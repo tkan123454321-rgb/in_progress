@@ -20,7 +20,7 @@ ticker_list = get_ticker_list()
 
 
 class StockTickerProducer:
-    def __init__(self, bootstrap_servers='localhost:9092', 
+    def __init__(self, bootstrap_servers='kafka:9092', 
                  client_id='producer-nap-batch', 
                  topic_name = "stock_list", 
                  update_conf: dict[str, str | int | float | bool] | None = None):
@@ -99,7 +99,7 @@ class StockTickerProducer:
                 return True
 
             except TypeError as e:
-                logger.error(f" Lỗi: {e}, sai định dạng messages", exec_info=True)
+                logger.error(f" Lỗi: {e}, sai định dạng messages", exc_info=True)
                 return False
             except BufferError as e:
                 logger.warning(f" Lỗi: {e}, Buffer đầy, đang chờ {retry_delay}s để worker dọn dẹp.")
@@ -109,16 +109,16 @@ class StockTickerProducer:
                 if kafka_error.retriable():
                     attempt += 1
                     if attempt > 5:
-                        logger.error(f" Lỗi: {kafka_error}, đã vượt quá số lần thử lại", exec_info=True)
+                        logger.error(f" Lỗi: {kafka_error}, đã vượt quá số lần thử lại", exc_info=True)
                         return False
                     logger.warning(f" Lỗi có thể retry, đang chờ {retry_delay}s trước khi thử lại.")
                     time.sleep(retry_delay)
                     self.producer.poll(0)
                 else:
-                    logger.error(f" Lỗi không thể retry: {kafka_error}", exec_info=True)
+                    logger.error(f" Lỗi không thể retry: {kafka_error}", exc_info=True)
                     return False
             except Exception as e:
-                logger.error(f" Lỗi không xác định: {e}", exec_info=True)
+                logger.error(f" Lỗi không xác định: {e}", exc_info=True)
                 return False
 
             finally:
@@ -146,12 +146,12 @@ class StockTickerProducer:
                 if kafka_error.retriable():
                     attempt += 1
                     if attempt > 5:
-                        logger.error(f" Lỗi: {kafka_error}, đã vượt quá số lần thử lại", exec_info=True)
+                        logger.error(f" Lỗi: {kafka_error}, đã vượt quá số lần thử lại", exc_info=True)
                         return False
                     logger.warning(f" Lỗi có thể retry, đang chờ {retry_delay}s trước khi thử lại.")
                     time.sleep(retry_delay)
                     self.producer.poll(0)
                 else:
-                    logger.error(f" Lỗi không thể retry: {kafka_error}", exec_info=True)
+                    logger.error(f" Lỗi không thể retry: {kafka_error}", exc_info=True)
                     return False
             

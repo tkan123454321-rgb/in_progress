@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - monitoring_net
   kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
@@ -155,7 +157,7 @@ services:
     build: .
     container_name: jupyter-lab
     command: >
-      jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*'
+      jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
     volumes:
       - .:/app
     ports:
