@@ -37,6 +37,8 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_JMX_PORT: 9997
       KAFKA_JMX_HOSTNAME: kafka
+    networks:
+      - monitoring_net
 
     healthcheck:
       # Lệnh kiểm tra: Thử kết nối vào cổng nội bộ 29092
