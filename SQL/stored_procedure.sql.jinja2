@@ -1,0 +1,28 @@
+WITH trash_data AS (
+    SELECT "Ticker", year, quarter,
+    {% for col in compare_columns %}
+        LAG("{{ col }}") OVER (
+            PARTITION BY "Ticker" 
+                ORDER BY 
+                    year ASC, quarter ASC
+        ) as prev_{{ col }},
+    {% endfor %}
+    "{{ compare_columns[0] }}" as anchor_col 
+    
+    FROM raw.{{ table_name }}
+)
+
+DELETE FROM raw.{{ table_name }}
+USING trash_data
+WHERE
+    raw.{{ table_name }}."Ticker" = trash_data."Ticker" 
+    AND raw.{{ table_name }}.year = trash_data.year 
+    AND raw.{{ table_name }}.quarter = trash_data.quarter 
+    AND (
+        {% for col in compare_columns %}
+            raw.{{ table_name }}."{{ col }}" = trash_data.prev_{{ col }}
+            {% if not loop.last %} 
+                AND 
+            {% endif %} 
+        {% endfor %}
+    );

@@ -1,0 +1,178 @@
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka
+    container_name: kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_HOSTNAME: kafka
+
+    healthcheck:
+      # Lệnh kiểm tra: Thử kết nối vào cổng nội bộ 29092
+      test: [ "CMD-SHELL", "nc -z localhost 29092 || exit 1" ]
+      interval: 10s # Cách 10s kiểm tra 1 lần
+      timeout: 5s # Chờ phản hồi tối đa 5s
+      retries: 5 # Thử 5 lần thất bại mới coi là 'unhealthy'
+      start_period: 30s # Quan trọng: Cho Kafka 30s để khởi động rồi mới bắt đầu check
+
+    mem_limit: 1024m
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  kafbat-ui:
+    container_name: kafbat-ui
+    image: ghcr.io/kafbat/kafka-ui:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    volumes:
+      # Ánh xạ file từ máy ông (trái) vào đúng chỗ quy định trong container (phải)
+      - ./config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
+    depends_on:
+      - kafka # Chờ ông trùm Kafka dậy thì thằng đệ tử UI mới được dậy
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - monitoring_net
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
+      - GF_SNAPSHOTS_EXTERNAL_ENABLED=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    networks:
+      - monitoring_net
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    environment:
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+    command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
+    volumes:
+      - ./config_docker/loki_config.yaml:/etc/loki/local-config.yaml
+      - ./loki-data:/loki
+    depends_on:
+      create-buckets:
+        condition: service_completed_successfully
+
+  minio:
+    image: quay.io/minio/aistor/minio:latest
+    container_name: aistor-server
+    networks:
+      - monitoring_net
+    restart: unless-stopped
+    ports:
+      - "9000:9000" # Cổng API (Loki kết nối vào đây)
+      - "9001:9001" # Cổng Web UI (Bạn vào đây để xem file)
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    volumes:
+      - ./minio.license:/minio.license
+      - minio_data:/mnt/data
+    command: server /mnt/data --console-address ":9001" --license /minio.license
+
+  create-buckets:
+    image: minio/mc:latest
+    restart: on-failure
+    networks:
+      - monitoring_net
+    environment:
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c " echo 'Đang chờ MinIO khởi động...';  until (/usr/bin/mc alias set myminio http://minio:9000 $${MINIO_USER} $${MINIO_PASSWORD});  do
+        sleep 1;
+      done;   /usr/bin/mc mb --ignore-existing myminio/loki-data;   /usr/bin/mc mb --ignore-existing myminio/loki-ruler;   echo 'hoàn thành tạo bucket';   exit 0; "
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+    volumes:
+      - ./config_docker/promtail-config.yaml:/etc/promtail/config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - promtail_data:/tmp
+    command: -config.file=/etc/promtail/config.yaml -config.expand-env=true
+
+  dev-container:
+    build: .
+    container_name: dev-container
+    command: [ "sleep", "infinity" ]
+    volumes:
+      - ./:/app
+    networks:
+      - monitoring_net
+
+  jupyter:
+    build: .
+    container_name: jupyter-lab
+    command: >
+      jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*'
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    networks:
+      - monitoring_net
+
+volumes:
+  db_data:
+    external: true
+    name: suici_mouse_scraper_postgres_data
+  grafana_data:
+  kafka_data:
+  minio_data:
+  promtail_data:
+
+
+networks:
+  monitoring_net:
+    driver: bridge

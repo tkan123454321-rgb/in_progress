@@ -1,0 +1,160 @@
+ promtail Pulling 
+ de609edadde4 Pulling fs layer 
+ 523b48785243 Pulling fs layer 
+ 85ed8d64e50a Pulling fs layer 
+ 471046fac765 Pulling fs layer 
+ 471046fac765 Downloading  4.194MB/30.44MB
+ 471046fac765 Downloading  10.49MB/30.44MB
+ 471046fac765 Downloading  16.78MB/30.44MB
+ 85ed8d64e50a Download complete 
+ 471046fac765 Downloading  23.07MB/30.44MB
+ 471046fac765 Downloading  29.36MB/30.44MB
+ 471046fac765 Download complete 
+ 523b48785243 Downloading  1.049MB/29.94MB
+ 523b48785243 Downloading  6.291MB/29.94MB
+ 523b48785243 Downloading  12.58MB/29.94MB
+ de609edadde4 Downloading  2.097MB/2.855MB
+ 523b48785243 Downloading  18.87MB/29.94MB
+ de609edadde4 Download complete 
+ 523b48785243 Downloading  23.07MB/29.94MB
+ 523b48785243 Downloading  29.94MB/29.94MB
+ 523b48785243 Download complete 
+ 523b48785243 Extracting 1 s
+ 523b48785243 Extracting 1 s
+ 523b48785243 Extracting 1 s
+ 523b48785243 Extracting 1 s
+ de609edadde4 Extracting 1 s
+ 523b48785243 Pull complete 
+ de609edadde4 Extracting 1 s
+ de609edadde4 Pull complete 
+ 471046fac765 Extracting 1 s
+ 471046fac765 Extracting 1 s
+ 471046fac765 Extracting 1 s
+ 85ed8d64e50a Pull complete 
+ 471046fac765 Pull complete 
+ promtail Pulled 
+---
+# Loki Config
+# (version=3.6.3, branch=release-3.6.x, revision=9385bc63)
+global:
+  file_watch_config:
+    min_poll_frequency: 250ms
+    max_poll_frequency: 250ms
+server:
+  http_listen_network: tcp
+  http_listen_address: ""
+  http_listen_port: 80
+  http_listen_conn_limit: 0
+  grpc_listen_network: tcp
+  grpc_listen_address: ""
+  grpc_listen_port: 9095
+  grpc_listen_conn_limit: 0
+  grpc_collect_max_streams_by_conn: true
+  proxy_protocol_enabled: false
+  tls_cipher_suites: ""
+  tls_min_version: ""
+  http_tls_config:
+    cert: ""
+    key: null
+    client_ca: ""
+    cert_file: ""
+    key_file: ""
+    client_auth_type: ""
+    client_ca_file: ""
+  grpc_tls_config:
+    cert: ""
+    key: null
+    client_ca: ""
+    cert_file: ""
+    key_file: ""
+    client_auth_type: ""
+    client_ca_file: ""
+  register_instrumentation: true
+  report_grpc_codes_in_instrumentation_label_enabled: false
+  graceful_shutdown_timeout: 30s
+  http_server_read_timeout: 30s
+  http_server_read_header_timeout: 0s
+  http_server_write_timeout: 30s
+  http_server_idle_timeout: 2m0s
+  http_log_closed_connections_without_response_enabled: false
+  grpc_server_max_recv_msg_size: 4194304
+  grpc_server_max_send_msg_size: 4194304
+  grpc_server_max_concurrent_streams: 100
+  grpc_server_max_connection_idle: 2562047h47m16.854775807s
+  grpc_server_max_connection_age: 2562047h47m16.854775807s
+  grpc_server_max_connection_age_grace: 2562047h47m16.854775807s
+  grpc_server_keepalive_time: 2h0m0s
+  grpc_server_keepalive_timeout: 20s
+  grpc_server_min_time_between_pings: 5m0s
+  grpc_server_ping_without_stream_allowed: false
+  grpc_server_num_workers: 0
+  grpc_server_stats_tracking_enabled: true
+  grpc_server_recv_buffer_pools_enabled: false
+  log_format: logfmt
+  log_level: info
+  log_source_ips_enabled: false
+  log_source_ips_full: false
+  log_source_ips_header: ""
+  log_source_ips_regex: ""
+  log_request_headers: false
+  log_request_at_info_level_enabled: false
+  log_request_exclude_headers_list: ""
+  trace_request_headers: false
+  trace_request_exclude_headers_list: ""
+  http_path_prefix: ""
+  cluster_validation:
+    label: ""
+    grpc:
+      enabled: false
+      soft_validation: false
+    http:
+      enabled: false
+      soft_validation: false
+      excluded_paths: ""
+      excluded_user_agents: ""
+  external_url: ""
+  health_check_target: null
+  disable: false
+  profiling_enabled: false
+  enable_runtime_reload: false
+client:
+  url: ""
+  batchwait: 1s
+  batchsize: 1048576
+  follow_redirects: false
+  enable_http2: false
+  backoff_config:
+    min_period: 500ms
+    max_period: 5m0s
+    max_retries: 10
+  timeout: 10s
+  tenant_id: ""
+  drop_rate_limited_batches: false
+positions:
+  sync_period: 10s
+  filename: /var/log/positions.yaml
+  ignore_invalid_yaml: false
+target_config:
+  sync_period: 10s
+  stdin: false
+limits_config:
+  readline_rate: 10000
+  readline_burst: 10000
+  readline_rate_drop: true
+  max_streams: 0
+  max_line_size: 0B
+  max_line_size_truncate: false
+tracing:
+  enabled: true
+wal:
+  enabled: false
+  dir: ""
+  cleanSegmentsOlderThan: 0s
+  watchConfig:
+    minReadFrequency: 0s
+    maxReadFrequency: 0s
+
+
+level=info ts=2026-01-21T07:26:03.127848634Z caller=promtail.go:135 msg="Reloading configuration file" sha3sum=3dbebdbda2928277103b60483fdeaee23cb8573f8c2e1cd42e02632f8cce1d8d
+level=error ts=2026-01-21T07:26:03.127907551Z caller=main.go:169 msg="error creating promtail" error="failed to create client manager: at least one client config must be provided"
+

@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+kafka:
+  clusters:
+    - name: "an's kafka cluster"
+      bootstrapServers: kafka:29092
+      metrics:
+        port: 9997
+        type: JMX
+      properties:
+        security.protocol: PLAINTEXT
+      

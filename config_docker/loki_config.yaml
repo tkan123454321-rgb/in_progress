@@ -1,0 +1,65 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9095
+  http_listen_address: 0.0.0.0  
+  grpc_listen_address: 0.0.0.0
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+
+  storage:
+    s3:
+      endpoint: http://minio:9000     
+      bucketnames: loki-data         
+      access_key_id: ${MINIO_USER}
+      secret_access_key: ${MINIO_PASSWORD}
+      s3forcepathstyle: true          
+      insecure: true
+
+
+schema_config:
+  configs:
+    - from: 2026-01-01
+      store: tsdb
+      object_store: s3
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+
+
+compactor:
+  working_directory: /loki/compactor
+  compaction_interval: 10m
+  retention_enabled: true             # Bật tính năng tự xóa
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 50
+  delete_request_store: s3
+  compactor_ring:
+    kvstore:
+      store: inmemory
+
+limits_config:
+  retention_period: 140h 
+  reject_old_samples: true
+  reject_old_samples_max_age: 1w
+  max_line_size: 64KB            
+  max_line_size_truncate: true   
+  max_line_size_truncate_identifier: " ... [truncated]"
+
+ingester:
+  wal:
+    enabled: true
+    dir: /loki/wal
+  chunk_idle_period: 1m  
+  chunk_retain_period: 0s
+  flush_op_timeout: 1m

@@ -1,0 +1,16 @@
+__pycache__/
+.vscode/
+.env
+.ipynb_checkpoints
+.venv
+logs/
+*.log
+.DS_Store
+loki-data/
+!.devcontainer.json
+*.csv
+*.parquet
+*.json
+*.avro
+test.ipynb
+*.license
