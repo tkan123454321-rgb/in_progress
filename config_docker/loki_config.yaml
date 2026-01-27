@@ -13,6 +13,7 @@ common:
   ring:
     kvstore:
       store: inmemory
+    replication_factor: 1
 
 
   storage:

@@ -138,6 +138,8 @@ services:
     image: grafana/promtail:latest
     container_name: promtail
     restart: unless-stopped
+    ports:
+      - "9080:9080"
     networks:
       - monitoring_net
     volumes:
