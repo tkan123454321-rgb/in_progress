@@ -1,16 +1,18 @@
+import logging
 from confluent_kafka import Producer
 from confluent_kafka.error import ProduceError
 from logging import *
 from infrastructure.common import get_db_engine
 from utils.logger_config import setup_logger
-from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.admin import AdminClient,NewTopic
 import os
 import time
 import pandas as pd
 from ingestion.utils import get_ticker_list
+from utils.logger_config import setup_logger
 
 # cài đặt logger
-logger = getLogger(__name__)    
+logger = setup_logger(component="extract")   
 
 # Database connection setup
 engine = get_db_engine()
@@ -20,7 +22,7 @@ ticker_list = get_ticker_list()
 
 
 class StockTickerProducer:
-    def __init__(self, bootstrap_servers='kafka:9092', 
+    def __init__(self, bootstrap_servers='kafka:29092', 
                  client_id='producer-nap-batch', 
                  topic_name = "stock_list", 
                  update_conf: dict[str, str | int | float | bool] | None = None):
@@ -56,12 +58,12 @@ class StockTickerProducer:
                                 num_partitions=3, 
                                 replication_factor=1,
                                 config = {
-                                'cleanup.policy': 'compact,delete',
-                                'segment.ms': '3600000',
-                                'segment.bytes': '104857600',
-                                'min.cleanable.dirty.ratio': '0.5',
-                                'retention.ms': '86400000',
-                                'delete.retention.ms': '86400000',     
+                                'cleanup.policy': 'compact,delete', 
+                                'segment.ms': '3600000', # Thời gian tối đa của một segment (1 giờ)
+                                'segment.bytes': '104857600', # Kích thước tối đa của một segment (100MB)
+                                'min.cleanable.dirty.ratio': '0.5', # Tỷ lệ dữ liệu "rác" (dirty) đạt 50% thì Kafka mới bắt đầu quá trình nén (compaction)
+                                'retention.ms': '86400000', # Thời gian lưu trữ tối đa
+                                'delete.retention.ms': '86400000',     # Thời gian giữ lại dấu vết (tombstone) sau khi message đã bị xóa nén
                             }
                             )
             logger.info(f"Topic '{self.topic_name}' chưa tồn tại, đã tạo mới" )

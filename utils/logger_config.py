@@ -7,6 +7,7 @@ from datetime import datetime, timezone, timedelta
 import logging_loki
 from queue import Queue
 
+global_level = logging.INFO
 
 class JsonFormatter(Formatter):
     def format(self, record):
@@ -16,7 +17,6 @@ class JsonFormatter(Formatter):
         
         log_record = {
             "level": record.levelname,
-            "name": record.name,
             "path_name": record.pathname,
             "message": record.getMessage(),
             "time": vn_time_str,
@@ -24,24 +24,23 @@ class JsonFormatter(Formatter):
         }
         return json.dumps(log_record,ensure_ascii=False)
 
-def setup_logger(name: str, level: int = DEBUG):
-    logger = getLogger(name)
-    logger.setLevel(level)
+def setup_logger(component: str):
+    logger = getLogger("main")
+    logger.setLevel(global_level)
     
-    if logger.hasHandlers():
-        logger.handlers.clear()
+    if not logger.hasHandlers():
     
-    handler = logging_loki.LokiQueueHandler(
-        Queue(-1), 
-        url="http://loki:3100/loki/api/v1/push", 
-        tags={"app": "dev-container"}, 
-        auth=None, 
-        version="1",
-    )
-    console_handler = StreamHandler(sys.stdout)
-    handler.setFormatter(JsonFormatter())
-    console_handler.setFormatter(JsonFormatter())
-    logger.addHandler(handler)
-    logger.addHandler(console_handler)
+        handler = logging_loki.LokiQueueHandler(
+            Queue(-1), 
+            url="http://loki:3100/loki/api/v1/push", 
+            tags={"app": "main_pipeline", "component": component}, 
+            auth=None, 
+            version="1",
+        )
+        console_handler = StreamHandler(sys.stdout)
+        handler.setFormatter(JsonFormatter())
+        console_handler.setFormatter(JsonFormatter())
+        logger.addHandler(handler)
+        logger.addHandler(console_handler)
 
-    return logger
+    return logging.LoggerAdapter(logger, {"component": component})

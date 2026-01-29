@@ -60,6 +60,8 @@ services:
       - "8080:8080"
     environment:
       DYNAMIC_CONFIG_ENABLED: 'true'
+    networks:
+      - monitoring_net
     volumes:
       # Ánh xạ file từ máy ông (trái) vào đúng chỗ quy định trong container (phải)
       - ./config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
