@@ -1,9 +1,10 @@
-from ingestion.utils import get_db_engine, _get_session
+from ingestion.ingestion_utils import _get_session
+from utils.db_connection import get_db_engine
 import requests
 import logging
 import time
 from requests.exceptions import RequestException, HTTPError, Timeout
-from ingestion.producer import StockTickerProducer
+from ingestion.kafka_adapter import StockTickerProducer
 import json
 from utils.logger_config import setup_logger
 
@@ -16,13 +17,12 @@ producer = StockTickerProducer(update_conf = {'compression.type': 'lz4', 'linger
 
 
 
-def _fetch_financial_reports(ticker: str):
+def _fetch_financial_reports(ticker: str, topic_name: str):
     start = 2018
     end = 2025
     years = range(end, start-1, -1)
     quarters = [4,3,2,1]
-    topic = "financial_reports"
-    producer.check_and_create_topic(topic)
+    
     try:
         for y in years: # tạo danh sách url tự động từ năm end đến start
             for q in quarters:
@@ -34,7 +34,7 @@ def _fetch_financial_reports(ticker: str):
                     if data:
                         msg = json.dumps(data, ensure_ascii=False).encode('utf-8')
                         key = f"{ticker}-{y}-{q}"
-                        producer.single_message_data(message=msg, key=key, topic_name=topic)
+                        producer.single_message_data(message=msg, key=key, topic_name=topic_name)
                         logger.info(f"Nạp báo cáo tài chính thành công cho {ticker} năm {y} quý {q}")
                     time.sleep(0.1) # Thời gian chờ giữa các yêu cầu để tránh bị chặn
                 except HTTPError as e:
@@ -48,6 +48,7 @@ def _fetch_financial_reports(ticker: str):
         else: 
             logger.critical(f"nạp báo cáo tài chính thất bại cho {ticker}: còn dữ liệu trong hàng đợi", exc_info=True)
             return False
+        
     except KeyboardInterrupt:
         logger.warning(f" đang xử lý{ticker}, nhận lệnh dừng từ bàn phím (KeyboardInterrupt).")
         raise 

@@ -1,6 +1,6 @@
 import time
 import pandas as pd
-from infrastructure.common import get_db_engine
+from utils.db_connection import get_db_engine
 import logging
 import requests
 import os
@@ -93,6 +93,9 @@ def get_ticker_list():
         logger.error(f"Error fetching ticker list: {e}")
         return []
     
+
+
+
     
 # tạo 1 session duy trì kết nối  
 def _get_session():

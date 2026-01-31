@@ -25,3 +25,4 @@ pydantic==2.12.5
 python-json-logger
 jupyterlab
 python-logging-loki
+boto3
