@@ -129,9 +129,8 @@ class KafkaStockConsumer:
         success = self._loader._minio_put_object(self.buffer)
         if success:
             try:
-            
-                logger.info(f"Đẩy dữ liệu lên minio thành công Bắt đầu làm sạch buffer")
                 self.consumer.commit(asynchronous=False)
+                logger.info(f"Đẩy dữ liệu lên minio thành công, đã commit, chuẩn bị làm sạch buffer")
                 self.buffer = []
                 
             except KafkaException as e:
