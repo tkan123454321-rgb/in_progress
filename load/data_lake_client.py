@@ -1,11 +1,17 @@
+import datetime
+from io import BytesIO
+import json
 from logging import log
+from time import time
+import uuid
+from arrow import now
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 import os
 from botocore.config import Config
 from utils.logger_config import setup_logger
-
+import time
 logger = setup_logger(component = "load")
 load_dotenv()
 
@@ -41,7 +47,6 @@ class DatalakeClient:
             if error_code == '404':
                 logger.warning(f"Bucket '{self.bucket_name}' is not existing. Creating...")
                 try:
-                    # 2. Gọi hàm create_bucket như trong hình ông thấy
                     self.s3_client.create_bucket(Bucket=self.bucket_name)
                     logger.info(f"✅ [S3] created successfully {self.bucket_name}")
                 except ClientError as create_err:
@@ -50,7 +55,41 @@ class DatalakeClient:
             else:
                 logger.error(f"error raised during bucket check: {e}", exc_info=True)
                 raise e
+    
+    def _minio_put_object(self, buffer):
+        if not buffer:
+                logger.info("[Info] No data to upload to MinIO.")
+                return True
+        try:
+            now = datetime.datetime.now()
+            unique_id = uuid.uuid4().hex[:8]
+            file_name = f"batch_{int(time.time())}_{unique_id}.jsonl"
+            file_key = (
+                        f"source=fireant/"
+                        f"layer=bronze/"
+                        f"year={now.year}/"
+                        f"month={now.month:02d}/"
+                        f"day={now.day:02d}/"
+                        f"{file_name}"
+                        )
+            
+            jsonl_string = "\n".join([json.dumps(record, ensure_ascii=False) for record in buffer])
+            
+            # Đóng gói vào hộp ảo BytesIO
+            file_buffer = jsonl_string.encode('utf-8')
 
+            # 4. UPLOAD: Đẩy lên MinIO
+            self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=file_key,       
+                Body=file_buffer    
+            )
+            return True
+        except ClientError as e:
+            logger.error(f"[Error] uploading to MinIO failed: {e}", exc_info=True)
+            return False
+        
+        
             
                 
     

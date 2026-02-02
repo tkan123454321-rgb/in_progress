@@ -161,6 +161,3 @@ class StockTickerProducer:
                     return False
             
             
-class StockTickerConsumer:
-    def __init__(self):
-        pass
