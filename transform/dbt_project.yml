@@ -1,0 +1,26 @@
+name: 'transform'
+profile: 'transform'
+
+model-paths: ["models"]       # Code SQL xử lý data -> Vứt vào thư mục tên là 'models'
+seed-paths: ["seeds"]         # File CSV nhỏ (từ điển) -> Vứt vào thư mục tên là 'seeds'
+test-paths: ["tests"]         # Code kiểm tra lỗi -> Vứt vào thư mục tên là 'tests'
+analysis-paths: ["analyses"]  # Code nháp -> Vứt vào thư mục tên là 'analyses'
+macro-paths: ["macros"]       # Hàm tự viết -> Vứt vào thư mục tên là 'macros'
+snapshot-paths: ["snapshots"] # Lưu lịch sử thay đổi -> Vứt vào thư mục tên là 'snapshots'
+
+
+clean-targets: [target, dbt_packages, logs]
+
+models:
+  transform:          
+    +materialized: table
+    +database: finance
+    silver:
+      +enable: true
+      +materialized: table  # Ghi đè lên ông nội (View -> Table)
+      +schema: silver        # Lưu vào schema riêng tên là silver
+
+    gold:
+      +enable: true
+      +materialized: view   # Giữ nguyên ý ông nội
+      +schema: gold

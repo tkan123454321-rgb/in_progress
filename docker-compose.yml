@@ -1,18 +1,18 @@
 services:
 
-  postgres:
-    image: postgres:15-alpine
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_DB=${PG_DB}
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - monitoring_net
+  # postgres:
+  #   image: postgres:15-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=${PG_USER}
+  #     - POSTGRES_PASSWORD=${PG_PASSWORD}
+  #     - POSTGRES_DB=${PG_DB}
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+  #   networks:
+  #     - monitoring_net
   kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
@@ -156,6 +156,12 @@ services:
     command: [ "sleep", "infinity" ]
     volumes:
       - ./:/app
+    environment:
+      - DBT_PROFILES_DIR=/app/transform # <--- Chỉ đến folder chứa file, KHÔNG trỏ vào file
+      - DBT_PROJECT_DIR=/app/transform # <--- Chỉ đến folder chứa file
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+
     networks:
       - monitoring_net
 
@@ -171,6 +177,46 @@ services:
     networks:
       - monitoring_net
 
+  nessie:
+    image: ghcr.io/projectnessie/nessie:latest
+    container_name: nessie
+    ports:
+      - "19120:19120"
+    restart: unless-stopped
+    environment:
+      - NESSIE_VERSION_STORE_TYPE=ROCKSDB
+      - NESSIE_VERSION_STORE_ROCKSDB_PATH=/var/lib/nessie/data
+      - NESSIE_CATALOG_DEFAULT_WAREHOUSE=minio_lakehouse
+      - NESSIE_CATALOG_WAREHOUSES_MINIO_LAKEHOUSE_LOCATION=s3://financial-data-lake/
+
+      # 3. S3/MinIO: Cấu hình kết nối để Nessie làm việc
+      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ENDPOINT=http://minio:9000
+      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_PATH_STYLE_ACCESS=true
+      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=${MINIO_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_PASSWORD}
+    volumes:
+      - nessie_data:/var/lib/nessie/data
+    depends_on:
+      - minio
+    networks:
+      - monitoring_net
+
+  trino:
+    image: trinodb/trino:latest
+    container_name: trino
+    ports:
+      - "9090:8080"
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+    volumes:
+      - ./trino_etc:/etc/trino
+    depends_on:
+      - minio
+      - nessie
+    mem_limit: 6gb
+
 volumes:
   db_data:
     external: true
@@ -179,6 +225,8 @@ volumes:
   kafka_data:
   minio_data:
   promtail_data:
+  nessie_data:
+  trino:
 
 
 networks:

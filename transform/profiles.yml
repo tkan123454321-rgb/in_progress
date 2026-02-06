@@ -1,0 +1,38 @@
+transform: 
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      
+      extensions:
+        - httpfs
+        - iceberg
+      
+      settings:
+        enable_external_file_cache: false
+
+
+      secrets:
+        - type: s3
+          region: "us-east-1"
+          key_id: "{{ env_var('MINIO_USER') }}"
+          secret: "{{ env_var('MINIO_PASSWORD') }}" 
+          scope: 's3://financial-data-lake/'
+          endpoint: "minio:9000"
+          use_ssl: false
+          url_style: "path"
+        
+      
+      attach:
+        - path: "s3://financial-data-lake/"
+          alias: finance
+          type: iceberg
+          options:
+            AUTHORIZATION_TYPE: "'none'"                  # Có dấu nháy đơn ' ' bên trong
+            ENDPOINT: "iceberg-rest:8181"
+            READ_ONLY: "false"
+  
+            
+
+
+          

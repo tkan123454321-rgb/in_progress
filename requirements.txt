@@ -26,3 +26,5 @@ python-json-logger
 jupyterlab
 python-logging-loki
 boto3
+dbt-duckdb
+dbt-core
