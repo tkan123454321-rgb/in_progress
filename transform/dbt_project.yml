@@ -9,12 +9,16 @@ macro-paths: ["macros"]       # Hàm tự viết -> Vứt vào thư mục tên l
 snapshot-paths: ["snapshots"] # Lưu lịch sử thay đổi -> Vứt vào thư mục tên là 'snapshots'
 
 
-clean-targets: [target, dbt_packages, logs]
+clean-targets: [target, dbt_packages, logs, .user.yml]
 
 models:
   transform:          
     +materialized: table
-    +database: finance
+    bronze:
+      +enable: true
+      +materialized: table
+      +schema: bronze        
+
     silver:
       +enable: true
       +materialized: table  # Ghi đè lên ông nội (View -> Table)

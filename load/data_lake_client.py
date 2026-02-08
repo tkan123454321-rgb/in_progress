@@ -4,7 +4,6 @@ import json
 from logging import log
 from time import time
 import uuid
-from arrow import now
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv

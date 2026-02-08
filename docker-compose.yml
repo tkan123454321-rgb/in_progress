@@ -34,6 +34,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 5
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_JMX_PORT: 9997
       KAFKA_JMX_HOSTNAME: kafka
@@ -48,7 +49,7 @@ services:
       retries: 5 # Thử 5 lần thất bại mới coi là 'unhealthy'
       start_period: 30s # Quan trọng: Cho Kafka 30s để khởi động rồi mới bắt đầu check
 
-    mem_limit: 1024m
+    mem_limit: 2048m
     volumes:
       - kafka_data:/var/lib/kafka/data
 
@@ -165,29 +166,30 @@ services:
     networks:
       - monitoring_net
 
-  jupyter:
-    build: .
-    container_name: jupyter-lab
-    command: >
-      jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
-    volumes:
-      - .:/app
-    ports:
-      - "8888:8888"
-    networks:
-      - monitoring_net
+  # jupyter:
+  #   build: .
+  #   container_name: jupyter-lab
+  #   command: >
+  #     jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "8888:8888"
+  #   networks:
+  #     - monitoring_net
 
   nessie:
     image: ghcr.io/projectnessie/nessie:latest
     container_name: nessie
+    user: root
     ports:
       - "19120:19120"
     restart: unless-stopped
     environment:
       - NESSIE_VERSION_STORE_TYPE=ROCKSDB
-      - NESSIE_VERSION_STORE_ROCKSDB_PATH=/var/lib/nessie/data
-      - NESSIE_CATALOG_DEFAULT_WAREHOUSE=minio_lakehouse
-      - NESSIE_CATALOG_WAREHOUSES_MINIO_LAKEHOUSE_LOCATION=s3://financial-data-lake/
+      - NESSIE_VERSION_STORE_PERSIST_ROCKS_DATABASE_PATH=/var/lib/nessie/data
+      - NESSIE_CATALOG_DEFAULT_WAREHOUSE=miniolakehouse
+      - NESSIE_CATALOG_WAREHOUSES_MINIOLAKEHOUSE_LOCATION=s3://financial-data-lake/
 
       # 3. S3/MinIO: Cấu hình kết nối để Nessie làm việc
       - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ENDPOINT=http://minio:9000

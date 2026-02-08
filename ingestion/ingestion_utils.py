@@ -1,5 +1,4 @@
 import time
-import pandas as pd
 from utils.db_connection import get_db_engine
 import logging
 import requests
@@ -84,14 +83,7 @@ class CheckpointManager:
     
     
     
-def get_ticker_list():
-    try:
-        df_tickers = pd.read_sql('SELECT DISTINCT("Ticker") FROM analysis_data.companies_list ORDER BY "Ticker" ASC', engine)
-        ticker_list = set(df_tickers['Ticker'].str.strip())
-        return ticker_list
-    except Exception as e:
-        logger.error(f"Error fetching ticker list: {e}")
-        return []
+
     
 
 

@@ -4,7 +4,7 @@ from confluent_kafka.error import ProduceError
 from logging import *
 from utils.db_connection import get_db_engine
 from utils.logger_config import setup_logger
-from confluent_kafka.admin import AdminClient,NewTopic
+from confluent_kafka.admin import AdminClient, NewTopic
 import os
 import time
 import pandas as pd
