@@ -1,18 +1,151 @@
-services:
+x-airflow-common: &airflow-common
+  image: apache/airflow:3.1.7
+  env_file:
+    - .env
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/config:/opt/airflow/config
+  user: "${AIRFLOW_UID:-50000}:0"
+  networks:
+    - monitoring_net
+  depends_on: &airflow-common-depends-on
+    postgres:
+      condition: service_healthy
 
-  # postgres:
-  #   image: postgres:15-alpine
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=${PG_USER}
-  #     - POSTGRES_PASSWORD=${PG_PASSWORD}
-  #     - POSTGRES_DB=${PG_DB}
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - db_data:/var/lib/postgresql/data
-  #   networks:
-  #     - monitoring_net
+services:
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow-webserver
+    command: api-server
+    ports:
+      - "8081:8080" # Đổi sang 8081 để tránh đụng port Trino/Spark
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    depends_on:
+      <<: *airflow-common-depends-on
+    entrypoint: /bin/bash
+    user: root
+    command:
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+          export AIRFLOW_UID=$$(id -u)
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        echo
+        echo "Creating missing opt dirs if missing:"
+        echo
+        mkdir -v -p /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Airflow version:"
+        /entrypoint airflow version
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Running airflow config list to create default config file if missing."
+        echo
+        /entrypoint airflow config list >/dev/null
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Change ownership of files in /opt/airflow to ${AIRFLOW_UID}:0"
+        echo
+        chown -R "${AIRFLOW_UID}:0" /opt/airflow/
+        echo
+        echo "Change ownership of files in shared volumes to ${AIRFLOW_UID}:0"
+        echo
+        chown -v -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - monitoring_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    mem_limit: 512m
+
   kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
@@ -21,33 +154,17 @@ services:
     ports:
       - "9092:9092"
       - "9997:9997"
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
-      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
-      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 5
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-      KAFKA_JMX_PORT: 9997
-      KAFKA_JMX_HOSTNAME: kafka
+    env_file:
+      - .env
     networks:
       - monitoring_net
 
     healthcheck:
-      # Lệnh kiểm tra: Thử kết nối vào cổng nội bộ 29092
-      test: [ "CMD-SHELL", "nc -z localhost 29092 || exit 1" ]
-      interval: 10s # Cách 10s kiểm tra 1 lần
-      timeout: 5s # Chờ phản hồi tối đa 5s
-      retries: 5 # Thử 5 lần thất bại mới coi là 'unhealthy'
-      start_period: 30s # Quan trọng: Cho Kafka 30s để khởi động rồi mới bắt đầu check
+      test: [ "CMD-SHELL", "nc -z localhost 9092 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
     mem_limit: 2048m
     volumes:
@@ -64,10 +181,9 @@ services:
     networks:
       - monitoring_net
     volumes:
-      # Ánh xạ file từ máy ông (trái) vào đúng chỗ quy định trong container (phải)
       - ./config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
     depends_on:
-      - kafka # Chờ ông trùm Kafka dậy thì thằng đệ tử UI mới được dậy
+      - kafka
 
   grafana:
     image: grafana/grafana:latest
@@ -77,11 +193,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
-      - GF_SNAPSHOTS_EXTERNAL_ENABLED=false
+    env_file:
+      - .env
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
@@ -94,9 +207,8 @@ services:
     ports:
       - "3100:3100"
     restart: unless-stopped
-    environment:
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
+    env_file:
+      - .env
     command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
     volumes:
       - ./config_docker/loki_config.yaml:/etc/loki/local-config.yaml
@@ -112,11 +224,10 @@ services:
       - monitoring_net
     restart: unless-stopped
     ports:
-      - "9000:9000" # Cổng API (Loki kết nối vào đây)
-      - "9001:9001" # Cổng Web UI (Bạn vào đây để xem file)
-    environment:
-      - MINIO_ROOT_USER=${MINIO_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+      - "9000:9000"
+      - "9001:9001"
+    env_file:
+      - .env
     volumes:
       - ./minio.license:/minio.license
       - minio_data:/mnt/data
@@ -127,9 +238,8 @@ services:
     restart: on-failure
     networks:
       - monitoring_net
-    environment:
-      MINIO_USER: ${MINIO_USER}
-      MINIO_PASSWORD: ${MINIO_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       - minio
     entrypoint: >
@@ -157,12 +267,8 @@ services:
     command: [ "sleep", "infinity" ]
     volumes:
       - ./:/app
-    environment:
-      - DBT_PROFILES_DIR=/app/transform # <--- Chỉ đến folder chứa file, KHÔNG trỏ vào file
-      - DBT_PROJECT_DIR=/app/transform # <--- Chỉ đến folder chứa file
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
-
+    env_file:
+      - .env
     networks:
       - monitoring_net
 
@@ -185,18 +291,8 @@ services:
     ports:
       - "19120:19120"
     restart: unless-stopped
-    environment:
-      - NESSIE_VERSION_STORE_TYPE=ROCKSDB
-      - NESSIE_VERSION_STORE_PERSIST_ROCKS_DATABASE_PATH=/var/lib/nessie/data
-      - NESSIE_CATALOG_DEFAULT_WAREHOUSE=miniolakehouse
-      - NESSIE_CATALOG_WAREHOUSES_MINIOLAKEHOUSE_LOCATION=s3://financial-data-lake/
-
-      # 3. S3/MinIO: Cấu hình kết nối để Nessie làm việc
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ENDPOINT=http://minio:9000
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_PATH_STYLE_ACCESS=true
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=${MINIO_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - nessie_data:/var/lib/nessie/data
     depends_on:
@@ -221,8 +317,6 @@ services:
 
 volumes:
   db_data:
-    external: true
-    name: suici_mouse_scraper_postgres_data
   grafana_data:
   kafka_data:
   minio_data:

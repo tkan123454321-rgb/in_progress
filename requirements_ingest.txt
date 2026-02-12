@@ -24,3 +24,6 @@ polars
 pyarrow
 pyiceberg[s3fs,pyarrow,polars]
 ipykernel
+
+fastavro
+cython

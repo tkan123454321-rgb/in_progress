@@ -4,7 +4,7 @@ from confluent_kafka import Consumer, KafkaError, KafkaException
 import os
 import socket
 import json
-from load.data_lake_client import DatalakeClient
+from load.data_lake_client import LakeHouseClient
 import sys
 
 logger = setup_logger(component="load")
@@ -23,7 +23,7 @@ class KafkaStockConsumer:
         self.group_id = group_id
         self.topic_name = topic_name
         self.buffer = []
-        self._loader = DatalakeClient()
+        self._loader = LakeHouseClient()
         # Cấu hình Consumer
         pid = os.getpid()
         hostname = socket.gethostname()

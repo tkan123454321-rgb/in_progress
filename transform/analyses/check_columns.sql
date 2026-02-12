@@ -1,0 +1,1 @@
+SHOW COLUMNS FROM bronze.raw_companies_listing

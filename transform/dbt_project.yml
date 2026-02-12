@@ -1,5 +1,5 @@
-name: 'transform'
-profile: 'transform'
+name: transform
+profile: transform
 
 model-paths: ["models"]       # Code SQL xử lý data -> Vứt vào thư mục tên là 'models'
 seed-paths: ["seeds"]         # File CSV nhỏ (từ điển) -> Vứt vào thư mục tên là 'seeds'
@@ -16,15 +16,15 @@ models:
     +materialized: table
     bronze:
       +enable: true
-      +materialized: table
+      +materialized: view
       +schema: bronze        
 
     silver:
       +enable: true
-      +materialized: table  # Ghi đè lên ông nội (View -> Table)
+      +materialized: table 
       +schema: silver        # Lưu vào schema riêng tên là silver
 
     gold:
       +enable: true
-      +materialized: view   # Giữ nguyên ý ông nội
+      +materialized: table  
       +schema: gold

@@ -1,28 +1,43 @@
 # %%
 import polars as pl
+from zoneinfo import ZoneInfo
+from datetime import datetime
 import pyarrow as pa
 from vnstock import Listing
-from datetime import datetime
+import time
 import os
 from utils.db_connection import get_catalog
-# %%
-iceberg_catalog = get_catalog()
-iceberg_catalog.create_namespace_if_not_exists("bronze")
-
-
-
-
-
-
-
-
-
-
-
-
-
+from load.data_lake_client import LakeHouseClient
+from pyiceberg.exceptions import NoSuchTableError
+from IPython.display import display
+from ingestion.fetch_company_list import _fetch_company_list, _fetch_upcom_company
+from ingestion.ingestion_utils import _get_session
 # %%
 
+raw_dim_company = _fetch_company_list()
+raw_upcom = _fetch_upcom_company()
+lake_house_client = LakeHouseClient()
+lake_house_client._put_raw_dim_company(raw_dim_company, name_table = "raw_companies_listing")
+lake_house_client._put_raw_dim_company(raw_upcom, name_table = "raw_upcom_listing")
+
+
+
+# %%
+listing = Listing(source='VCI')
+df_upcom = listing.all_symbols()
+display(df_upcom)
+
+df_group = listing.symbols_by_group("HOSE")
+display(df_group)
+
+
+# %%
+s = _get_session()
+url = "https://restv2.fireant.vn/symbols/"
+response = s.get(url, timeout=10)
+print(response.text)
+
+# %%
 
 
 
