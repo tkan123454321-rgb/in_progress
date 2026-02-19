@@ -1,3 +1,4 @@
 dbt-trino
 dbt-core
 sqlfmt
+elementary-data

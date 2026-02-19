@@ -1,0 +1,13 @@
+# snapshots:
+#   - name: snp_dim_company
+#     # Thay source(...) bằng ref(...)
+#     relation: ref('dim_company') 
+    
+#     config:
+#       target_schema: snapshots
+#       unique_key: company_sk  -- Dùng khóa chính bạn đã tạo ở Silver
+#       strategy: check
+#       check_cols: 
+#         - market_cap
+#         - shares_outstanding
+#         - ticker_status

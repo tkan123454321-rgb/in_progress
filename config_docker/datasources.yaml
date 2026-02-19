@@ -8,3 +8,13 @@ datasources:
     jsonData:
       timeout: 60
       maxLines: 1000
+  - name: trino-elementary
+    type: trino-datasource
+    access: proxy
+    url: http://trino:8080
+    database: lakehouse
+    jsonData:
+      Catalog: lakehouse
+      Schema: elementary
+
+

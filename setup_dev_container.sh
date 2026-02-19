@@ -1,7 +1,15 @@
 #!/bin/bash
 
 set -e 
-
+# --- 0. Cài đặt công cụ hệ thống ----
+if ! command -v make &> /dev/null; then
+    echo "[SYSTEM] Đang cài đặt make..."
+    # Dùng apt-get update && apt-get install để đảm bảo thông nòng
+    apt-get update && apt-get install -y make
+    echo "[SYSTEM] Cài đặt make hoàn tất."
+else
+    echo "[SYSTEM] Lệnh 'make' đã có sẵn. Bỏ qua."
+fi
 # --- 1. Môi trường INGEST ---
 if [ ! -d ".venv_ingest" ]; then
     echo "📦 [INGEST] Chưa thấy venv, đang tạo mới và cài thư viện..."

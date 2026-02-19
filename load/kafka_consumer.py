@@ -48,7 +48,7 @@ class KafkaStockConsumer:
     def consume_batch_messages(self):
         self.consumer.subscribe(topics=[self.topic_name])
         idle_count = 0
-        BATCH_SIZE = 20
+        BATCH_SIZE = 50
         FLUSH_INTERVAL = 5
         last_flush_time = time.time()
         try:
@@ -68,16 +68,16 @@ class KafkaStockConsumer:
                         time.sleep(5) 
                         continue
                 try:
-                    messages = self.consumer.consume(num_messages = 10, timeout=1.0)
+                    messages = self.consumer.consume(num_messages = 25, timeout=1.0)
                 except RuntimeError as e:
                     logger.error(f"Lỗi runtime khi tiêu thụ tin nhắn: {e}")
                     sys.exit(1)
                 if not messages:
                     idle_count += 1
                     time.sleep(1)
-                    logger.debug(f"⏳ Không có hàng... Đếm ngược: {idle_count}/10")
-                    if idle_count >= 10:
-                        logger.info("🛑 Đã đợi 10 giây mà không có tin mới. Dừng Consumer!")
+                    logger.debug(f"⏳ Không có hàng... Đếm ngược: {idle_count}/7")
+                    if idle_count >= 7:
+                        logger.info("🛑 Đã đợi 7 giây mà không có tin mới. Dừng Consumer!")
                         break # Thoát khỏi vòng lặp While True -> Nhảy xuống Finally
                     continue
                 for msg in messages:
@@ -87,9 +87,6 @@ class KafkaStockConsumer:
                         elif msg.error().retriable():
                             logger.warning(f"Lỗi tạm thời khi tiêu thụ tin nhắn: {msg.error().str()}")
                             continue
-                        elif msg.error().fatal():
-                            logger.critical(f"Lỗi nghiêm trọng khi tiêu thụ tin nhắn: {msg.error().str()}")
-                            raise KafkaException(msg.error())
                         else:
                             logger.error(f"Lỗi không xác định khi tiêu thụ tin nhắn: {msg.error().str()}")
                             raise KafkaException(msg.error())
@@ -125,7 +122,10 @@ class KafkaStockConsumer:
     def _flush_and_commit(self):
         if not self.buffer:
             return
-        logger.info(f"Buffer đạt {len(self.buffer)} tin. Bắt đầu đẩy MinIO...")
+        logger.info(f"Buffer đạt {len(self.buffer)} tin. Bắt đầu biến đổi bằng polars và đẩy lên MinIO")
+        try:
+            start= time.time()
+            
         success = self._loader._minio_put_object(self.buffer)
         if success:
             try:

@@ -1,4 +1,5 @@
 # %%
+import json
 import polars as pl
 from zoneinfo import ZoneInfo
 from datetime import datetime
@@ -10,7 +11,7 @@ from utils.db_connection import get_catalog
 from load.data_lake_client import LakeHouseClient
 from pyiceberg.exceptions import NoSuchTableError
 from IPython.display import display
-from ingestion.fetch_company_list import _fetch_company_list, _fetch_upcom_company
+from ingestion.fetch_company_list import _fetch_company_list
 from ingestion.ingestion_utils import _get_session
 # %%
 
@@ -23,19 +24,26 @@ lake_house_client._put_raw_dim_company(raw_upcom, name_table = "raw_upcom_listin
 
 
 # %%
-listing = Listing(source='VCI')
-df_upcom = listing.all_symbols()
-display(df_upcom)
 
-df_group = listing.symbols_by_group("HOSE")
-display(df_group)
 
 
 # %%
 s = _get_session()
-url = "https://restv2.fireant.vn/symbols/"
+ticker_list = ["VNM", "VCB", "HPG", "FPT", "VIC"] # Demo với 5 mã, sau này sẽ lấy từ DB
+url = f"https://restv2.fireant.vn/symbols/VIC/fundamental"
 response = s.get(url, timeout=10)
-print(response.text)
+json_data = {"source": "fireant",
+            "type": "balance_sheet",
+            "ticker": "VIC",
+            "year": 2023,
+            "quarter": 4,
+            "data": response.json()}
+msg = json.dumps(json_data, ensure_ascii=False)
+print(type(json_data["data"]))
+print(type(msg["data"]))
+    
+
+
 
 # %%
 

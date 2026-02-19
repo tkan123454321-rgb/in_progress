@@ -9,22 +9,43 @@ macro-paths: ["macros"]       # Hàm tự viết -> Vứt vào thư mục tên l
 snapshot-paths: ["snapshots"] # Lưu lịch sử thay đổi -> Vứt vào thư mục tên là 'snapshots'
 
 
-clean-targets: [target, dbt_packages, logs, .user.yml]
+clean-targets: [target, logs, .user.yml]
 
 models:
   transform:          
     +materialized: table
     bronze:
-      +enable: true
-      +materialized: view
-      +schema: bronze        
-
+      +schema: bronze    
+    staging:
+      +schema: staging
     silver:
-      +enable: true
-      +materialized: table 
-      +schema: silver        # Lưu vào schema riêng tên là silver
-
+      +materialized: incremental
+      +schema: silver
     gold:
-      +enable: true
-      +materialized: table  
       +schema: gold
+      +materialized: table
+  elementary:
+    +schema: elementary
+    +materialized: table
+
+data_tests:
+  transform:
+    +limit: 1000
+    +store_failures: true
+    +schema: test_results
+    
+
+flags:
+  +require_certificate_validation: True
+vars:
+  days_back: 45 # The maximal timeframe for which the test will collect data.
+  test_sample_row_count: 20 # number of failed test rows, which are stored in the table test_result_rows
+  detection_period: # the period which is used to detect data quality issues
+    period: day
+    count: 10
+  exclude_detection_period_from_training: true # exclude the detection period from training data, preventing from overlapping data quality issues with training data
+  detection_delay: 
+    period: day 
+    count: 1
+  # timestamp_column: loaded_at # set at silver layer level
+  # where_expression: EXTRACT(DOW FROM timestamp_column) BETWEEN 2 AND 6 # set at silver layer level

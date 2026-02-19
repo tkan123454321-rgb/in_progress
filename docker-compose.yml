@@ -198,7 +198,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-
+      - plugins-trino:/var/lib/grafana/plugins/trino
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -323,6 +323,7 @@ volumes:
   promtail_data:
   nessie_data:
   trino:
+  plugins-trino:
 
 
 networks:
