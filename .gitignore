@@ -17,3 +17,4 @@ test.ipynb
 *.license
 transform/dbt_packages/
 transform/target/
+!transform/dashboard/*.json
