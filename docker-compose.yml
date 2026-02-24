@@ -128,19 +128,23 @@ services:
         ls -la /opt/airflow/{logs,dags,plugins,config}
 
   postgres:
-    image: postgres:15-alpine
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
     container_name: postgres
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - "5432:5432"
+    command: [ "postgres", "-c", "shared_preload_libraries=pg_partman_bgw" ]
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./postgres_database/init_postgres_db:/docker-entrypoint-initdb.d
     networks:
       - monitoring_net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -212,7 +216,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
     volumes:
       - ./config_docker/loki_config.yaml:/etc/loki/local-config.yaml
-      - ./loki-data:/loki
+      - loki_data:/loki
     depends_on:
       create-buckets:
         condition: service_completed_successfully
@@ -315,6 +319,21 @@ services:
       - nessie
     mem_limit: 6gb
 
+  vector:
+    image: timberio/vector:latest-alpine
+    container_name: vector
+    ports:
+      - "5001:5000"
+    user: root
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+    command: [ "--config", "/etc/vector/vector.yaml", "--watch-config" ]
+    volumes:
+      - ./config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
+      - ./vector_log:/tmp/vector_log
+      - vector_data:/var/lib/vector
+
 volumes:
   db_data:
   grafana_data:
@@ -324,6 +343,8 @@ volumes:
   nessie_data:
   trino:
   plugins-trino:
+  loki_data:
+  vector_data:
 
 
 networks:

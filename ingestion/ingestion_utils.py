@@ -1,5 +1,4 @@
 import time
-from utils.db_connection import get_db_engine
 import logging
 import requests
 import os
@@ -10,7 +9,7 @@ from utils.logger_config import setup_logger
 
 load_dotenv()
 logger = setup_logger(component="extract")
-engine = get_db_engine()
+
 
 class CheckpointManager:
     

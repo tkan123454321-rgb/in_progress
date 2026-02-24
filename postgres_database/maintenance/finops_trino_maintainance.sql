@@ -1,0 +1,1 @@
+SELECT partman.run_maintenance();

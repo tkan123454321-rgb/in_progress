@@ -16,10 +16,9 @@ from ingestion.ingestion_utils import _get_session
 # %%
 
 raw_dim_company = _fetch_company_list()
-raw_upcom = _fetch_upcom_company()
 lake_house_client = LakeHouseClient()
 lake_house_client._put_raw_dim_company(raw_dim_company, name_table = "raw_companies_listing")
-lake_house_client._put_raw_dim_company(raw_upcom, name_table = "raw_upcom_listing")
+
 
 
 

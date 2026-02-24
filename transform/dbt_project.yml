@@ -25,8 +25,9 @@ models:
       +schema: gold
       +materialized: table
   elementary:
-    +schema: elementary
     +materialized: table
+    +database: ops_db
+    +schema: elementary
 
 data_tests:
   transform:
@@ -38,6 +39,7 @@ data_tests:
 flags:
   +require_certificate_validation: True
 vars:
+  'dbt_date:time_zone': 'Asia/Ho_Chi_Minh'
   days_back: 45 # The maximal timeframe for which the test will collect data.
   test_sample_row_count: 20 # number of failed test rows, which are stored in the table test_result_rows
   detection_period: # the period which is used to detect data quality issues

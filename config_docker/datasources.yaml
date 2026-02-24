@@ -16,5 +16,20 @@ datasources:
     jsonData:
       Catalog: lakehouse
       Schema: elementary
+  - name: Postgres
+    type: postgres
+    url: postgres:5432 
+    user: ${POSTGRES_USER}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD} 
+    jsonData:
+      database: ${POSTGRES_DB}
+      sslmode: 'disable'
+      maxOpenConns: 100
+      maxIdleConns: 100
+      maxIdleConnsAuto: true
+      connMaxLifetime: 14400
+      postgresVersion: 1500 
+      timescaledb: false
 
 
