@@ -56,7 +56,7 @@ sinks:
     type: postgres
     inputs: 
       - trino_processed
-    endpoint: "postgresql://tkan:Tkan2005@postgres:5432/finance_db"
+    endpoint: "postgresql://tkan:Tkan2005@postgres:5432/ops_db"
     table: "finops.trino_finops_logs"
     
 

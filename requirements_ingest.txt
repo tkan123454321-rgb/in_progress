@@ -4,9 +4,8 @@ pytz
 
 vnstock
 
-
-SQLAlchemy
-psycopg2-binary
+psycopg[binary]
+connectorx
 
 
 
@@ -27,3 +26,5 @@ ipykernel
 
 fastavro
 cython
+trino
+trino[sqlalchemy]

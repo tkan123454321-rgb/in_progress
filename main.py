@@ -5,26 +5,22 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 import pyarrow as pa
 from vnstock import Listing
-import time
-import os
-from utils.db_connection import get_catalog
-from load.data_lake_client import LakeHouseClient
 from pyiceberg.exceptions import NoSuchTableError
 from IPython.display import display
 from ingestion.fetch_company_list import _fetch_company_list
 from ingestion.ingestion_utils import _get_session
-# %%
-
-raw_dim_company = _fetch_company_list()
-lake_house_client = LakeHouseClient()
-lake_house_client._put_raw_dim_company(raw_dim_company, name_table = "raw_companies_listing")
-
-
-
+from utils.lakehouse_connection import LakeHouseClient
+from utils.lakehouse_read import LakehouseReader
 
 # %%
+ticker_list = LakehouseReader()._get_ticker_list_raw()
 
 
+
+
+# %%
+from ingestion.ingest_fundamental import ingest_fundamental_main
+ingest_fundamental_main()
 
 # %%
 s = _get_session()

@@ -6,6 +6,7 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ops_db')\gexec
 CREATE SCHEMA IF NOT EXISTS elementary;
 CREATE SCHEMA IF NOT EXISTS partman;
 CREATE EXTENSION IF NOT EXISTS pg_partman SCHEMA partman;
+CREATE SCHEMA IF NOT EXISTS ingestion;
 
 
 
@@ -45,6 +46,20 @@ CREATE INDEX IF NOT EXISTS idx_finops_cpu_time_desc
 ON finops.trino_finops_logs (cpu_time_s DESC NULLS LAST);
 
 
+
+
+------------Job_ingestion------------------------------------------------------------------------------------------------- (Partition theo start_time)
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental (
+    batch_id VARCHAR(50),
+    topic_name VARCHAR(50),
+    data_type VARCHAR(50),
+    ticker VARCHAR(20),
+    created_time TIMESTAMPTZ
+);
+
+
+
+
 -- thiết lập Part_man ------------------------------------------------------------------------------------------------
 
 DO $$
@@ -59,11 +74,13 @@ BEGIN
             p_premake := 5,
             p_default_table := 'true'
         );
+
+        UPDATE partman.part_config 
+        SET retention = '60 days', 
+            retention_keep_table = false, -- false nghĩa là DROP luôn bảng thay vì tách ra
+            retention_keep_index = false
+        WHERE parent_table = 'finops.trino_finops_logs';
+
     END IF;
     
-    UPDATE partman.part_config 
-    SET retention = '60 days', 
-        retention_keep_table = false, -- false nghĩa là DROP luôn bảng thay vì tách ra
-        retention_keep_index = false
-    WHERE parent_table = 'finops.trino_finops_logs';
 END $$;

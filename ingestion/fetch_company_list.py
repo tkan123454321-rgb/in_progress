@@ -1,14 +1,21 @@
+import uuid
 from zoneinfo import ZoneInfo
 import pandas as pd
 import time
 from vnstock import Listing
 import polars as pl
 from datetime import datetime
+from utils.logger_config import setup_logger
+from utils.lakehouse_read import LakehouseReader
 
-current_time = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-current_time = current_time.replace(microsecond=0, tzinfo=None)
+
+
+logger = setup_logger(component="extract")
+
 
 def _fetch_company_list():
+    current_time = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
+    current_time = current_time.replace(microsecond=0, tzinfo=None)
     listing = Listing(source='VCI')
     df = listing.symbols_by_industries()
     df = pl.from_pandas(df)

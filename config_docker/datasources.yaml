@@ -23,7 +23,7 @@ datasources:
     secureJsonData:
       password: ${POSTGRES_PASSWORD} 
     jsonData:
-      database: ${POSTGRES_DB}
+      database: ops_db
       sslmode: 'disable'
       maxOpenConns: 100
       maxIdleConns: 100

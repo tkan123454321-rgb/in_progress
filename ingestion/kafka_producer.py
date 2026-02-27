@@ -2,58 +2,23 @@ import logging
 from confluent_kafka import Producer
 from confluent_kafka.error import ProduceError
 from logging import *
-from utils.db_connection import get_db_engine
 from utils.logger_config import setup_logger
-from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.admin import AdminClient, NewTopic  # pyright: ignore[reportPrivateImportUsage]
 import os
 import time
 import pandas as pd
-from ingestion.ingestion_utils import get_ticker_list
 from utils.logger_config import setup_logger
 
 # cài đặt logger
 logger = setup_logger(component="extract")   
+# Cấu hình Kafka Producer
 
-# Database connection setup
-engine = get_db_engine()
-
-ticker_list = get_ticker_list()
-
-boostrap_servers='kafka:29092'
-
-
-class KafkaAdminClient:
-    def __init__(self, bootstrap_servers=boostrap_servers):
-        self.admin_client = AdminClient({'bootstrap.servers': bootstrap_servers})
+# hàm kiểm tra và tạo topic 
     
-    # hàm kiểm tra và tạo topic 
-    def check_and_create_topic(self, topic_name):
-        metadata = self.admin_client.list_topics()
-        logger.debug(f"Các topic hiện có: {list(metadata.topics.keys())}")
-        if topic_name in metadata.topics:
-            logger.info(f"Topic '{topic_name}' đã tồn tại")
-        else:
-            new_topic = NewTopic(topic=topic_name, 
-                                num_partitions=3, 
-                                replication_factor=1,
-                                config = {
-                                'cleanup.policy': 'compact,delete', 
-                                'segment.ms': '3600000', # Thời gian tối đa của một segment (1 giờ)
-                                'segment.bytes': '104857600', # Kích thước tối đa của một segment (100MB)
-                                'min.cleanable.dirty.ratio': '0.5', # Tỷ lệ dữ liệu "rác" (dirty) đạt 50% thì Kafka mới bắt đầu quá trình nén (compaction)
-                                'retention.ms': '86400000', # Thời gian lưu trữ tối đa
-                                'delete.retention.ms': '86400000',     # Thời gian giữ lại dấu vết (tombstone) sau khi message đã bị xóa nén
-                            }
-                            )
-            logger.info(f"Topic '{topic_name}' chưa tồn tại, đã tạo mới" )
-            self.admin_client.create_topics([new_topic])
-    
-        
-
 class StockTickerProducer:
-    def __init__(self, bootstrap_servers=boostrap_servers, 
-                 client_id='producer-nap-batch', 
-                 topic_name = "stock_list", 
+    def __init__(self, bootstrap_servers, 
+                 client_id, 
+                 topic_name, 
                  update_conf: dict[str, str | int | float | bool] | None = None):
         
         self.client_id = client_id
@@ -65,6 +30,8 @@ class StockTickerProducer:
             'bootstrap.servers': bootstrap_servers,
             'client.id': client_id,
             'enable.idempotence': True, # Đảm bảo tin không bị duplicate
+            'compression.type': 'lz4',      # Nén để giảm dung lượng mạng
+            'linger.ms': 50             # Chờ 50ms để gom batch
         }
         
         if update_conf:
@@ -74,6 +41,8 @@ class StockTickerProducer:
         
         # 2. Khởi tạo Resource
         self.producer = Producer(self.conf)   
+
+
 
     # Hàm báo cáo kết quả gửi tin nhắn
     def _on_delivery_report(self, err, msg):
@@ -159,5 +128,10 @@ class StockTickerProducer:
                 else:
                     logger.error(f" Lỗi không thể retry: {kafka_error}", exc_info=True)
                     return False
+                
+    def close(self):
+        # Hàm này quan trọng để flush nốt dữ liệu thừa trước khi tắt
+        logger.info("flushing producer before closing...")
+        self.producer.flush(10)
             
             
