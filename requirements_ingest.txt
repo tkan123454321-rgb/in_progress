@@ -11,6 +11,8 @@ connectorx
 
 requests
 python-dotenv
+pyyaml
+pydantic
 tenacity
 
 

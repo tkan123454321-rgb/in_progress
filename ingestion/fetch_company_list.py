@@ -6,7 +6,6 @@ from vnstock import Listing
 import polars as pl
 from datetime import datetime
 from utils.logger_config import setup_logger
-from utils.lakehouse_read import LakehouseReader
 
 
 

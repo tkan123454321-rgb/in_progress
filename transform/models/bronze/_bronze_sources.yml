@@ -14,6 +14,19 @@ sources:
             error_after:
               count: 60
               period: day
+      
+      - name: fundamental
+        description: "Dữ liệu cơ bản của các công ty niêm yết, bao gồm vốn hoá thị trường, số lượng cổ phiếu đang lưu hành,..."
+        config:
+          loaded_at_field: inserted_time
+          freshness:
+            warn_after: 
+              count: 35
+              period: day
+            error_after:
+              count: 60
+              period: day
+        
      
       
 

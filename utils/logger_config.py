@@ -24,7 +24,7 @@ class JsonFormatter(Formatter):
         }
         return json.dumps(log_record,ensure_ascii=False)
 
-def setup_logger(component: str):
+def setup_logger(component: str) -> LoggerAdapter:
     logger = getLogger(f"pipeline.{component}")
     logger.setLevel(global_level)
     

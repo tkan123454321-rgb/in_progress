@@ -1,12 +1,12 @@
 name: transform
 profile: transform
 
-model-paths: ["models"]       # Code SQL xử lý data -> Vứt vào thư mục tên là 'models'
-seed-paths: ["seeds"]         # File CSV nhỏ (từ điển) -> Vứt vào thư mục tên là 'seeds'
-test-paths: ["tests"]         # Code kiểm tra lỗi -> Vứt vào thư mục tên là 'tests'
-analysis-paths: ["analyses"]  # Code nháp -> Vứt vào thư mục tên là 'analyses'
-macro-paths: ["macros"]       # Hàm tự viết -> Vứt vào thư mục tên là 'macros'
-snapshot-paths: ["snapshots"] # Lưu lịch sử thay đổi -> Vứt vào thư mục tên là 'snapshots'
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
 
 
 clean-targets: [target, logs, .user.yml]

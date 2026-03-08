@@ -1,41 +1,38 @@
 # %%
-import json
-import polars as pl
-from zoneinfo import ZoneInfo
-from datetime import datetime
-import pyarrow as pa
-from vnstock import Listing
-from pyiceberg.exceptions import NoSuchTableError
-from IPython.display import display
-from ingestion.fetch_company_list import _fetch_company_list
-from ingestion.ingestion_utils import _get_session
-from utils.lakehouse_connection import LakeHouseClient
-from utils.lakehouse_read import LakehouseReader
+import os
+import typing
+
+from dotenv import load_dotenv
+from pathlib import Path
+import re
+import yaml # type: ignore
+from schema.producer_schema import KafkaMetadataFundamental
+from utils.logger_config import setup_logger
+from utils.other_utils import load_env_config
+# %%
+from ingestion.ingest_main import ingest_fundamental_main, _generate_metadata_fundamental
+from schema.producer_schema import KafkaMetadataFundamental
+from utils.other_utils import ConfigLoader
+from load.load_main import load_main
+
+ingest_fundamental_main(
+    model_cls=KafkaMetadataFundamental,
+    generate_metadata_callable=_generate_metadata_fundamental)
+
+load_main(topic_name='fundamental')
+
+
 
 # %%
-ticker_list = LakehouseReader()._get_ticker_list_raw()
+from utils.postgres_client import PostgresClient
 
-
+with PostgresClient.get_db_connection() as conn:
+    postgres_client = PostgresClient(conn)
+    print(postgres_client._CONN_STR)
 
 
 # %%
-from ingestion.ingest_fundamental import ingest_fundamental_main
-ingest_fundamental_main()
 
-# %%
-s = _get_session()
-ticker_list = ["VNM", "VCB", "HPG", "FPT", "VIC"] # Demo với 5 mã, sau này sẽ lấy từ DB
-url = f"https://restv2.fireant.vn/symbols/VIC/fundamental"
-response = s.get(url, timeout=10)
-json_data = {"source": "fireant",
-            "type": "balance_sheet",
-            "ticker": "VIC",
-            "year": 2023,
-            "quarter": 4,
-            "data": response.json()}
-msg = json.dumps(json_data, ensure_ascii=False)
-print(type(json_data["data"]))
-print(type(msg["data"]))
     
 
 

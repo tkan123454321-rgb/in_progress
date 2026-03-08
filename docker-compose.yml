@@ -185,7 +185,7 @@ services:
     networks:
       - monitoring_net
     volumes:
-      - ./config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
+      - ./config/config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
     depends_on:
       - kafka
 
@@ -201,7 +201,7 @@ services:
       - .env
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./config/config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - plugins-trino:/var/lib/grafana/plugins/trino
   loki:
     image: grafana/loki:latest
@@ -215,7 +215,7 @@ services:
       - .env
     command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
     volumes:
-      - ./config_docker/loki_config.yaml:/etc/loki/local-config.yaml
+      - ./config/config_docker/loki_config.yaml:/etc/loki/local-config.yaml
       - loki_data:/loki
     depends_on:
       create-buckets:
@@ -260,7 +260,7 @@ services:
     networks:
       - monitoring_net
     volumes:
-      - ./config_docker/promtail-config.yaml:/etc/promtail/config.yaml
+      - ./config/config_docker/promtail-config.yaml:/etc/promtail/config.yaml
       - /var/run/docker.sock:/var/run/docker.sock
       - promtail_data:/tmp
     command: -config.file=/etc/promtail/config.yaml -config.expand-env=true
@@ -330,7 +330,7 @@ services:
       - monitoring_net
     command: [ "--config", "/etc/vector/vector.yaml", "--watch-config" ]
     volumes:
-      - ./config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
+      - ./config/config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
       - ./vector_log:/tmp/vector_log
       - vector_data:/var/lib/vector
 

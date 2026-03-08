@@ -1,0 +1,11 @@
+fundamental:
+  source: ${MY_SOURCE}       
+  url_template: https://restv2.${MY_SOURCE}.vn/symbols/{ticker}/fundamental
+  table_name_postgres: "ingestion_metadata_fundamental"
+  topic: 'fundamental'
+  data_type: 'fundamental'
+
+
+
+
+    
