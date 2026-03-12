@@ -18,7 +18,7 @@ def _fetch_company_list():
     listing = Listing(source='VCI')
     df = listing.symbols_by_industries()
     df = pl.from_pandas(df)
-    df = df.with_columns(ingestion_time = pl.lit(current_time))
+    df = df.with_columns(inserted_time = pl.lit(current_time))
     df_arrow = df.to_arrow()
     return df_arrow
 

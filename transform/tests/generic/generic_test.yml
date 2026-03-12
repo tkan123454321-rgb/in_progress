@@ -1,0 +1,17 @@
+
+macros:
+  - name: test_invalid_rate
+    description: >
+      Bài test tự chế để kiểm tra tỷ lệ rác (ví dụ: status = 'unqualified').
+      Nó sẽ đếm số dòng rác chia cho tổng số dòng. 
+      Nên kết hợp với config `warn_if` và `error_if` để làm cầu dao tự động.
+    arguments:
+      - name: model
+        type: string
+        description: "Bảng cần test (dbt tự truyền vào)"
+      - name: column_name
+        type: string
+        description: "Cột cần test (ví dụ: status)"
+      - name: invalid_value
+        type: string
+        description: "Giá trị bị coi là rác (ví dụ: 'unqualified')"

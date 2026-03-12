@@ -38,6 +38,13 @@ else
     echo "⏩ [DBT] Môi trường đã tồn tại. Bỏ qua."
 fi
 
+source .venv_dbt/bin/activate
+
+
+dbt clean || true  
+dbt deps
+deactivate
+
 echo "🎉 [AUTO-SETUP] Hoàn tất! Ông chủ có thể làm việc."
 
 grep -qq "alias ai=" ~/.bashrc || echo 'alias ai="source /app/.venv_ingest/bin/activate"' >> ~/.bashrc

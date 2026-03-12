@@ -12,9 +12,9 @@ transforms:
     source: |-
       if !exists(.statistics) {
             abort
-        }
+        } 
 
-      new_event= {}
+      new_event = {}
 
       # basic information
       new_event.query_id = to_string(.metadata.queryId) ?? "unknown_id"
@@ -67,3 +67,5 @@ sinks:
       type: disk           
       max_size: 1073741824 
       when_full: block
+
+

@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: gold_dim_company
+    description: "Dimension table storing the list of listed companies across 3 exchanges (HOSE, HNX, UPCOM). Data has been cleansed, validated, and categorized to serve as the core Data Model for BI Dashboards."
+    
+    # BÀI TEST BẢO VỆ MẶT TIỀN (SCHEMA ENFORCEMENT)
+    data_tests:
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          column_list: [
+            "ticker", "company_name", "industry_group", "sector_detail",
+            "shares_outstanding", "floating_shares", "market_cap", "avg_volume_3m",
+            "insider_ownership", "institution_ownership", "foreign_ownership",
+            "status", "gold_unqualified_reason", "gold_invocation_id", "gold_updated_at"
+          ]
+      - dbt_utils.recency:
+          field: gold_updated_at
+          datepart: day
+          interval: 1
+
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "Stock ticker symbol (Primary Key)."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: company_name
+        data_type: varchar
+        description: "Full name of the listed company."
+
+      - name: industry_group
+        data_type: varchar
+        description: "Level 1 industry group (e.g., Banking, Real Estate, Manufacturing)."
+
+      - name: sector_detail
+        data_type: varchar
+        description: "Level 2/3 detailed business sector."
+
+      - name: shares_outstanding
+        data_type: double
+        description: "Total number of outstanding shares."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: floating_shares
+        data_type: double
+        description: "Number of free-floating shares available for public trading."
+
+      - name: market_cap
+        data_type: double
+        description: "Market Capitalization in VND."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 500000000000
+              row_condition: "status = 'qualified'"
+
+      - name: avg_volume_3m
+        data_type: double
+        description: "3-month average daily trading volume."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 100000
+              row_condition: "status = 'qualified'"
+
+      - name: insider_ownership
+        data_type: double
+        description: "Percentage of shares held by insiders and management."
+
+      - name: institution_ownership
+        data_type: double
+        description: "Percentage of shares held by institutional investors."
+
+      - name: foreign_ownership
+        data_type: double
+        description: "Percentage of shares held by foreign investors."
+
+      - name: status
+        data_type: varchar
+        description: "Data quality and investment criteria status: 'qualified' (investable) or 'unqualified' (penny/illiquid/error)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['qualified', 'unqualified']
+
+      - name: gold_unqualified_reason
+        data_type: varchar
+        description: "Reason for being excluded from the qualified set (e.g., [API Error], [Silver Error], or [Gold Rule])."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: gold_invocation_id
+        data_type: varchar
+        description: "dbt invocation ID generated during the Gold layer run for audit trail."
+
+      - name: gold_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Timestamp indicating when the Gold table was last updated (Output SLA)."
+        data_tests:
+          - not_null

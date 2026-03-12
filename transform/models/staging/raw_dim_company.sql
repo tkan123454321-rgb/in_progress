@@ -12,14 +12,13 @@ WITH raw_source AS (
 ),
 staged_data as (
     SELECT 
-        {{ dbt_utils.generate_surrogate_key(['symbol']) }} as company_sk,
         TRIM(UPPER(symbol)) AS ticker,
         NULLIF(TRIM(organ_name), '') AS company_name,
         NULLIF(TRIM(icb_name2), '') AS industry_group,
         NULLIF(TRIM(icb_name4), '') AS sector_detail,
-        TRY_CAST(ingestion_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS ingested_at,
+        TRY_CAST(ingestion_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS inserted_bronze_time,
         from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AT TIME ZONE 'Asia/Ho_Chi_Minh' AS staged_at,
-        '{{ invocation_id }}' AS dbt_staging_invocation_id
+        '{{ invocation_id }}' AS staging_invocation_id
         from raw_source
  ) 
 SELECT * FROM staged_data

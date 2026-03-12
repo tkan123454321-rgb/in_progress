@@ -78,7 +78,8 @@ BEGIN
         UPDATE partman.part_config 
         SET retention = '60 days', 
             retention_keep_table = false, -- false nghĩa là DROP luôn bảng thay vì tách ra
-            retention_keep_index = false
+            retention_keep_index = false,
+            infinite_time_partitions = true
         WHERE parent_table = 'finops.trino_finops_logs';
 
     END IF;

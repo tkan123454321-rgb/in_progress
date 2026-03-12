@@ -24,30 +24,65 @@ models:
     gold:
       +schema: gold
       +materialized: table
+
   elementary:
-    +materialized: table
-    +database: ops_db
     +schema: elementary
+    +materialized: table
+    +views_enabled: false
+    +incremental_strategy: 'merge'
+    edr:
+      run_results:
+          dbt_run_results:
+            +materialized: incremental
+          dbt_invocations:
+            +materialized: incremental
+          elementary_test_results:
+            +materialized: incremental
+          dbt_source_freshness_results:
+            +materialized: incremental
+          test_result_rows:
+            +materialized: incremental
+      
+      data_monitoring:
+        data_monitoring:
+          +materialized: incremental
+
+      
+        schema_changes:
+          +materialized: incremental
+      
+
+
 
 data_tests:
   transform:
-    +limit: 1000
     +store_failures: true
+    +limit: 1000
     +schema: test_results
+    +database: ops_db
+    
     
 
 flags:
   +require_certificate_validation: True
 vars:
   'dbt_date:time_zone': 'Asia/Ho_Chi_Minh'
-  days_back: 45 # The maximal timeframe for which the test will collect data.
-  test_sample_row_count: 20 # number of failed test rows, which are stored in the table test_result_rows
-  detection_period: # the period which is used to detect data quality issues
-    period: day
-    count: 10
-  exclude_detection_period_from_training: true # exclude the detection period from training data, preventing from overlapping data quality issues with training data
-  detection_delay: 
-    period: day 
-    count: 1
-  # timestamp_column: loaded_at # set at silver layer level
-  # where_expression: EXTRACT(DOW FROM timestamp_column) BETWEEN 2 AND 6 # set at silver layer level
+  elementary:
+    training_period: # the period which is used to train the data quality model
+      period: day
+      count: 45
+    test_sample_row_count: 4 # number of failed test rows, which are stored in the table test_result_rows
+    detection_period: # the period which is used to detect data quality issues
+      period: day
+      count: 10
+    exclude_detection_period_from_training: true # exclude the detection period from training data, preventing from overlapping data quality issues with training data
+    detection_delay: 
+      period: day 
+      count: 1
+    # timestamp_column: loaded_at # set at silver layer level
+    # where_expression: EXTRACT(DOW FROM timestamp_column) BETWEEN 2 AND 6 # set at silver layer level
+
+query-comment:
+  comment: >-
+    {"app": "dbt", "env": "{{ target.name }}", "user": "{{ target.user }}", "node_id": "{{ node.unique_id }}", "run_id": "{{ invocation_id }}"}
+  append: true
