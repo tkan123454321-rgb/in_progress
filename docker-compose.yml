@@ -304,6 +304,53 @@ services:
     networks:
       - monitoring_net
 
+  nessie-cli:
+    image: ghcr.io/projectnessie/nessie-cli:0.107.4
+    container_name: nessie_cli_tool
+    profiles: [ "tools" ]
+    stdin_open: true
+    tty: true
+    networks:
+      - monitoring_net
+    command: [ "--uri", "http://nessie:19120/iceberg" ]
+    depends_on:
+      - nessie
+
+  nessie-gc:
+    image: ghcr.io/projectnessie/nessie-gc:latest
+    container_name: nessie_gc_tool
+    networks:
+      - monitoring_net
+    environment:
+      - AWS_REGION=us-east-1
+
+    command:
+      [
+        "gc",
+        "-c",
+        "P1D",
+        "--uri",
+        "http://nessie:19120/api/v2",
+
+        "--jdbc-url",
+        "jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie_gc",
+        "--jdbc-user",
+        "${POSTGRES_USER}",
+        "--jdbc-password",
+        "${POSTGRES_PASSWORD}",
+        "--jdbc-schema",
+        "CREATE_IF_NOT_EXISTS",
+
+        "-I",
+        "s3.access-key-id=${MINIO_ROOT_USER}",
+        "-I",
+        "s3.secret-access-key=${MINIO_ROOT_PASSWORD}",
+        "-I",
+        "s3.endpoint=http://minio:9000",
+        "-I",
+        "s3.path-style-access=true"
+      ]
+
   trino:
     image: trinodb/trino:latest
     container_name: trino

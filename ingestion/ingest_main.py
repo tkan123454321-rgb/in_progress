@@ -34,7 +34,7 @@ def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metada
     try:
         # Lấy danh sách tổng và ép kiểu Set
         ticker_list = LakeHouseClient()._get_ticker_list_raw()
-        with PostgresClient.get_db_connection() as conn:
+        with PostgresClient.get_db_connection(db_name="ops_db") as conn:
             
             postgresclient = PostgresClient(conn)
             batch_id = str(uuid.uuid4())

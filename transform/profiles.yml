@@ -8,12 +8,13 @@ transform:
       host: trino
       port: 8080
       database: lakehouse
-      schema: finance
+      schema: bronze
       threads: 4
       timezone: Asia/Ho_Chi_Minh
 
       session_properties:
         join_distribution_type: BROADCAST
+
       
       
             

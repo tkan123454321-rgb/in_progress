@@ -10,25 +10,15 @@ from schema.producer_schema import KafkaMetadataFundamental
 from utils.logger_config import setup_logger
 from utils.other_utils import load_env_config
 # %%
-from ingestion.ingest_main import ingest_fundamental_main, _generate_metadata_fundamental
-from schema.producer_schema import KafkaMetadataFundamental
-from utils.other_utils import ConfigLoader
-from load.load_main import load_main
-
-ingest_fundamental_main(
-    model_cls=KafkaMetadataFundamental,
-    generate_metadata_callable=_generate_metadata_fundamental)
-
-load_main(topic_name='fundamental')
-
-
+from utils.postgres_client import PostgresClient
+with PostgresClient.get_db_connection(db_name="platform_db") as conn:
+    postgres_client = PostgresClient(conn)
+    for batch in postgres_client.yield_orphan_location_batches():
+        print(batch)
 
 # %%
-from utils.postgres_client import PostgresClient
-
-with PostgresClient.get_db_connection() as conn:
-    postgres_client = PostgresClient(conn)
-    print(postgres_client._CONN_STR)
+from utils.minio_maintenance import minio_maintenance
+minio_maintenance(db_name="platform_db")
 
 
 # %%

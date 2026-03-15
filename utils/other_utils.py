@@ -9,6 +9,8 @@ import yaml # type: ignore
 from utils.logger_config import setup_logger
 from pydantic import BaseModel, ValidationError
 import requests
+from utils.lakehouse_client import LakeHouseClient
+from utils.postgres_client import PostgresClient
 from typing import Any, Callable, ClassVar, Dict
 logger = setup_logger(component="utils")
 
@@ -61,3 +63,4 @@ def _get_session() -> requests.Session:
     "Authorization": auth_token
     }) # type: ignore
     return s
+
