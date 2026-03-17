@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e 
+find . -type f -name "*.sh" -exec chmod +x {} +
 # --- 0. Cài đặt công cụ hệ thống ----
 if ! command -v make &> /dev/null; then
     echo "[SYSTEM] Đang cài đặt make..."

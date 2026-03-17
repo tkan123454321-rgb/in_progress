@@ -3,12 +3,10 @@ TEMP_DIR := tmp_codegen
 
 # Đảm bảo dùng thụt lề bằng phím TAB, không dùng dấu cách nhé sếp!
 nessie:
-	@# khởi động container nessie-cli để tương tác với Nessie server
-
-	docker compose run --rm nessie-cli 
+	bash ./scripts/nessie_merge_branch.sh
 
 gc-sweep:
-	@docker compose run --rm nessie-gc
+	@bash ./scripts/nessie_maintenance.sh
 
 yaml:
 	@# Cách dùng: make yaml m=<tên_model>

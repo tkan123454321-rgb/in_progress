@@ -16,7 +16,7 @@ models:
       - dbt_utils.recency:
           field: gold_updated_at
           datepart: day
-          interval: 1
+          interval: 30
 
     columns:
       - name: ticker
