@@ -2,8 +2,11 @@ TEMP_DIR := tmp_codegen
 
 
 # Đảm bảo dùng thụt lề bằng phím TAB, không dùng dấu cách nhé sếp!
-nessie:
+nessie-merge:
 	bash ./scripts/nessie_merge_branch.sh
+
+nessie-cli:
+	docker compose run --rm nessie-cli --uri "http://nessie:19120/iceberg"
 
 gc-sweep:
 	@bash ./scripts/nessie_maintenance.sh

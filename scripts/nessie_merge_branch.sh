@@ -6,7 +6,7 @@ TARGET_BRANCH="main"
 
 set +e
 docker compose run --rm -T nessie-cli \
-  --uri "http://nessie:19120/api/v2" \
+  --uri "http://nessie:19120/iceberg" \
   --non-ansi \
   -c "MERGE DRY BRANCH $SOURCE_BRANCH INTO $TARGET_BRANCH BEHAVIOR NORMAL"
 DRY_STATUS=$?
@@ -18,7 +18,7 @@ if [ $DRY_STATUS -ne 0 ]; then
 fi
 
 docker compose run --rm -T -e TERM=dumb nessie-cli \
-  --uri "http://nessie:19120/api/v2" \
+  --uri "http://nessie:19120/iceberg" \
   --non-ansi \
   -c "MERGE BRANCH $SOURCE_BRANCH INTO $TARGET_BRANCH BEHAVIOR NORMAL" \
   -c "DROP BRANCH $SOURCE_BRANCH" \

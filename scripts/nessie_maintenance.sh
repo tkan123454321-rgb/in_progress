@@ -34,7 +34,7 @@ echo " Bước 2: Bắt đầu quét và xóa Orphan Files trên MinIO..."
 docker compose run --rm nessie-gc gc \
   -c P7D \
   --max-file-modification="$SAFE_TIME" \
-  --uri "http://nessie:19120/api/v2" \
+  --uri "http://nessie:19120/iceberg" \
   "${JDBC_ARGS[@]}" \
   -I "s3.access-key-id=${MINIO_ROOT_USER}" \
   -I "s3.secret-access-key=${MINIO_ROOT_PASSWORD}" \

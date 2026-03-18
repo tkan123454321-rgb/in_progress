@@ -95,40 +95,7 @@ class LakeHouseClient:
             logger.error(f"Table {table} does not exist.")
             raise e
     
-    def yield_schema_locations(self) -> Generator[Sequence[tuple], None, None]:
-        """
-        Quét MinIO theo từng layer, trả về generator chứa các batch thư mục con.
-        Định dạng trả về: (tên_schema, [(location1,), (location2,), ...])
-        """
-        paginator = self.s3_client.get_paginator('list_objects_v2')
-        for schema_name in self.REQUIRED_SCHEMAS:
-            prefix_path = f"{schema_name}/"
-            page_paginator = paginator.paginate(Bucket=self.BUCKET_NAME, Delimiter='/', Prefix=prefix_path)
-            for page in page_paginator:
-                if 'CommonPrefixes' in page:
-                    batch=[]
-                    for obj in page['CommonPrefixes']:
-                        folder_path = obj['Prefix']
-                        batch.append((folder_path,))
-                    yield batch
-
-    def clean_orphan_location(self, location: str) -> None:
-        """
-        Xóa một thư mục mồ côi trên MinIO.
-        """
-        paginator = self.s3_client.get_paginator('list_objects_v2')
-        pages = paginator.paginate(Bucket=self.BUCKET_NAME, Prefix=location)
-        for page in pages:
-            if 'Contents' in page:
-                objects_to_delete = [{'Key': obj['Key']} for obj in page['Contents']]
-                for obj in page['Contents']:
-                    response = self.s3_client.delete_objects(Bucket=self.BUCKET_NAME, 
-                                                            Delete={
-                                                                'Objects': objects_to_delete,
-                                                                'Quiet': True
-                                                            })
-                    if 'Errors' in response:
-                        logger.error(f"❌ Lỗi khi xóa file trong {location}: {response['Errors']}")
+   
                         
         
 

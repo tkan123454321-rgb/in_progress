@@ -335,6 +335,7 @@ services:
   nessie-gc:
     image: ghcr.io/projectnessie/nessie-gc:latest
     container_name: nessie_gc_tool
+    profiles: [ "tools" ]
     networks:
       - monitoring_net
     environment:

@@ -1,6 +1,7 @@
 # %%
 import os
 import typing
+from urllib import request
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -12,10 +13,8 @@ from utils.logger_config import setup_logger
 # %%
 from utils.postgres_client import PostgresClient
 with PostgresClient.get_db_connection(db_name="platform_db") as conn:
-    postgres_client = PostgresClient(conn)
-    for batch in postgres_client.yield_orphan_location_batches():
-        print(batch)
-
+    pg_client = PostgresClient(conn=conn)
+    pg_client.prepare_maintenance_queue()
 # %%
 from utils.minio_maintenance import minio_maintenance
 minio_maintenance(db_name="platform_db")

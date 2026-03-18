@@ -1,8 +1,9 @@
 import psycopg
 from psycopg import sql
+from psycopg.rows import dict_row, DictRow
 from utils.logger_config import setup_logger
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import polars as pl
 from polars.exceptions import PolarsError, ColumnNotFoundError, SQLInterfaceError, SQLSyntaxError
 from typing import ClassVar, Generator, Sequence
@@ -36,7 +37,7 @@ class PostgresClient:
         """
         conn_str = cls._build_conn_str(db_name)
         try:
-            conn = psycopg.connect(conninfo=conn_str, autocommit=True)
+            conn = psycopg.connect(conninfo=conn_str, autocommit=True, row_factory= dict_row)  # type: ignore
             return conn
         except psycopg.Error as e:
             logger.critical(f"🔥 Không thể kết nối DB| mã lỗi: {e.sqlstate} {e}")
@@ -124,60 +125,7 @@ class PostgresClient:
             logger.critical(f"FATAL POLARS: Lỗi xử lý dữ liệu nội bộ của Polars: {e}")
             raise  
     
-    def prepare_temp_minio_table(self) -> None:
-        """BƯỚC 1: Dọn dẹp và tạo bảng Tmp. Không cần cursor nữa."""
-        setup_sql = """
-            DROP TABLE IF EXISTS nessie_gc.temp_minio_object_locations;
-            CREATE TABLE nessie_gc.temp_minio_object_locations (
-                location VARCHAR PRIMARY KEY,
-                scanned_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-        # Quất thẳng execute từ connection
-        self.conn.execute(setup_sql)
-        logger.info("Đã tạo bảng tạm: temp_minio_object_locations.")
-
-    def insert_minio_location_batch(self, batch: Sequence[tuple]) -> None:
-        """BƯỚC 2: Nạp 1 batch dữ liệu vào bảng Tmp."""
-        insert_sql = "INSERT INTO nessie_gc.temp_minio_object_locations (location) VALUES (%s)"
-        # executemany cũng gọi thẳng từ connection luôn
-        with self.conn.cursor() as cur:
-            cur.executemany(insert_sql, batch)
-
-    def swap_minio_location_tables(self) -> None:
-        """BƯỚC 3: Tráo bảng Tmp thành bảng Chính."""
-        swap_sql = """
-            DROP TABLE IF EXISTS nessie_gc.minio_object_locations CASCADE;
-            ALTER TABLE nessie_gc.temp_minio_object_locations RENAME TO minio_object_locations;
-        """
-        self.conn.execute(swap_sql)
-        logger.info("🔄 Đã Swap thành công sang bảng chính: minio_object_locations.")
-    
-    def yield_orphan_location_batches(self) -> Generator[str, None, None]:
-        """
-        [PHASE 2] Generator: Dùng EXCEPT tìm rác và nhả về từng mẻ (chunk).
-        """
-        set_ram_sql = "SELECT set_config('work_mem', '50MB', true);"
-        query = sql.SQL( """
-            SELECT location 
-            FROM nessie_gc.minio_object_locations
-            EXCEPT
-            SELECT REPLACE(base_location, 's3://financial-data-lake/', '')
-            FROM nessie_gc.gc_live_set_content_locations;
-        """)
+   
         
-        with self.conn.transaction():
-            self.conn.execute(set_ram_sql)
-            with self.conn.cursor(name="orphan_stream_cursor") as cur:
-                # Ép RAM cho query
-                # Thực thi EXCEPT
-                cur.execute(query)
-                
-                # Bơm nước trả về từng mẻ
-                while True:
-                    batch = cur.fetchmany(1000)
-                    if not batch:
-                        break
-                    for row in batch:
-                        yield row[0]
+        
    
