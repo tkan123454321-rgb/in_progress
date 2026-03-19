@@ -29,4 +29,3 @@ ipykernel
 fastavro
 cython
 trino
-trino[sqlalchemy]

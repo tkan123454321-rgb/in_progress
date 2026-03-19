@@ -1,4 +1,4 @@
-
+import trino.dbapi
 import os
 from pyiceberg.catalog import load_catalog
 import boto3
@@ -29,6 +29,7 @@ class LakeHouseClient:
         "gold"
     ]
     
+    
     def __init__(self) -> None:   
         self.s3_client = boto3.client(
             service_name='s3',
@@ -51,7 +52,12 @@ class LakeHouseClient:
                 "py-io-impl": "pyiceberg.io.pyarrow.PyArrowFileIO"
             }
         )
-
+        self.trino_conn = trino.dbapi.connect(
+            host="trino",
+            port=8080,
+            user="admin",
+            catalog="lakehouse_main")
+        
         self._ensure_medallion_layers()
         self._ensure_bucket_exists()
     

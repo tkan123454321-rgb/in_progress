@@ -4,6 +4,7 @@ from utils.logger_config import setup_logger
 from datetime import datetime, timedelta, timezone
 from psycopg import sql
 from typing import Sequence, Generator
+from trino.exceptions import Error as TrinoError
 logger = setup_logger(component="minio_maintenance")
 
 
@@ -15,6 +16,7 @@ class LakehouseMaintenance:
         """
         self.pg = pg_client
         self.lake = lake_client
+        self.trino_conn = lake_client.trino_conn
     
     def _prepare_temp_minio_table(self) -> None:
         """BƯỚC 1: Dọn dẹp và tạo bảng Tmp. Không cần cursor nữa."""
@@ -160,5 +162,95 @@ class LakehouseMaintenance:
                 logger.info(f"HOÀN TẤT GC! Tổng cộng đã tiêu diệt: {total_deleted} thư mục rác.")         
         except Exception as e:
             logger.error(f" CÓ LỖI, ĐÃ ROLLBACK: {e}")
+    
+    def _refresh_queue_from_trino(self) -> None:
+        with self.trino_conn.cursor() as cur:
+            cur.execute("SELECT table_schema, table_name FROM system.iceberg_tables")
+            rows = cur.fetchall()
+        
+        logger.info(f"🚚 [Postgres] Đang nạp {len(rows)} bảng vào Hàng đợi...")
+        with self.pg.conn.cursor() as pg_cur:
+            pg_cur.executemany("""
+                INSERT INTO iceberg_maintenance.iceberg_optimize (schema_name, table_name) 
+                VALUES (%s, %s)
+                ON CONFLICT (schema_name, table_name) DO NOTHING
+            """, rows)
+        logger.info("✅ Hoàn thành nạp hệ thống bảng iceberg mới từ metadata vào bảng maintenance từ Trino.")
+    
+    def _run_optimize(self) -> None:
+        """Đọc hàng đợi PENDING và điều phối chạy Optimize"""
+        logger.info("BẮT ĐẦU XỬ LÝ HÀNG ĐỢI OPTIMIZE...")
+        
+        cursor = self.pg.conn.execute("""
+            SELECT schema_name, table_name 
+            FROM iceberg_maintenance.iceberg_optimize 
+            WHERE status = 'PENDING'
+        """)
+        tasks = cursor.fetchall() 
+        if not tasks:
+            logger.info("🎉 Không có bảng PENDING nào. Mọi thứ đã SUCCESS!")
+            return
+        print(tasks)
+
+        with self.trino_conn.cursor() as trino_cur:
+            logger.info(f"🚀 Bắt đầu optimize {len(tasks)} bảng...")
+            for task in tasks:
+                try:
+                    schema = task['schema_name'] # type: ignore
+                    table = task['table_name'] # type: ignore
+                    table_full_name = f"{schema}.{table}" 
+                    
+                    # ==========================================
+                    # 1. TRINO ENGINE (Dùng chuỗi f-string chuẩn của Python)
+                    # ==========================================
+                    # Trino chỉ nhận String. Ta kiểm soát được tên bảng từ Postgres nên f-string ở đây là an toàn.
+                    trino_cur.execute(f"ALTER TABLE {table_full_name} EXECUTE optimize(file_size_threshold => '128MB')")
+                    trino_cur.fetchall() # Nhớ phải có fetchall() để Trino xả hết kết quả nhé
+                    
+                    trino_cur.execute(f"ALTER TABLE {table_full_name} EXECUTE optimize_manifests")
+                    trino_cur.fetchall()
+                    
+                    # ==========================================
+                    # 2. POSTGRES ENGINE (Dùng Parameterized Query %s)
+                    # ==========================================
+                    # Cấu trúc rõ ràng, dễ đọc, siêu bảo mật
+                    update_query = """
+                        UPDATE iceberg_maintenance.iceberg_optimize 
+                        SET status = 'SUCCESS', last_updated_at = CURRENT_TIMESTAMP 
+                        WHERE schema_name = %s AND table_name = %s
+                    """
+                    self.pg.conn.execute(update_query, (schema, table))
+                    
+                    logger.info(f"   ✅ BẢO TRÌ HOÀN TẤT: {table_full_name}")
+                    
+                except TrinoError as e:
+                    logger.error(f"   ❌ [TRINO LỖI] Bỏ qua bảng {table_full_name}. Chi tiết: {e}")
+    
+    def run_full_iceberg_maintenance(self) -> None:
+        """
+        Hàm DUY NHẤT cần gọi từ bên ngoài. 
+        Tự động kiểm tra hàng đợi, cập nhật danh sách và chạy nén file.
+        """
+        logger.info("🔥 BẮT ĐẦU QUY TRÌNH BẢO TRÌ ICEBERG LAKEHOUSE 🔥")
+        try:
+            # Bước 1: Tổ trưởng Kho kiểm tra xem có cần lấy danh sách mới không
+            needs_refresh = self._prepare_maintenance_queue()
+            
+            # Bước 2: Nếu cần, gọi Tổ trưởng Vận chuyển đi lấy data từ Trino
+            if needs_refresh:
+                self._refresh_queue_from_trino()
+                
+            # Bước 3: Gọi Tổ trưởng Thi công ra mặt để nén file
+            self._run_optimize()
+            
+            logger.info("QUY TRÌNH BẢO TRÌ iceberg tables thành công")
+            
+        except Exception as e:
+            # Lưới bọc an toàn cuối cùng cho toàn bộ hệ thống
+            logger.critical(f"💥 [CRITICAL ALERT] Sập toàn bộ quy trình bảo trì. Lý do: {e}")
+                
+                
+        
+
                 
 

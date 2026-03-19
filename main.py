@@ -11,10 +11,12 @@ from schema.producer_schema import KafkaMetadataFundamental
 from utils.logger_config import setup_logger
 
 # %%
+from utils.minio_maintenance import LakehouseMaintenance
+from utils.lakehouse_client import LakeHouseClient
 from utils.postgres_client import PostgresClient
-with PostgresClient.get_db_connection(db_name="platform_db") as conn:
-    pg_client = PostgresClient(conn=conn)
-    pg_client.prepare_maintenance_queue()
+
+maintenance_instance = LakehouseMaintenance(lake_client=LakeHouseClient(), pg_client=PostgresClient(PostgresClient.get_db_connection("platform_db")))
+maintenance_instance.run_full_iceberg_maintenance()
 # %%
 from utils.minio_maintenance import minio_maintenance
 minio_maintenance(db_name="platform_db")
