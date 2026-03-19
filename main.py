@@ -23,7 +23,12 @@ minio_maintenance(db_name="platform_db")
 
 
 # %%
-
+from utils.other_utils import _get_session
+session = _get_session()
+# response = session.get("https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate=2020-03-02&endDate=2026-03-19&offset=0&limit=50")
+# response.json()
+respons_2 = session.get("https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate=2026-03-02&endDate=2026-03-19&offset=0&limit=50")
+respons_2.json()
     
 
 

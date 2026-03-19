@@ -49,6 +49,19 @@ class KafkaMetadataFundamental(BaseMetadata):
         ).encode('utf-8')
         
         return ticker, message_bytes
+
+class KafkaMetadataHistoricalQuotes(BaseMetadata):
+    YAML_PATH: ClassVar[List[str]] = ["historical_quotes"]
+    
+    default_limit: int
+    default_offset: int
+    start_trade_date: str = "UNKNOWN"
+    end_trade_date: str = "UNKNOWN"
+    
+    
+    
+
+    
     
 
     

@@ -9,7 +9,7 @@ from utils.logger_config import setup_logger
 import sys
 from confluent_kafka.admin import AdminClient, NewTopic # pyright: ignore[reportPrivateImportUsage]
 from pyiceberg.exceptions import NoSuchTableError
-from typing import Sequence, Generator
+from typing import Sequence, Generator, Literal
 
 logger = setup_logger(component="utils")
 
@@ -89,18 +89,30 @@ class LakeHouseClient:
                 raise e
 
      
-    def _get_ticker_list_raw(self) -> set[str]:
+    def _get_ticker_list_raw(self, mode : Literal["fundamental", "other_data"] = "fundamental" ) -> set[str]:
         try:
-            table = "silver.silver_dim_company"
-            tbl = self.catalog.load_table(table)
-            tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
-            result = set(tbl["ticker"].to_list())
-            logger.info(f"Successfully fetch {len(result)} tickers")
-            return result
+            if mode == "fundamental":
+                table = "silver.silver_dim_company"
+                tbl = self.catalog.load_table(table)
+                tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
+                result = set(tbl["ticker"].to_list())
+                logger.info(f"Successfully fetch {len(result)} tickers")
+                return result
+            elif mode == "other_data":
+                table = "gold.gold_dim_company"
+                tbl = self.catalog.load_table(table)
+                tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
+                result = set(tbl["ticker"].to_list())
+                logger.info(f"Successfully fetch {len(result)} tickers")
+                return result
+            else:
+                raise ValueError(f"Invalid mode '{mode}' for fetching ticker list.")
         except NoSuchTableError as e:
             logger.error(f"Table {table} does not exist.")
             raise e
     
+
+        
    
                         
         

@@ -1,5 +1,5 @@
 
-from typing import Any, Iterable, Callable
+from typing import Any, Iterable, Callable, Literal
 import uuid
 from pydantic import ValidationError
 from utils.logger_config import datetime, setup_logger
@@ -12,28 +12,15 @@ from utils.kafka_client import KafkaClient
 from utils.lakehouse_client import LakeHouseClient
 
 logger = setup_logger(component="extract")
-bootstrap_servers = 'kafka:29092'
 
-def _generate_metadata_fundamental[T: KafkaMetadataFundamental](
-    config: KafkaMetadataFundamental, 
-    ticker_list: Iterable[str],
-    batch_id: str
-) -> Iterable[tuple[str, bytes]]:
-    """Chỉ gọi hàm nhân bản cực nhẹ của object."""
-    for ticker in ticker_list:
-        yield config._create_kafka_message(ticker=ticker, batch_id=batch_id)
-    
-
-
-
-def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: Callable[[T, Iterable[str], str], Iterable[tuple[str, bytes]]]) -> None:
+def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: Callable[[T, Iterable[str], str], Iterable[tuple[str, bytes]]], ticker_list_mode: Literal["fundamental", "other_data"] = "fundamental") -> None:
     config = ConfigLoader.load(model_cls)
     producer = StockTickerProducer(
         topic_name=config.topic
     )
     try:
         # Lấy danh sách tổng và ép kiểu Set
-        ticker_list = LakeHouseClient()._get_ticker_list_raw()
+        ticker_list = LakeHouseClient()._get_ticker_list_raw(mode=ticker_list_mode)
         with PostgresClient.get_db_connection(db_name="ops_db") as conn:
             
             postgresclient = PostgresClient(conn)
