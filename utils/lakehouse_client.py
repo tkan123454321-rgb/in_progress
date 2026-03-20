@@ -52,15 +52,26 @@ class LakeHouseClient:
                 "py-io-impl": "pyiceberg.io.pyarrow.PyArrowFileIO"
             }
         )
-        self.trino_conn = trino.dbapi.connect(
-            host="trino",
-            port=8080,
-            user="admin",
-            catalog="lakehouse_main")
-        
         self._ensure_medallion_layers()
         self._ensure_bucket_exists()
     
+    @staticmethod
+    def _get_trino_connection(type: Literal["maintenance", "read"] = "read") -> trino.dbapi.Connection:
+        if type == "maintenance":
+            return trino.dbapi.connect(
+                host="trino",
+                port=8080,
+                user="admin",
+                catalog="lakehouse_main")
+        elif type == "read":
+            return trino.dbapi.connect(
+                host="trino",
+                port=8080,
+                user="admin",
+                catalog="lakehouse_dev")
+        else:
+            raise ValueError(f"Invalid connection type '{type}' requested.")
+
     def _ensure_medallion_layers(self) -> None:
         for layer in self.REQUIRED_SCHEMAS:
             try:
@@ -89,28 +100,9 @@ class LakeHouseClient:
                 raise e
 
      
-    def _get_ticker_list_raw(self, mode : Literal["fundamental", "other_data"] = "fundamental" ) -> set[str]:
-        try:
-            if mode == "fundamental":
-                table = "silver.silver_dim_company"
-                tbl = self.catalog.load_table(table)
-                tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
-                result = set(tbl["ticker"].to_list())
-                logger.info(f"Successfully fetch {len(result)} tickers")
-                return result
-            elif mode == "other_data":
-                table = "gold.gold_dim_company"
-                tbl = self.catalog.load_table(table)
-                tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
-                result = set(tbl["ticker"].to_list())
-                logger.info(f"Successfully fetch {len(result)} tickers")
-                return result
-            else:
-                raise ValueError(f"Invalid mode '{mode}' for fetching ticker list.")
-        except NoSuchTableError as e:
-            logger.error(f"Table {table} does not exist.")
-            raise e
+   
     
+        
 
         
    

@@ -9,6 +9,7 @@ import os
 import time
 import pandas as pd
 from utils.logger_config import setup_logger
+from contextlib import contextmanager
 
 # cài đặt logger
 logger = setup_logger(component="extract")   
@@ -55,7 +56,6 @@ class StockTickerProducer(KafkaClient):
         else:
             logger.debug(f"nạp Thành công {msg.value().decode('utf-8')} | offset: {msg.offset()} |topic: {msg.topic()} | partition: {msg.partition()} | client_id: {self.conf['client.id']}")
 
-
     def single_message_data(self, message, key):
         retry_delay = 0.2
         attempt = 0 
@@ -92,4 +92,23 @@ class StockTickerProducer(KafkaClient):
         logger.info("flushing producer before closing...")
         self.producer.flush(10)
             
+    @classmethod
+    @contextmanager
+    def managed(cls, topic_name: str, update_conf: dict | None = None):
+        """
+        Factory method bọc Class lại thành một Context Manager.
+        Sử dụng: with StockTickerProducer.managed("my_topic") as producer:
+        """
+        logger.info("🔌 [Kafka] Khởi tạo và mở kết nối Producer...")
+        # 1. SETUP: Tạo đối tượng
+        producer_instance = cls(topic_name=topic_name, update_conf=update_conf)
+        
+        try:
+            # 2. YIELD: Nhả cái object ra cho khối 'with' xài
+            yield producer_instance
             
+        finally:
+            if producer_instance.close() is None:
+                logger.info("🔒 Đã đóng producer sau khi nạp metadata cơ bản thành công.")
+            else:
+                logger.critical("⚠️ Chưa flush hết dữ liệu khi đóng producer sau nạp metadata cơ bản.")

@@ -14,9 +14,23 @@ class LakehouseMaintenance:
         Nhận 2 client đã được khởi tạo sẵn từ bên ngoài.
         Maintenance chỉ làm nhiệm vụ điều phối (Orchestrator).
         """
-        self.pg = pg_client
-        self.lake = lake_client
-        self.trino_conn = lake_client.trino_conn
+        self.pg_conn = pg_client.get_db_connection(db_name="platform_db")
+        self.trino_conn = lake_client._get_trino_connection(type="maintenance")
+        self.s3_client = lake_client.s3_client
+        self.catalog = lake_client.catalog
+        self.REQUIRED_SCHEMAS = lake_client.REQUIRED_SCHEMAS
+        self.BUCKET_NAME = lake_client.BUCKET_NAME
+    
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Ủy quyền dọn dẹp cho thư viện gốc"""
+        if self.pg_conn:
+            self.pg_conn.__exit__(exc_type, exc_val, exc_tb)
+        if self.trino_conn:
+            self.trino_conn.__exit__(exc_type, exc_val, exc_tb)
+        logger.info("🔒 Đã đóng toàn bộ kết nối bảo trì Lakehouse.")
     
     def _prepare_temp_minio_table(self) -> None:
         """BƯỚC 1: Dọn dẹp và tạo bảng Tmp. Không cần cursor nữa."""
@@ -28,14 +42,14 @@ class LakehouseMaintenance:
             );
         """
         # Quất thẳng execute từ connection
-        self.pg.conn.execute(setup_sql)
+        self.pg_conn.execute(setup_sql)
         logger.info("Đã tạo bảng tạm: temp_minio_object_locations.")
 
     def _insert_minio_location_batch(self, batch: Sequence[tuple]) -> None:
         """BƯỚC 2: Nạp 1 batch dữ liệu vào bảng Tmp."""
         insert_sql = "INSERT INTO nessie_gc.temp_minio_object_locations (location) VALUES (%s)"
         # executemany cũng gọi thẳng từ connection luôn
-        with self.pg.conn.cursor() as cur:
+        with self.pg_conn.cursor() as cur:
             cur.executemany(insert_sql, batch)
 
     def _swap_minio_location_tables(self) -> None:
@@ -44,7 +58,7 @@ class LakehouseMaintenance:
             DROP TABLE IF EXISTS nessie_gc.minio_object_locations CASCADE;
             ALTER TABLE nessie_gc.temp_minio_object_locations RENAME TO minio_object_locations;
         """
-        self.pg.conn.execute(swap_sql)
+        self.pg_conn.execute(swap_sql)
         logger.info("🔄 Đã Swap thành công sang bảng chính: minio_object_locations.")
     
     def _yield_orphan_location_batches(self) -> Generator[str, None, None]:
@@ -60,9 +74,9 @@ class LakehouseMaintenance:
             FROM nessie_gc.gc_live_set_content_locations;
         """)
         
-        with self.pg.conn.transaction():
-            self.pg.conn.execute(set_ram_sql)
-            with self.pg.conn.cursor(name="orphan_stream_cursor") as cur:
+        with self.pg_conn.transaction():
+            self.pg_conn.execute(set_ram_sql)
+            with self.pg_conn.cursor(name="orphan_stream_cursor") as cur:
                 # Ép RAM cho query
                 # Thực thi EXCEPT
                 cur.execute(query)
@@ -90,8 +104,8 @@ class LakehouseMaintenance:
         
 
         # Bước 1: kiểm tra và tạo bảng nếu chưa có
-        self.pg.conn.execute(query_create_table)
-        cursor_check = self.pg.conn.execute("SELECT COUNT(*) as total_count, MIN(batch_created_at) as oldest_date FROM iceberg_maintenance.iceberg_optimize;")
+        self.pg_conn.execute(query_create_table)
+        cursor_check = self.pg_conn.execute("SELECT COUNT(*) as total_count, MIN(batch_created_at) as oldest_date FROM iceberg_maintenance.iceberg_optimize;")
         row = cursor_check.fetchone()
         print(row)
         if row['total_count'] == 0: # type: ignore
@@ -101,7 +115,7 @@ class LakehouseMaintenance:
         if row['oldest_date'] is not None: # type: ignore
             if row['oldest_date'] < datetime.now(timezone.utc) - timedelta(days=7):  # type: ignore
                 logger.info("🔄 Đã qua 7 ngày. Đang dọn dẹp hàng đợi cũ (TRUNCATE)...")
-                self.pg.conn.execute("TRUNCATE TABLE iceberg_maintenance.iceberg_optimize;")
+                self.pg_conn.execute("TRUNCATE TABLE iceberg_maintenance.iceberg_optimize;")
                 return True
                 
         return False
@@ -111,10 +125,10 @@ class LakehouseMaintenance:
         Quét MinIO theo từng layer, trả về generator chứa các batch thư mục con.
         Định dạng trả về: (tên_schema, [(location1,), (location2,), ...])
         """
-        paginator = self.lake.s3_client.get_paginator('list_objects_v2')
-        for schema_name in self.lake.REQUIRED_SCHEMAS:
+        paginator = self.s3_client.get_paginator('list_objects_v2')
+        for schema_name in self.REQUIRED_SCHEMAS:
             prefix_path = f"{schema_name}/"
-            page_paginator = paginator.paginate(Bucket=self.lake.BUCKET_NAME, Delimiter='/', Prefix=prefix_path)
+            page_paginator = paginator.paginate(Bucket=self.BUCKET_NAME, Delimiter='/', Prefix=prefix_path)
             for page in page_paginator:
                 if 'CommonPrefixes' in page:
                     batch=[]
@@ -127,13 +141,13 @@ class LakehouseMaintenance:
         """
         Xóa một thư mục mồ côi trên MinIO.
         """
-        paginator = self.lake.s3_client.get_paginator('list_objects_v2')
-        pages = paginator.paginate(Bucket=self.lake.BUCKET_NAME, Prefix=location)
+        paginator = self.s3_client.get_paginator('list_objects_v2')
+        pages = paginator.paginate(Bucket=self.BUCKET_NAME, Prefix=location)
         for page in pages:
             if 'Contents' in page:
                 objects_to_delete = [{'Key': obj['Key']} for obj in page['Contents']]
                 for obj in page['Contents']:
-                    response = self.lake.s3_client.delete_objects(Bucket=self.lake.BUCKET_NAME, 
+                    response = self.s3_client.delete_objects(Bucket=self.BUCKET_NAME, 
                                                             Delete={
                                                                 'Objects': objects_to_delete,
                                                                 'Quiet': True
@@ -144,7 +158,7 @@ class LakehouseMaintenance:
     def minio_maintenance(self) -> None:
         try:
             # Vẫn bọc trong transaction để bảo vệ toàn vẹn dữ liệu
-            with self.pg.conn.transaction():
+            with self.pg_conn.transaction():
                 
                 # 1. Tạo bảng tạm
                 self._prepare_temp_minio_table()
@@ -169,7 +183,7 @@ class LakehouseMaintenance:
             rows = cur.fetchall()
         
         logger.info(f"🚚 [Postgres] Đang nạp {len(rows)} bảng vào Hàng đợi...")
-        with self.pg.conn.cursor() as pg_cur:
+        with self.pg_conn.cursor() as pg_cur:
             pg_cur.executemany("""
                 INSERT INTO iceberg_maintenance.iceberg_optimize (schema_name, table_name) 
                 VALUES (%s, %s)
@@ -181,7 +195,7 @@ class LakehouseMaintenance:
         """Đọc hàng đợi PENDING và điều phối chạy Optimize"""
         logger.info("BẮT ĐẦU XỬ LÝ HÀNG ĐỢI OPTIMIZE...")
         
-        cursor = self.pg.conn.execute("""
+        cursor = self.pg_conn.execute("""
             SELECT schema_name, table_name 
             FROM iceberg_maintenance.iceberg_optimize 
             WHERE status = 'PENDING'
@@ -219,7 +233,7 @@ class LakehouseMaintenance:
                         SET status = 'SUCCESS', last_updated_at = CURRENT_TIMESTAMP 
                         WHERE schema_name = %s AND table_name = %s
                     """
-                    self.pg.conn.execute(update_query, (schema, table))
+                    self.pg_conn.execute(update_query, (schema, table))
                     
                     logger.info(f"   ✅ BẢO TRÌ HOÀN TẤT: {table_full_name}")
                     
