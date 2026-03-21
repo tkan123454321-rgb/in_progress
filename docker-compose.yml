@@ -296,23 +296,23 @@ services:
       - "19120:19120"
     restart: unless-stopped
     environment:
-      - NESSIE_VERSION_STORE_TYPE=JDBC
-      - NESSIE_VERSION_STORE_PERSIST_JDBC_DATASOURCE=postgresql
-      - NESSIE_VERSION_STORE_PERSIST_JDBC_SCHEMA=nessie
-      - QUARKUS_DATASOURCE_POSTGRESQL_JDBC_URL=jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie
-      - QUARKUS_DATASOURCE_POSTGRESQL_USERNAME=${POSTGRES_USER}
-      - QUARKUS_DATASOURCE_POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - nessie.version.store.type=JDBC
+      - nessie.version.store.persist.jdbc.datasource=postgresql
+      - nessie.version.store.persist.jdbc.schema=nessie
+      - quarkus.datasource.postgresql.jdbc.url=jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie
+      - quarkus.datasource.postgresql.username=${POSTGRES_USER}
+      - quarkus.datasource.postgresql.password=${POSTGRES_PASSWORD}
 
-      - NESSIE_CATALOG_DEFAULT_WAREHOUSE=miniolakehouse
-      - NESSIE_CATALOG_WAREHOUSES_MINIOLAKEHOUSE_LOCATION=s3://financial-data-lake/
+      - nessie.catalog.default-warehouse=miniolakehouse
+      - nessie.catalog.warehouses.miniolakehouse.location=s3://financial-data-lake/
 
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ENDPOINT=http://minio:9000
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_PATH_STYLE_ACCESS=true
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_REGION=us-east-1
+      - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000
+      - nessie.catalog.service.s3.default-options.path-style-access=true
+      - nessie.catalog.service.s3.default-options.region=us-east-1
 
-      - NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ACCESS_KEY=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
-      - NESSIE_CATALOG_SECRETS_ACCESS_KEY_NAME=${POSTGRES_USER}
-      - NESSIE_CATALOG_SECRETS_ACCESS_KEY_SECRET=${POSTGRES_PASSWORD}
+      - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
+      - nessie.catalog.secrets.access-key.name=${MINIO_USER}
+      - nessie.catalog.secrets.access-key.secret=${MINIO_PASSWORD}
     volumes:
       - nessie_data:/var/lib/nessie/data
     depends_on:
@@ -328,7 +328,6 @@ services:
     tty: true
     networks:
       - monitoring_net
-    # command: [ "--uri", "http://nessie:19120/iceberg" ]
     depends_on:
       - nessie
 

@@ -87,7 +87,7 @@ class LakehouseMaintenance:
                     if not batch:
                         break
                     for row in batch:
-                        yield row[0]
+                        yield row['location'] # type: ignore
         
     def _prepare_maintenance_queue(self):
         
@@ -175,7 +175,7 @@ class LakehouseMaintenance:
             else:
                 logger.info(f"HOÀN TẤT GC! Tổng cộng đã tiêu diệt: {total_deleted} thư mục rác.")         
         except Exception as e:
-            logger.error(f" CÓ LỖI, ĐÃ ROLLBACK: {e}")
+            logger.exception(f" CÓ LỖI, ĐÃ ROLLBACK")
     
     def _refresh_queue_from_trino(self) -> None:
         with self.trino_conn.cursor() as cur:
@@ -213,21 +213,12 @@ class LakehouseMaintenance:
                     schema = task['schema_name'] # type: ignore
                     table = task['table_name'] # type: ignore
                     table_full_name = f"{schema}.{table}" 
-                    
-                    # ==========================================
-                    # 1. TRINO ENGINE (Dùng chuỗi f-string chuẩn của Python)
-                    # ==========================================
-                    # Trino chỉ nhận String. Ta kiểm soát được tên bảng từ Postgres nên f-string ở đây là an toàn.
                     trino_cur.execute(f"ALTER TABLE {table_full_name} EXECUTE optimize(file_size_threshold => '128MB')")
                     trino_cur.fetchall() # Nhớ phải có fetchall() để Trino xả hết kết quả nhé
                     
                     trino_cur.execute(f"ALTER TABLE {table_full_name} EXECUTE optimize_manifests")
                     trino_cur.fetchall()
-                    
-                    # ==========================================
-                    # 2. POSTGRES ENGINE (Dùng Parameterized Query %s)
-                    # ==========================================
-                    # Cấu trúc rõ ràng, dễ đọc, siêu bảo mật
+
                     update_query = """
                         UPDATE iceberg_maintenance.iceberg_optimize 
                         SET status = 'SUCCESS', last_updated_at = CURRENT_TIMESTAMP 

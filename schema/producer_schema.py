@@ -59,7 +59,7 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
     table_name_postgres: str = "ingestion_metadata_historical_quotes"
     topic: str = "historical_quotes"
     data_type: str = "historical_quotes"
-    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/historical-quotes?limit={limit}&offset={offset}"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/historical-quotes?startDate={start_date}&endDate={end_date}&offset={offset}&limit={limit}"
     start_date: date = Field(default=date(2018, 1, 1))
     end_date: date = Field(default_factory=lambda: date.today() - timedelta(days=1))
     
@@ -74,11 +74,12 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
             limit=self.default_limit
         )
 
-    def _create_kafka_message(self, ticker: str, start_date: date) -> Tuple[str, bytes]:
+    def _create_kafka_message(self, ticker: str, start_date: date, offset: int) -> Tuple[str, bytes]:
         
         updated_instance = self.model_copy(update={
             "ticker": ticker, 
-            "start_date": start_date, # Ghi đè cái 2018 bằng ngày thực tế từ Postgres
+            "start_date": start_date,
+            "default_offset": offset # Ghi đè cái 2018 bằng ngày thực tế từ Postgres
             # end_date không cần update vì mặc định nó đã là hôm qua rồi!
         })
         
@@ -89,7 +90,6 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
             },
             ensure_ascii=False
         ).encode('utf-8')
-        
         return ticker, message_bytes
     
     

@@ -43,7 +43,8 @@ class LakeHouseClient:
         self.catalog = load_catalog(
             "nessie_catalog",
             **{"type": "rest",
-                "uri": "http://nessie:19120/iceberg",  
+                "uri": "http://nessie:19120/iceberg/dev",
+                "snapshot-loading-mode": "refs",
                 "warehouse": f"s3://{self.BUCKET_NAME}/",  
                 "s3.endpoint": self.ENDPOINT_URL,  
                 "s3.access-key-id": self._ACCESS_KEY,  

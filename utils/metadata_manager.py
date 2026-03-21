@@ -2,7 +2,7 @@ from utils.logger_config import setup_logger
 from utils.postgres_client import PostgresClient
 from utils.lakehouse_client import LakeHouseClient, NoSuchTableError
 from typing import Literal
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 import polars as pl
 from polars.exceptions import PolarsError, ColumnNotFoundError, SQLInterfaceError, SQLSyntaxError
 import psycopg
@@ -11,6 +11,7 @@ from psycopg.rows import dict_row, DictRow
 from typing import ClassVar, Generator, Sequence
 from contextlib import contextmanager
 import trino.dbapi
+from pyiceberg.expressions import EqualTo
 
 
 logger = setup_logger(component="utils")
@@ -37,7 +38,7 @@ class MetadataManager:
             elif mode == "other_data":
                 table = "gold.gold_dim_company"
                 tbl = self.catalog.load_table(table)
-                tbl = tbl.scan(selected_fields=("ticker",)).to_polars()
+                tbl = tbl.scan(row_filter=EqualTo(term = "status", literal = "qualified"), selected_fields=("ticker",)).to_polars()
                 result = set(tbl["ticker"].to_list())
                 logger.info(f"Successfully fetch {len(result)} tickers")
                 return result
@@ -65,8 +66,6 @@ class MetadataManager:
         try:
             self.pg_conn.execute(query, data) # type: ignore
         except psycopg.Error as e:
-            # Bắt ĐÍCH DANH lỗi của psycopg (Database Error)
-            # Báo warning để vòng lặp đi tiếp, không làm chết luồng chạy của Kafka
             logger.error(f"⚠️ Lỗi Database khi ghi log cho mã {ticker}: {e.sqlstate}, {e}")
             raise
 
@@ -96,37 +95,103 @@ class MetadataManager:
     def get_missing_tickers(self, table_name, tickers_set):
         """BƯỚC 2: Quét DB bằng Polars tốc độ cao để tìm các mã chưa được nạp"""
         query = f"SELECT ticker FROM ingestion.{table_name}"
-        try:
-            df = pl.read_database_uri(query=query, uri=self.pg_conn_str, engine="connectorx")
+        df = pl.read_database_uri(query=query, uri=self.pg_conn_str, engine="connectorx")
+        
+        if df.is_empty():
+            processed_tickers_set = set()
+        else:
+            processed_tickers_set = set(df["ticker"].to_list())
             
-            if df.is_empty():
-                processed_tickers_set = set()
-            else:
-                processed_tickers_set = set(df["ticker"].to_list())
-                
-            missing_tickers = tickers_set - processed_tickers_set
+        missing_tickers = tickers_set - processed_tickers_set
+        
+        if missing_tickers:
+            logger.warning(f"⚠️ Có {len(missing_tickers)} mã chưa được nạp trong 24h qua. Bắt đầu chạy bù.")
+        else:
+            logger.info("✅ Tất cả mã đã được nạp đầy đủ trong 24h qua.")
             
-            if missing_tickers:
-                logger.warning(f"⚠️ Có {len(missing_tickers)} mã chưa được nạp trong 24h qua. Bắt đầu chạy bù.")
-            else:
-                logger.info("✅ Tất cả mã đã được nạp đầy đủ trong 24h qua.")
-                
-            return missing_tickers
+        return missing_tickers
 
-        # 1. BẮT LỖI CẤU TRÚC BẢNG (FATAL)
-        except ColumnNotFoundError as e:
-            logger.error(f"FATAL SCHEMA: Bảng {table_name} bị thiếu cột 'ticker'. Chi tiết: {e}")
-            raise  # Ném lỗi ra ngoài, bắt buộc sập luồng chính!
 
-        # 2. BẮT LỖI CÚ PHÁP SQL (FATAL)
-        except (SQLInterfaceError, SQLSyntaxError) as e:
-            logger.error(f"FATAL QUERY: Sai cú pháp SQL khi gọi Polars. Chi tiết: {e}")
-            raise  # Ném lỗi ra ngoài, bắt buộc sập luồng chính!
-            
-        except PolarsError as e:
-            logger.critical(f"FATAL POLARS: Lỗi xử lý dữ liệu nội bộ của Polars: {e}")
-            raise 
-    
+    def sync_historical_watermark_tickers(self) -> None:
+        """
+        BƯỚC 1: Đồng bộ danh sách từ Gold Layer vào bảng Watermark.
+        Khởi tạo ngày mặc định (2018-01-01) cho mã mới.
+        """
+        logger.info("[Watermark Sync] Đang đối soát danh sách mã cổ phiếu từ Lakehouse...")
+
+        # 1. Lấy danh sách Gold Tickers (Nguồn chân lý)
+        gold_tickers = self._get_ticker_list_raw(mode="other_data")
+
+        # 2. Lấy danh sách đang có trong DB Postgres
+        with self.pg_conn.cursor() as cur:
+            cur.execute("""
+                SELECT ticker, ticker_status 
+                FROM ingestion.ingestion_historical_quotes_watermark
+            """)
+            db_data = cur.fetchall()
+            db_tickers = set(row['ticker'] for row in db_data) # type: ignore
+            inactive_db_tickers = set(row['ticker'] for row in db_data if row['ticker_status'] == 'inactive') # type: ignore
+
+        new_tickers = gold_tickers - db_tickers
+        disappeared_tickers = db_tickers - gold_tickers
+        reappeared_tickers = (gold_tickers & db_tickers) & inactive_db_tickers
+
+        if not any([new_tickers, disappeared_tickers, reappeared_tickers]):
+            logger.info("[Watermark Sync] Danh sách đã đồng bộ 100%. Bỏ qua bước cập nhật DB.")
+            return
+
+        # 4. Thực thi vào Database (Gói gọn trong 1 Transaction)
+        with self.pg_conn.transaction():
+            with self.pg_conn.cursor() as cur:
+                
+                # 4.1. Mã mới: Insert & Gán mốc 2018-01-01
+                if new_tickers:
+                    insert_query = """
+                        INSERT INTO ingestion.ingestion_historical_quotes_watermark 
+                        (ticker, last_ingested_date, ticker_status, updated_at)
+                        VALUES (%(ticker)s, '2018-01-01', 'active', CURRENT_TIMESTAMP)
+                    """
+                    cur.executemany(insert_query, [{'ticker': t} for t in new_tickers])
+                    logger.info(f" Đã thêm {len(new_tickers)} mã mới với mốc thời gian 2018-01-01.")
+
+                    # 4.2. Mã biến mất: Dùng %(ticker)s và truyền Dict
+                if disappeared_tickers:
+                    deactivate_query = """
+                        UPDATE ingestion.ingestion_historical_quotes_watermark
+                        SET ticker_status = 'inactive', updated_at = CURRENT_TIMESTAMP
+                        WHERE ticker = %(ticker)s
+                    """
+                    cur.executemany(deactivate_query, [{'ticker': t} for t in disappeared_tickers])
+                    logger.warning(f"   ⚠️ Đã khóa (inactive) {len(disappeared_tickers)} mã không còn trên Lakehouse.")
+
+                # 4.3. Mã quay lại: Dùng %(ticker)s và truyền Dict
+                if reappeared_tickers:
+                    reactivate_query = """
+                        UPDATE ingestion.ingestion_historical_quotes_watermark
+                        SET ticker_status = 'active', updated_at = CURRENT_TIMESTAMP
+                        WHERE ticker = %(ticker)s
+                    """
+                    cur.executemany(reactivate_query, [{'ticker': t} for t in reappeared_tickers])
+                    logger.info(f"   ♻️ Đã mở khóa lại {len(reappeared_tickers)} mã.")
+                
+        logger.info("[Watermark Sync] Đối soát hoàn tất rực rỡ!")
+        
+        
+    def _get_smart_start_date(self, ticker: str) -> date:
+        """
+        Lấy ngày nạp dữ liệu cuối cùng của một ticker từ bảng Watermark.
+        Nếu là mã mới, trả về mốc mặc định 2018-01-01.
+        """
+        query = """
+            SELECT last_ingested_date 
+            FROM ingestion.ingestion_historical_quotes_watermark 
+            WHERE ticker = %(ticker)s
+        """
+        cursor = self.pg_conn.execute(query, {"ticker": ticker}) # type: ignore
+        result = cursor.fetchone() # type: ignore
+        return result['last_ingested_date'] # type: ignore
+        
+        
     def __enter__(self):
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):

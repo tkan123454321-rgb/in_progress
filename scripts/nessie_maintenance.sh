@@ -15,7 +15,11 @@ JDBC_ARGS=(
   "--jdbc-password" "${POSTGRES_PASSWORD}"
 )
 
-SAFE_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d "7 days ago")
+if date --version >/dev/null 2>&1; then
+    SAFE_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d "7 days ago") # Cho Linux
+else
+    SAFE_TIME=$(date -u -v-7d +"%Y-%m-%dT%H:%M:%SZ") # Cho Mac
+fi
 
 set +e 
 docker compose run --rm nessie-gc create-sql-schema "${JDBC_ARGS[@]}" --jdbc-schema "DROP_AND_CREATE" > /dev/null 2>&1
@@ -32,14 +36,14 @@ set -e
 # --- BƯỚC 2: QUÉT VÀ XÓA RÁC VẬT LÝ TRÊN MINIO ---
 echo " Bước 2: Bắt đầu quét và xóa Orphan Files trên MinIO..."
 docker compose run --rm nessie-gc gc \
-  -c P7D \
+  -c 'P7D' \
   --max-file-modification="$SAFE_TIME" \
-  --uri "http://nessie:19120/iceberg" \
+  --uri "http://nessie:19120/api/v2" \
   "${JDBC_ARGS[@]}" \
   -I "s3.access-key-id=${MINIO_ROOT_USER}" \
   -I "s3.secret-access-key=${MINIO_ROOT_PASSWORD}" \
   -I "s3.endpoint=http://minio:9000" \
-  -I "s3.path-style-access=true" > /dev/null 2>&1
+  -I "s3.path-style-access=true"
 
 GC_STATUS=$?
 if [ $GC_STATUS -eq 0 ]; then

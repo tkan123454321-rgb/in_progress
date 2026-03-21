@@ -13,7 +13,7 @@ from utils.metadata_manager import MetadataManager
 logger = setup_logger(component="extract")
 type GeneratorFunc[T] = Callable[[T, Iterable[str]], Iterable[tuple[str, bytes]]]
 
-def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: GeneratorFunc[T], ticker_list_mode: Literal["fundamental", "other_data"] = "fundamental") -> None:
+def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: GeneratorFunc[T], ticker_list_mode: Literal["fundamental", "other_data"] = "fundamental") -> None:
     config = model_cls()
     metadata_manager = MetadataManager(
         pg_client=PostgresClient(),
@@ -30,8 +30,8 @@ def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metada
                 return
             
             logger.info(f"🚀 Bắt đầu tạo và bắn {len(missing_tickers)} mã vào Kafka. Batch ID: {config.batch_id}")
-            metadata_generator = generate_metadata_callable(config, missing_tickers)
-            
+            metadata_generator = generate_metadata_callable(config=config, ticker_list=missing_tickers, metadata_manager=metadata_manager) # type: ignore
+            logged_tickers = set()
             for ticker, metadata_item in metadata_generator:
                 
                 # Bắn vào Kafka (Không cần truyền topic_name nữa vì Producer đã nhớ)
@@ -43,7 +43,9 @@ def ingest_fundamental_main[T: BaseMetadata](model_cls: type[T], generate_metada
                 if not is_sent:
                     raise RuntimeError(f"❌ Mất kết nối/Lỗi Kafka khi bắn mã {ticker}. Ngừng toàn bộ batch!")
                     # Ghi nhận trạng thái vào DB (Chỉ cần 2 tham số, mọi thứ khác class tự lo)
-                metadata_manager.log_metadata_to_db(ticker=ticker, batch_id=config.batch_id, topic=config.topic, data_type=config.data_type, table_name=config.table_name_postgres)                    # type: ignore
+                if ticker not in logged_tickers:
+                    metadata_manager.log_metadata_to_db(ticker=ticker, batch_id=config.batch_id, topic=config.topic, data_type=config.data_type, table_name=config.table_name_postgres)                    # type: ignore
+                    logged_tickers.add(ticker)
             logger.info(f"🏁 Đã đẩy xong batch {config.batch_id} vào Kafka. Chi tiết giám sát xem trên Grafana Dashboard.")
     except KeyboardInterrupt:
         logger.warning("⏹️ Nhận lệnh dừng từ bàn phím (KeyboardInterrupt). Dừng quá trình nạp.")

@@ -57,8 +57,22 @@ CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental (
     created_time TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_historical_quotes (
+    batch_id VARCHAR(50),
+    topic_name VARCHAR(50),
+    data_type VARCHAR(50),
+    ticker VARCHAR(20),
+    created_time TIMESTAMPTZ
+);
 
-
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_historical_quotes_watermark(
+    batch_id VARCHAR(50),
+    ticker VARCHAR(20),
+    last_ingested_date DATE NOT NULL,
+    ticker_status VARCHAR(20),
+    updated_at TIMESTAMPTZ,
+    PRIMARY KEY (ticker)
+);
 
 -- thiết lập Part_man ------------------------------------------------------------------------------------------------
 

@@ -7,21 +7,26 @@ from dotenv import load_dotenv
 from pathlib import Path
 import re
 import yaml # type: ignore
+from ingestion.generate_data_metadata import KafkaMetadataHistoricalQuotes, _generate_metadata_fundamental
 from schema.producer_schema import KafkaMetadataFundamental
 from utils.logger_config import setup_logger
 
 # %%
-from utils.minio_maintenance import LakehouseMaintenance
-from utils.lakehouse_client import LakeHouseClient
-from utils.postgres_client import PostgresClient
-
-maintenance_instance = LakehouseMaintenance(lake_client=LakeHouseClient(), pg_client=PostgresClient(PostgresClient.get_db_connection("platform_db")))
-maintenance_instance.run_full_iceberg_maintenance()
+from ingestion.ingest_main import ingest_main
+from schema.producer_schema import KafkaMetadataHistoricalQuotes, KafkaMetadataFundamental
+from ingestion.generate_data_metadata import _generate_metadata_fundamental, _generate_metadata_historical
+ingest_main(
+    model_cls=KafkaMetadataHistoricalQuotes,
+    generate_metadata_callable=_generate_metadata_historical,
+    ticker_list_mode="other_data"
+)
 
 # %%
-from utils.minio_maintenance import minio_maintenance
-minio_maintenance(db_name="platform_db")
-
+from utils.metadata_manager import MetadataManager
+from utils.postgres_client import PostgresClient
+from utils.lakehouse_client import LakeHouseClient
+with MetadataManager(PostgresClient(), LakeHouseClient()) as metadata_manager:    
+    metadata_manager.sync_historical_watermark_tickers()
 
 # %%
 from utils.other_utils import _get_session
@@ -46,5 +51,7 @@ for offset in range(0, estimate_trading_days, 500):
 
 
 
+
+# %%
 
 # %%
