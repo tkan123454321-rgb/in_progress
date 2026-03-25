@@ -22,11 +22,13 @@ ingest_main(
 )
 
 # %%
-from utils.metadata_manager import MetadataManager
-from utils.postgres_client import PostgresClient
+from utils.minio_maintenance import LakehouseMaintenance
 from utils.lakehouse_client import LakeHouseClient
-with MetadataManager(PostgresClient(), LakeHouseClient()) as metadata_manager:    
-    metadata_manager.sync_historical_watermark_tickers()
+from utils.postgres_client import PostgresClient
+from utils.metadata_manager import MetadataManager
+with MetadataManager(pg_client = PostgresClient(), lake_client=LakeHouseClient()) as metadata_manager:
+    metadata_manager._update_max_ingested_date()
+
 
 # %%
 from utils.other_utils import _get_session

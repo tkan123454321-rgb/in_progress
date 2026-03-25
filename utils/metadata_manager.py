@@ -190,8 +190,40 @@ class MetadataManager:
         cursor = self.pg_conn.execute(query, {"ticker": ticker}) # type: ignore
         result = cursor.fetchone() # type: ignore
         return result['last_ingested_date'] # type: ignore
+    
+    def _update_max_ingested_date(self) -> None:
+        """
+        Lấy ngày nạp dữ liệu mới nhất của một ticker từ bảng log metadata.
+        """
+        query = """
+            SELECT ticker, MAX(event_date) as latest_trade_event
+            FROM bronze.historical_quotes
+            GROUP BY ticker
+        """
+        with self.trino_conn.cursor() as trino_cur:
+            trino_cur.execute(query)
+            results : list[list[str | datetime.date]] = trino_cur.fetchall() # type: ignore
+            logger.info(f"lấy dữ liệu ngày nạp mới nhất từ bảng bronze.historical_quotes thành công với {len(results)} mã.")
+        if not results:
+            logger.warning(f"Không tìm thấy dữ liệu lịch sử của historical_quotes để cập nhật watermark.")
+            return
         
-        
+        with self.pg_conn.transaction():
+            with self.pg_conn.cursor() as pg_cur:
+                update_query = """
+                                UPDATE ingestion.ingestion_historical_quotes_watermark
+                                SET 
+                                    last_ingested_date = %(last_ingested_date)s,
+                                    updated_at = CURRENT_TIMESTAMP
+                                WHERE ticker = %(ticker)s;
+                            """
+                update_data = [
+                    {"ticker": row[0], "last_ingested_date": row[1]} 
+                    for row in results
+                ]
+                pg_cur.executemany(update_query, update_data)
+        logger.info("🔒 Đã cập nhật watermark cho bảng ingestion.ingestion_historical_quotes_watermark thành công.")
+
     def __enter__(self):
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):

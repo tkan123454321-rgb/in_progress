@@ -1,5 +1,5 @@
 from typing_extensions import Literal
-
+from schema.producer_schema import BaseMetadata
 import polars as pl
 from time import time
 from dotenv import load_dotenv
@@ -21,8 +21,8 @@ class LakehouseLoader(LakeHouseClient):
            
     def _put_lakehouse(
         self, 
+        config: BaseMetadata,  # 🎯 Nhận trực tiếp đối tượng đã khởi tạo
         arrow_table: pa.Table, 
-        name_table: str, 
         mode: Literal["append", "overwrite"] = "append"
     ) -> bool:
 
@@ -31,7 +31,7 @@ class LakehouseLoader(LakeHouseClient):
             logger.error(f"❌ Input không phải PyArrow Table, nhận được: {type(arrow_table)}")
             raise TypeError("Input bắt buộc phải là PyArrow Table")
 
-        table_name = f"bronze.{name_table}"
+        table_name = f"bronze.{config.topic}"
 
         try:
             # 2. Bảng ĐÃ TỒN TẠI -> Load, Đồng bộ Schema và Ghi theo Mode
@@ -51,7 +51,11 @@ class LakehouseLoader(LakeHouseClient):
         except NoSuchTableError:
             # 3. Bảng CHƯA TỒN TẠI -> Tạo mới
             # Lưu ý: Khi tạo bảng mới thì luôn luôn dùng append để đẩy data mẻ đầu tiên vào
-            table = self.catalog.create_table(table_name, schema=arrow_table.schema)
+            table = self.catalog.create_table(
+                identifier=table_name, 
+                schema=config.iceberg_schema,
+                partition_spec=config.iceberg_partition_spec
+                )
             table.append(arrow_table)
             
             logger.info(f"🧊 Đã tạo mới và ghi mẻ đầu tiên thành công vào {table_name}")

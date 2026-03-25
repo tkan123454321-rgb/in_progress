@@ -2,7 +2,7 @@
 
     {% if layer_name == 'staging' %}
         -- Lớp Staging đẻ ra 2 cột mới
-        TRY_CAST(inserted_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS inserted_bronze_time,
+        TRY_CAST(bronze_ingested_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS inserted_bronze_time,
         '{{ invocation_id }}' AS staging_invocation_id,
         from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AT TIME ZONE 'Asia/Ho_Chi_Minh' AS staged_at,
         

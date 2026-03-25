@@ -3,7 +3,7 @@ import requests
 from zoneinfo import ZoneInfo
 from utils.exception import RetryableAPIError
 from utils.logger_config import setup_logger
-from confluent_kafka import Consumer, KafkaError, KafkaException, error, Message
+from confluent_kafka import Consumer, KafkaError, KafkaException, error, Message, TopicPartition
 import os
 import socket
 import json
@@ -12,11 +12,11 @@ from utils.kafka_client import KafkaClient
 import sys
 import uuid
 from datetime import datetime
-from typing import Any, Iterable, ClassVar, Sequence
+from typing import Any, Callable, Iterable, ClassVar, Sequence
 from polars.exceptions import PolarsError
 import polars as pl
 import pyarrow as pa
-
+from contextlib import contextmanager
 
 logger = setup_logger(component="load")
 
@@ -26,7 +26,7 @@ class KafkaStockConsumer(KafkaClient):
                 'max.poll.interval.ms': 350000,
                 'enable.auto.commit': False,
                 'auto.offset.reset': 'earliest' }
-    MESSAGE_SIZE: ClassVar[int] = 25
+    MESSAGE_SIZE: ClassVar[int] = 10
     POLL_TIMEOUT: ClassVar[float] = 3.0
     MAX_EMPTY_POLLS: ClassVar[int] = 3
         
@@ -112,9 +112,8 @@ class KafkaStockConsumer(KafkaClient):
             return
             
         try:
-            self.consumer.commit(asynchronous=False)
-            logger.info(f"✅ Đã đẩy MinIO và Commit Kafka thành công")
-            buffer.clear() 
+            topic_partitions: list[TopicPartition] = self.consumer.commit(asynchronous=False)
+            logger.info(f"✅ Đã đẩy MinIO và Commit Kafka thành công | {topic_partitions}")
             
         except KafkaException as e:
             error = e.args[0]
@@ -126,9 +125,12 @@ class KafkaStockConsumer(KafkaClient):
                 # Lỗi chí mạng (Sai group_id, bị kick khỏi nhóm...) -> Chết luôn!
                 logger.error(f"❌ Lỗi chí mạng khi commit offsets: {error}", exc_info=True)
                 raise e
+        finally:
+            buffer.clear()
+            logger.info("🧹 Đã xóa sạch buffer sau khi cố gắng commit.")
     
     @staticmethod
-    def _process_single_message(request_session: requests.Session, msg: dict[str, Any]) -> dict | None:
+    def _process_single_message(request_session: requests.Session, msg: dict[str, Any], transform_callable: Callable[[dict[str, Any], Any], list]) -> list | None:
         """
         Consumer thuần túy: Hứng Kafka -> Gọi API -> Gắn thêm ID/Time/data
         """
@@ -148,33 +150,31 @@ class KafkaStockConsumer(KafkaClient):
             if not api_data:
                 logger.info(f"Ticker {ticker} không có dữ liệu. Bỏ qua.")
                 return None
+            else:
+                logger.info(f"✅ API trả về dữ liệu cho ticker {ticker}: {url}. Đang xử lý transform...")
             
-            # 2. Bơm thêm 3 trường sinh tồn vào thẳng gói tin gốc
-            msg.update({
-            "data": json.dumps(api_data, ensure_ascii=False),
-            "message_id": str(uuid.uuid4()),
-            "inserted_time": datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-            })
-            logger.debug(f"API call thành công và đã bổ sung dữ liệu cho ticker {ticker}")
-            return msg
+            return transform_callable(msg, api_data)
         except (requests.RequestException, json.JSONDecodeError) as e:
             raise RetryableAPIError(ticker=ticker, reason=e, message_id=msg.get("message_id")) from e
-    
-    
-    @staticmethod    
-    def _build_arrow_payload_lazy(buffer: list[dict[str, Any]]) -> pa.Table:
-        if not buffer:
-            raise ValueError("Danh sách records trống.")
-        
-        lf = pl.LazyFrame(buffer)
-        try:
-            df = lf.collect()
-            df = df.with_columns(
-                pl.col("inserted_time").dt.convert_time_zone("UTC")
-            )
-            return df.to_arrow()
 
-        except PolarsError as e:
-            # Bắt tất cả lỗi khác của Polars mà không thuộc các loại trên
-            logger.error(f"[TRANSFORM] Lỗi Polars không xác định: {e}")
-            raise
+
+    @classmethod
+    @contextmanager
+    def managed(cls, topic_name: str, update_conf: dict[str, Any] | None = None):
+        """
+        Context Manager cho Consumer. Đảm bảo luôn close() để rời Consumer Group an toàn.
+        """
+        logger.info("🔌 [Kafka] Khởi tạo và mở kết nối Consumer...")
+        consumer_instance = cls(topic_name=topic_name, update_conf=update_conf)
+        
+        try:
+            yield consumer_instance
+        finally:
+            logger.info("🔒 Đang đóng kết nối Consumer...")
+            try:
+                # Lệnh close() này cực kỳ quan trọng của Confluent Kafka
+                # Nó sẽ báo với Broker là "tôi nghỉ chơi", để Broker chia lại partition cho máy khác
+                consumer_instance.consumer.close()
+                logger.info("✅ Đã đóng Consumer an toàn.")
+            except Exception as e:
+                logger.error(f"❌ Lỗi khi đóng Consumer: {e}")

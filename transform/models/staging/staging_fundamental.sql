@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% set max_ingest_time = get_max_timestamp('bronze', 'fundamental', 'inserted_time') %}
+{% set max_ingest_time = get_max_timestamp('bronze', 'fundamental', 'bronze_ingested_time') %}
 
 {% set fields = get_fundamental_columns() %}
 
@@ -14,7 +14,7 @@ WITH raw_source AS (
         AND data != '{}'
         
         -- 2. NHÉT BIẾN VÀO ĐÂY: Dùng Jinja bọc biến max_ingest_time lại
-        AND TRY_CAST(inserted_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' 
+        AND TRY_CAST(bronze_ingested_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' 
         >= 
         TRY_CAST('{{ max_ingest_time }}' AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' - INTERVAL '2' DAY
 ),

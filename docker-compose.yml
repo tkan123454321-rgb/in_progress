@@ -14,6 +14,22 @@ x-airflow-common: &airflow-common
     postgres:
       condition: service_healthy
 
+x-nessie-env: &nessie-shared-env
+  nessie.version.store.type: JDBC
+  nessie.version.store.persist.jdbc.datasource: postgresql
+  nessie.version.store.persist.jdbc.schema: nessie
+  quarkus.datasource.postgresql.jdbc.url: jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie
+  quarkus.datasource.postgresql.username: ${POSTGRES_USER}
+  quarkus.datasource.postgresql.password: ${POSTGRES_PASSWORD}
+  nessie.catalog.default-warehouse: miniolakehouse
+  nessie.catalog.warehouses.miniolakehouse.location: s3://financial-data-lake/
+  nessie.catalog.service.s3.default-options.endpoint: http://minio:9000
+  nessie.catalog.service.s3.default-options.path-style-access: 'true'
+  nessie.catalog.service.s3.default-options.region: us-east-1
+  nessie.catalog.service.s3.default-options.access-key: urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
+  nessie.catalog.secrets.access-key.name: ${MINIO_USER}
+  nessie.catalog.secrets.access-key.secret: ${MINIO_PASSWORD}
+
 services:
   airflow-webserver:
     <<: *airflow-common
@@ -276,43 +292,15 @@ services:
     networks:
       - monitoring_net
 
-  # jupyter:
-  #   build: .
-  #   container_name: jupyter-lab
-  #   command: >
-  #     jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "8888:8888"
-  #   networks:
-  #     - monitoring_net
-
   nessie:
-    image: ghcr.io/projectnessie/nessie:latest
+    image: ghcr.io/projectnessie/nessie:0.107.4
     container_name: nessie
     user: root
     ports:
       - "19120:19120"
     restart: unless-stopped
     environment:
-      - nessie.version.store.type=JDBC
-      - nessie.version.store.persist.jdbc.datasource=postgresql
-      - nessie.version.store.persist.jdbc.schema=nessie
-      - quarkus.datasource.postgresql.jdbc.url=jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie
-      - quarkus.datasource.postgresql.username=${POSTGRES_USER}
-      - quarkus.datasource.postgresql.password=${POSTGRES_PASSWORD}
-
-      - nessie.catalog.default-warehouse=miniolakehouse
-      - nessie.catalog.warehouses.miniolakehouse.location=s3://financial-data-lake/
-
-      - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000
-      - nessie.catalog.service.s3.default-options.path-style-access=true
-      - nessie.catalog.service.s3.default-options.region=us-east-1
-
-      - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
-      - nessie.catalog.secrets.access-key.name=${MINIO_USER}
-      - nessie.catalog.secrets.access-key.secret=${MINIO_PASSWORD}
+      <<: *nessie-shared-env
     volumes:
       - nessie_data:/var/lib/nessie/data
     depends_on:
@@ -332,13 +320,24 @@ services:
       - nessie
 
   nessie-gc:
-    image: ghcr.io/projectnessie/nessie-gc:latest
+    image: ghcr.io/projectnessie/nessie-gc:0.107.4
     container_name: nessie_gc_tool
     profiles: [ "tools" ]
     networks:
       - monitoring_net
     environment:
       - AWS_REGION=us-east-1
+
+  nessie-admin:
+    image: ghcr.io/projectnessie/nessie-server-admin:0.107.4
+    container_name: nessie_admin_tool
+    profiles: [ "tools" ]
+    networks:
+      - monitoring_net # Sửa lại tên network cho đúng với hệ thống của ông giáo
+    depends_on:
+      - nessie
+    environment:
+      <<: *nessie-shared-env
 
   trino:
     image: trinodb/trino:latest
@@ -369,6 +368,17 @@ services:
       - ./config/config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
       - ./vector_log:/tmp/vector_log
       - vector_data:/var/lib/vector
+  # jupyter:
+  #   build: .
+  #   container_name: jupyter-lab
+  #   command: >
+  #     jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "8888:8888"
+  #   networks:
+  #     - monitoring_net
 
 volumes:
   db_data:

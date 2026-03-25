@@ -14,7 +14,7 @@ logger = setup_logger(component="extract")
 type GeneratorFunc[T] = Callable[[T, Iterable[str]], Iterable[tuple[str, bytes]]]
 
 def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: GeneratorFunc[T], ticker_list_mode: Literal["fundamental", "other_data"] = "fundamental") -> None:
-    config = model_cls()
+    config = model_cls() # type: ignore
     metadata_manager = MetadataManager(
         pg_client=PostgresClient(),
         lake_client=LakeHouseClient())

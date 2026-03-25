@@ -1,10 +1,10 @@
-{% macro get_max_timestamp(source_name, table_name, column_name='inserted_time') %}
+{% macro get_max_timestamp(source_name, table_name, column_name='bronze_ingested_time') %}
     {# 
 
         Args:
             source_name (str): Tên source (vd: 'bronze')
             table_name (str): Tên bảng (vd: 'fundamental')
-            column_name (str): Cột cần lấy max time (mặc định: 'inserted_time')
+            column_name (str): Cột cần lấy max time (mặc định: 'bronze_ingested_time')
             
         Returns (str)
     #}
