@@ -1,4 +1,5 @@
 # %%
+import math
 import os
 import typing
 from urllib import request
@@ -7,52 +8,46 @@ from dotenv import load_dotenv
 from pathlib import Path
 import re
 import yaml # type: ignore
-from ingestion.generate_data_metadata import KafkaMetadataHistoricalQuotes, _generate_metadata_fundamental
-from schema.producer_schema import KafkaMetadataFundamental
+from ingestion.generate_data_metadata import KafkaMetadataHistoricalQuotes, _generate_metadata_financial_reports, _generate_metadata_fundamental
+from schema.producer_schema import KafkaMetadataCashFlowIndirect, KafkaMetadataFundamental, KafkaMetadataIncomeStatement
 from utils.logger_config import setup_logger
 
 # %%
 from ingestion.ingest_main import ingest_main
-from schema.producer_schema import KafkaMetadataHistoricalQuotes, KafkaMetadataFundamental
-from ingestion.generate_data_metadata import _generate_metadata_fundamental, _generate_metadata_historical
-ingest_main(
-    model_cls=KafkaMetadataHistoricalQuotes,
-    generate_metadata_callable=_generate_metadata_historical,
-    ticker_list_mode="other_data"
-)
-
-# %%
-from utils.minio_maintenance import LakehouseMaintenance
-from utils.lakehouse_client import LakeHouseClient
-from utils.postgres_client import PostgresClient
-from utils.metadata_manager import MetadataManager
-with MetadataManager(pg_client = PostgresClient(), lake_client=LakeHouseClient()) as metadata_manager:
-    metadata_manager._update_max_ingested_date()
-
+from schema.producer_schema import KafkaMetadataHistoricalQuotes, KafkaMetadataFundamental, KafkaMetadataFinancialReports, KafkaMetadataBalanceSheet, KafkaMetadataCashFlowDirect, KafkaMetadataIncomeStatement, KafkaMetadataCashFlowIndirect
+from ingestion.generate_data_metadata import _generate_metadata_fundamental, _generate_metadata_historical, _generate_metadata_financial_reports
+financiel_model_list =[KafkaMetadataBalanceSheet, KafkaMetadataCashFlowDirect, KafkaMetadataIncomeStatement, KafkaMetadataCashFlowIndirect]
+for model_cls in financiel_model_list:
+    ingest_main(
+            model_cls=model_cls,
+            generate_metadata_callable=_generate_metadata_financial_reports,
+            ticker_list_mode="other_data"
+        )
 
 # %%
 from utils.other_utils import _get_session
-from datetime import date
-import time
-session = _get_session()
-# response = session.get("https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate=2020-03-02&endDate=2026-03-19&offset=0&limit=50")
-# response.json()
-start_date = date(2022, 3, 15)
-end_date = date(2026, 3, 19)
-day_diffs = (end_date - start_date).days
-estimate_trading_days = int(day_diffs * (250 / 365)) + 20
-print (f"Estimated trading days between {start_date} and {end_date}: {estimate_trading_days}")
-for offset in range(0, estimate_trading_days, 500):
-    url = f"https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate={start_date}&endDate={end_date}&offset={offset}&limit=500"
-    print(url)
-    response = session.get(url)
-    print(response.json())
-    print(f"{len(response.json())} records retrieved for offset {offset}")
-    time.sleep(1)  # Sleep for 1 second to avoid hitting rate limits
+import polars as pl
+
+with _get_session() as s:
+    response = s.get("https://restv2.fireant.vn/symbols/NT2/full-financial-reports?type=4&year=2025&quarter=4&limit=33")
+    response_data =response.json()
+lf = pl.LazyFrame(response_data)
+lf = lf.explode("values").unnest("values").collect().select([
+          pl.col("id").alias("indicator_id"),     # Lấy cột id và đổi tên
+          pl.col("name").alias("indicator_name"), # Lấy cột name và đổi tên
+          "year",                                 # Mấy cột này giữ nguyên
+          "quarter",
+          "value"
+      ])
+lf.glimpse()
 
 
-
-
+# %%
+from load.load_main import load_main
+from schema.producer_schema import KafkaMetadataFinancialReports
+load_main(
+    model_cls=KafkaMetadataFinancialReports
+)
 
 # %%
 

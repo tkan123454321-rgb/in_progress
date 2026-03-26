@@ -92,9 +92,9 @@ class MetadataManager:
 
 
 
-    def get_missing_tickers(self, table_name, tickers_set):
+    def get_missing_tickers(self, table_name: str, tickers_set: set[str], data_type: str):
         """BƯỚC 2: Quét DB bằng Polars tốc độ cao để tìm các mã chưa được nạp"""
-        query = f"SELECT ticker FROM ingestion.{table_name}"
+        query = f"SELECT ticker FROM ingestion.{table_name} where data_type = '{data_type}'"
         df = pl.read_database_uri(query=query, uri=self.pg_conn_str, engine="connectorx")
         
         if df.is_empty():
@@ -112,7 +112,7 @@ class MetadataManager:
         return missing_tickers
 
 
-    def sync_historical_watermark_tickers(self) -> None:
+    def sync_historical_watermark_tickers(self, table_name_watermark_postgres: str) -> None:
         """
         BƯỚC 1: Đồng bộ danh sách từ Gold Layer vào bảng Watermark.
         Khởi tạo ngày mặc định (2018-01-01) cho mã mới.
@@ -124,10 +124,11 @@ class MetadataManager:
 
         # 2. Lấy danh sách đang có trong DB Postgres
         with self.pg_conn.cursor() as cur:
-            cur.execute("""
+            select_query = sql.SQL("""
                 SELECT ticker, ticker_status 
-                FROM ingestion.ingestion_historical_quotes_watermark
-            """)
+                FROM ingestion.{}
+            """).format(sql.Identifier(table_name_watermark_postgres))
+            cur.execute(select_query)
             db_data = cur.fetchall()
             db_tickers = set(row['ticker'] for row in db_data) # type: ignore
             inactive_db_tickers = set(row['ticker'] for row in db_data if row['ticker_status'] == 'inactive') # type: ignore
@@ -146,47 +147,49 @@ class MetadataManager:
                 
                 # 4.1. Mã mới: Insert & Gán mốc 2018-01-01
                 if new_tickers:
-                    insert_query = """
-                        INSERT INTO ingestion.ingestion_historical_quotes_watermark 
+                    insert_query = sql.SQL("""
+                        INSERT INTO ingestion.{} 
                         (ticker, last_ingested_date, ticker_status, updated_at)
                         VALUES (%(ticker)s, '2018-01-01', 'active', CURRENT_TIMESTAMP)
-                    """
+                    """).format(sql.Identifier(table_name_watermark_postgres))
                     cur.executemany(insert_query, [{'ticker': t} for t in new_tickers])
                     logger.info(f" Đã thêm {len(new_tickers)} mã mới với mốc thời gian 2018-01-01.")
 
                     # 4.2. Mã biến mất: Dùng %(ticker)s và truyền Dict
                 if disappeared_tickers:
-                    deactivate_query = """
-                        UPDATE ingestion.ingestion_historical_quotes_watermark
+                    deactivate_query = sql.SQL("""
+                        UPDATE ingestion.{}
                         SET ticker_status = 'inactive', updated_at = CURRENT_TIMESTAMP
                         WHERE ticker = %(ticker)s
-                    """
+                    """).format(sql.Identifier(table_name_watermark_postgres))
                     cur.executemany(deactivate_query, [{'ticker': t} for t in disappeared_tickers])
                     logger.warning(f"   ⚠️ Đã khóa (inactive) {len(disappeared_tickers)} mã không còn trên Lakehouse.")
 
                 # 4.3. Mã quay lại: Dùng %(ticker)s và truyền Dict
                 if reappeared_tickers:
-                    reactivate_query = """
-                        UPDATE ingestion.ingestion_historical_quotes_watermark
+                    reactivate_query = sql.SQL("""
+                        UPDATE ingestion.{}
                         SET ticker_status = 'active', updated_at = CURRENT_TIMESTAMP
                         WHERE ticker = %(ticker)s
-                    """
+                    """).format(sql.Identifier(table_name_watermark_postgres))
                     cur.executemany(reactivate_query, [{'ticker': t} for t in reappeared_tickers])
                     logger.info(f"   ♻️ Đã mở khóa lại {len(reappeared_tickers)} mã.")
                 
         logger.info("[Watermark Sync] Đối soát hoàn tất rực rỡ!")
         
         
-    def _get_smart_start_date(self, ticker: str) -> date:
+    def _get_smart_start_date(self, ticker: str, table_name_watermark_postgres: str ) -> date:
         """
         Lấy ngày nạp dữ liệu cuối cùng của một ticker từ bảng Watermark.
         Nếu là mã mới, trả về mốc mặc định 2018-01-01.
         """
-        query = """
+        query = sql.SQL("""
             SELECT last_ingested_date 
-            FROM ingestion.ingestion_historical_quotes_watermark 
+            FROM ingestion.{table} 
             WHERE ticker = %(ticker)s
-        """
+        """).format(
+            table=sql.Identifier(table_name_watermark_postgres)
+        )
         cursor = self.pg_conn.execute(query, {"ticker": ticker}) # type: ignore
         result = cursor.fetchone() # type: ignore
         return result['last_ingested_date'] # type: ignore
@@ -196,13 +199,13 @@ class MetadataManager:
         Lấy ngày nạp dữ liệu mới nhất của một ticker từ bảng log metadata.
         """
         query = """
-            SELECT ticker, MAX(event_date) as latest_trade_event
+            SELECT ticker, MAX(event_date) as latest_trade_event, batch_id
             FROM bronze.historical_quotes
             GROUP BY ticker
         """
         with self.trino_conn.cursor() as trino_cur:
             trino_cur.execute(query)
-            results : list[list[str | datetime.date]] = trino_cur.fetchall() # type: ignore
+            results : list[list[str | datetime.date | str ]] = trino_cur.fetchall() # type: ignore
             logger.info(f"lấy dữ liệu ngày nạp mới nhất từ bảng bronze.historical_quotes thành công với {len(results)} mã.")
         if not results:
             logger.warning(f"Không tìm thấy dữ liệu lịch sử của historical_quotes để cập nhật watermark.")
@@ -214,15 +217,29 @@ class MetadataManager:
                                 UPDATE ingestion.ingestion_historical_quotes_watermark
                                 SET 
                                     last_ingested_date = %(last_ingested_date)s,
-                                    updated_at = CURRENT_TIMESTAMP
+                                    updated_at = CURRENT_TIMESTAMP,
+                                    batch_id = %(batch_id)s
                                 WHERE ticker = %(ticker)s;
                             """
                 update_data = [
-                    {"ticker": row[0], "last_ingested_date": row[1]} 
+                    {"ticker": row[0], "last_ingested_date": row[1], "batch_id": row[2]}
                     for row in results
                 ]
                 pg_cur.executemany(update_query, update_data)
         logger.info("🔒 Đã cập nhật watermark cho bảng ingestion.ingestion_historical_quotes_watermark thành công.")
+    
+    
+    def _update_max_ingested_date_financial_report(self, ticker: str, table_name_watermark_postgres: str) -> None:
+        query = sql.SQL("""
+            UPDATE ingestion.{}
+            SET last_ingested_date = CURRENT_DATE, updated_at = CURRENT_TIMESTAMP
+            WHERE ticker = %(ticker)s
+            """).format(sql.Identifier(table_name_watermark_postgres))
+        with self.pg_conn.transaction():
+            with self.pg_conn.cursor() as cur:
+                # cur.execute(query, {'ticker': ticker}) chưa 
+                pass
+        
 
     def __enter__(self):
         return self

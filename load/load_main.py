@@ -6,7 +6,8 @@ from utils.logger_config import setup_logger
 from utils.minio_maintenance import LakeHouseClient
 from utils.metadata_manager import MetadataManager
 from utils.postgres_client import PostgresClient
-from utils.other_utils import BaseMetadata, _get_session
+from utils.other_utils import _get_session
+from schema.producer_schema import BaseMetadata
 import sys
 from polars.exceptions import PolarsError
 from utils.exception import RetryableAPIError
@@ -55,7 +56,7 @@ def _load_main_message[T: BaseMetadata](model_cls: type[T], mode: Literal["run_f
                     # 4. GOM ĐỦ MẺ THÌ XẢ KHO (FLUSH)
                     if len(buffer) >= BATCH_SIZE:
                         logger.info(f"Mẻ đã đầy {BATCH_SIZE} tin! Tiến hành Transform & Load...")
-                        arrow_table = config._build_arrow_payload_lazy(buffer)
+                        arrow_table = config._build_arrow_payload_lazy(buffer) # type: ignore
                         if loader._put_lakehouse(arrow_table=arrow_table, config=config, mode ="append"): # type: ignore
                             logger.info(f"✅ Đã nạp thành công mẻ {BATCH_SIZE} tin vào Lakehouse. Tiến hành commit Kafka...")
                             consumer._flush_and_commit(buffer)
@@ -68,7 +69,7 @@ def _load_main_message[T: BaseMetadata](model_cls: type[T], mode: Literal["run_f
                 if buffer:
                     logger.info(f"⚠️ Còn sót lại {len(buffer)} tin trong buffer chưa kịp nạp. Đang cố gắng xử lý nốt trước khi dừng...")
                     try:
-                        arrow_table = config._build_arrow_payload_lazy(buffer)
+                        arrow_table = config._build_arrow_payload_lazy(buffer) # type: ignore
                         loader._put_lakehouse(arrow_table=arrow_table, config=config, mode="append") # type: ignore
                         consumer._flush_and_commit(buffer)
                         logger.info(f"dừng thành công sau khi đã xử lý nốt buffer còn sót lại.")

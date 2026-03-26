@@ -4,6 +4,7 @@ from typing import Any
 from utils.kafka_client import ClassVar, KafkaClient
 from confluent_kafka import Producer
 from confluent_kafka.error import ProduceError
+from confluent_kafka.cimpl import KafkaException
 from utils.logger_config import setup_logger
 import os
 import time
@@ -85,6 +86,57 @@ class StockTickerProducer(KafkaClient):
                     self.producer.poll(0)
                 else:
                     logger.error(f" Lỗi không thể retry: {kafka_error}", exc_info=True)
+                    return False
+    
+    def batch_message_data(self, messages_list: list[bytes], key: str) -> bool:
+        """
+        Gửi một BATCH tin nhắn lên Kafka.
+        messages_list: Danh sách các payload (bytes) của cùng 1 ticker (Ví dụ: 4 loại BCTC).
+        key: Tên mã cổ phiếu (Ticker).
+        """
+        formatted_messages = [
+            {'value': msg, 'key': key} for msg in messages_list
+        ]
+
+        retry_delay = 0.2
+        attempt = 0 
+        
+        while True:
+            try:
+                # 2. Gọi hàm produce_batch thần thánh
+                num_queued = self.producer.produce_batch(
+                    topic=self.topic_name,
+                    messages=formatted_messages,
+                    on_delivery=self._on_delivery_report
+                )
+                self.producer.poll(0)
+                
+                logger.debug(
+                    f"📦 Đã đưa vào hàng đợi {num_queued}/{len(messages_list)} tin nhắn "
+                    f"cho mã {key} tại topic {self.topic_name}.", 
+                    extra={'client_id': self.conf.get('client.id', 'unknown')}
+                )
+                return True
+                
+            except BufferError as e:
+                # Buffer đầy: Không tăng attempt, chỉ chờ worker của Kafka dọn dẹp rồi nhét lại
+                logger.warning(f"⚠️ Lỗi {e}: Buffer đầy khi gửi batch mã {key}. Đang chờ {retry_delay}s...")
+                self.producer.poll(retry_delay)
+                
+            except KafkaException as e: # BỎ Exception, CHỈ BẮT KafkaException
+                kafka_error = e.args[0]
+                
+                if kafka_error.retriable():
+                    attempt += 1
+                    if attempt > 5:
+                        logger.error(f"❌ Lỗi Kafka: {kafka_error}. Vượt quá 5 lần thử cho batch mã {key}.", exc_info=True)
+                        return False
+                    
+                    logger.warning(f"🔄 Lỗi có thể retry (Attempt {attempt}/5) cho mã {key}. Chờ {retry_delay}s...")
+                    time.sleep(retry_delay)
+                    self.producer.poll(0)
+                else:
+                    logger.error(f"🚨 Lỗi KHÔNG thể retry khi gửi batch mã {key}: {kafka_error}", exc_info=True)
                     return False
                 
     def close(self):

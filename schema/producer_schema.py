@@ -15,6 +15,7 @@ from pyiceberg.partitioning import PartitionSpec
 from utils.metadata_manager import MetadataManager
 from utils.postgres_client import PostgresClient
 from utils.lakehouse_client import LakeHouseClient
+from utils.other_utils import get_target_anchor
 logger = setup_logger(component="schema")
 class BaseMetadata(BaseModel,ABC):
     """Lớp cha để định danh mọi loại Metadata trong hệ thống"""
@@ -26,7 +27,6 @@ class BaseMetadata(BaseModel,ABC):
     batch_size: int
     table_name_postgres: str 
     topic: str
-    data_type: str
     url_template: str
     
     # 1. static fields (lấy thẳng từ YAML, không động theo từng mã)
@@ -54,42 +54,19 @@ class BaseMetadata(BaseModel,ABC):
     @property
     def iceberg_schema(self) -> Schema:
         """Tự động tra sổ lấy Schema dựa vào data_type của Class con"""
-        if self.data_type not in TABLE_REGISTRY:
-            raise ValueError(f"Chưa định nghĩa Schema cho loại dữ liệu: {self.data_type}")
-        return TABLE_REGISTRY[self.data_type]["schema"]
+        if self.topic not in TABLE_REGISTRY:
+            raise ValueError(f"Chưa định nghĩa Schema cho loại dữ liệu: {self.topic}")
+        return TABLE_REGISTRY[self.topic]["schema"]
 
     @property
     def iceberg_partition_spec(self) -> PartitionSpec:
         """Tự động tra sổ lấy Partition Spec dựa vào data_type của Class con"""
-        if self.data_type not in TABLE_REGISTRY:
-            raise ValueError(f"Chưa định nghĩa Partition cho loại dữ liệu: {self.data_type}")
-        return TABLE_REGISTRY[self.data_type]["partition_spec"]
-    
-    @computed_field
-    @abstractmethod
-    def url(self) -> str:
-        """Bắt buộc class con phải định nghĩa cách tạo URL"""
-        pass
-    
-    @abstractmethod
-    def _create_kafka_message(self, ticker: str, **kwargs) -> Tuple[str, bytes]:
-        """
-        Class con tự quyết định nhận thêm tham số gì (offset, start_date...)
-        Nhưng bắt buộc phải trả về Tuple[str, bytes]
-        """
-        pass
+        if self.topic not in TABLE_REGISTRY:
+            raise ValueError(f"Chưa định nghĩa Partition cho loại dữ liệu: {self.topic}")
+        return TABLE_REGISTRY[self.topic]["partition_spec"]
 
-    @abstractmethod
-    def transform_message(self, msg: dict[str, Any], api_data: Any) -> dict:
-        """Bắt buộc phải có hàm xử lý dữ liệu trả về từ API"""
-        pass
-    @abstractmethod
-    def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> pa.Table:
-        """Bắt buộc phải có hàm chuyển đổi list dict thành PyArrow Table"""
-        pass
-    
-    
-    
+
+
 class KafkaMetadataFundamental(BaseMetadata):
     batch_size : int = 100
     table_name_postgres: str = "ingestion_metadata_fundamental"
@@ -152,6 +129,7 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/historical-quotes?startDate={start_date}&endDate={end_date}&offset={offset}&limit={limit}"
     start_date: date = Field(default=date(2018, 1, 1))
     end_date: date = Field(default_factory=lambda: date.today() - timedelta(days=1))
+    table_watermark_name_postgres : str = "ingestion_historical_quotes_watermark"
     
     @computed_field
     def url(self) -> str:
@@ -218,11 +196,93 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
             raise e
   
 
+class KafkaMetadataFinancialReports(BaseMetadata):
+    batch_size: int = 10
+    default_limit : int = 0
+    table_name_postgres: str = "ingestion_metadata_financial_reports"
+    table_watermark_name_postgres : str = "ingestion_financial_reports_watermark"
+    topic: str = "financial_reports"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/full-financial-reports?type={type_id}&year={year}&quarter={quarter}&limit={limit}"
+    target_year: int = Field(default_factory=lambda: get_target_anchor()[0])
+    target_quarter: int = Field(default_factory=lambda: get_target_anchor()[1])
+    type_id : int = Field(default=0, description="""
+                          1: Báo cáo cân đối kế toán(Quarterly)
+                          2: Báo cáo kết quả kinh doanh(Quarterly)
+                          3: Báo cáo lưu chuyển tiền tệ trực tiếp(Quarterly)
+                          4: Báo cáo lưu chuyển tiền tệ gián tiếp(Quarterly)
+                          """)
+    
+    @computed_field
+    def url(self) -> str:
+        return self.url_template.format(
+            source=self.source, 
+            ticker=self.ticker, 
+            year=self.target_year, 
+            quarter=self.target_quarter,
+            limit=self.default_limit,
+            type_id=self.type_id
 
+        )
     
     
+    def _create_kafka_message(self, ticker: str, limit: int, type_id: int) -> Tuple[str, bytes]:
+        
+        updated_instance = self.model_copy(update={
+            "ticker": ticker, 
+            "default_limit": limit,
+            "type_id": type_id
+        })
+        
+        message_bytes = updated_instance.model_dump_json(
+            include={ 
+                "ticker", "batch_id", "data_type", "source", 
+                "created_at_ts", "url" 
+            },
+            ensure_ascii=False
+        ).encode('utf-8')
+        return ticker, message_bytes
+    
+    def transform_message(self, msg: dict[str, Any], api_data: Any) -> dict:
+        if not isinstance(api_data, list):
+            raise ValueError(f"Dữ liệu Historical phải là List, nhưng lại nhận được: {type(api_data)}")
+        processed_time = datetime.now(ZoneInfo("UTC"))
+        return {
+                **msg,  
+                "data": api_data, 
+                "message_processed_time": processed_time                   
+            }
+        
+    def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
+        lf = pl.LazyFrame(buffer)
+        df = lf.explode("data").unnest("data").explode("values").unnest("values").select([
+                pl.col("ticker"),
+                pl.col("batch_id"),
+                pl.col("data_type"),
+                pl.col("source"),
+                pl.col("url"),
+                pl.col("id").alias("indicator_id").cast(pl.Int32),     # Lấy cột id và đổi tên
+                pl.col("name").alias("indicator_name"), # Lấy cột name và đổi tên
+                pl.col("year").cast(pl.Int32),
+                pl.col("quarter").cast(pl.Int32),
+                pl.col("value").cast(pl.Float64),
+                pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
+                pl.col("message_processed_time"),
+                pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
+    ])
+        return df.collect().to_arrow()
 
-    
-    
+class KafkaMetadataBalanceSheet(KafkaMetadataFinancialReports):
+    data_type: str = "balance_sheet"
+    type_id: int = 1
 
-    
+class KafkaMetadataIncomeStatement(KafkaMetadataFinancialReports):
+    data_type: str = "income_statement"
+    type_id: int = 2
+
+class KafkaMetadataCashFlowDirect(KafkaMetadataFinancialReports):
+    data_type: str = "cash_flow_direct"
+    type_id: int = 3
+
+class KafkaMetadataCashFlowIndirect(KafkaMetadataFinancialReports):
+    data_type: str = "cash_flow_indirect"
+    type_id: int = 4
