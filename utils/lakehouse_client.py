@@ -4,7 +4,7 @@ from pyiceberg.catalog import load_catalog
 import boto3
 from botocore.exceptions import ClientError
 from botocore.config import Config
-from schema.producer_schema import ClassVar
+from typing import ClassVar
 from utils.logger_config import setup_logger
 import sys
 from confluent_kafka.admin import AdminClient, NewTopic # pyright: ignore[reportPrivateImportUsage]
@@ -43,7 +43,7 @@ class LakeHouseClient:
         self.catalog = load_catalog(
             "nessie_catalog",
             **{"type": "rest",
-                "uri": "http://nessie:19120/iceberg/dev",
+                "uri": "http://nessie:19120/iceberg",
                 "snapshot-loading-mode": "refs",
                 "warehouse": f"s3://{self.BUCKET_NAME}/",  
                 "s3.endpoint": self.ENDPOINT_URL,  
@@ -57,21 +57,13 @@ class LakeHouseClient:
         self._ensure_bucket_exists()
     
     @staticmethod
-    def _get_trino_connection(type: Literal["maintenance", "read"] = "read") -> trino.dbapi.Connection:
-        if type == "maintenance":
-            return trino.dbapi.connect(
-                host="trino",
-                port=8080,
-                user="admin",
-                catalog="lakehouse_main")
-        elif type == "read":
-            return trino.dbapi.connect(
-                host="trino",
-                port=8080,
-                user="admin",
-                catalog="lakehouse_dev")
-        else:
-            raise ValueError(f"Invalid connection type '{type}' requested.")
+    def _get_trino_connection() -> trino.dbapi.Connection:
+        return trino.dbapi.connect(
+            host="trino",
+            port=8080,
+            user="admin",
+            catalog="lakehouse_main")
+        
 
     def _ensure_medallion_layers(self) -> None:
         for layer in self.REQUIRED_SCHEMAS:

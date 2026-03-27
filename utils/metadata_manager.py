@@ -22,7 +22,7 @@ class MetadataManager:
     
     def __init__(self, pg_client: PostgresClient, lake_client: LakeHouseClient):
         self.pg_conn : psycopg.Connection = pg_client.get_db_connection(db_name=self.DB_NAME)  # type: ignore
-        self.trino_conn : trino.dbapi.Connection  = lake_client._get_trino_connection("read")
+        self.trino_conn : trino.dbapi.Connection  = lake_client._get_trino_connection()
         self.catalog = lake_client.catalog
         self.pg_conn_str : str = pg_client._build_conn_str(db_name=self.DB_NAME)
     

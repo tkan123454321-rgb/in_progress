@@ -1,6 +1,6 @@
 {% macro cleanup_elementary_logs(days=30) %}
 
-    {% set target_database = 'lakehouse' %}
+    {% set target_database = 'lakehouse_main' %}
     {% set target_schema = 'elementary' %}
     
     {% set tables_config = {

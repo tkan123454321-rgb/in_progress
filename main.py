@@ -29,17 +29,9 @@ from utils.other_utils import _get_session
 import polars as pl
 
 with _get_session() as s:
-    response = s.get("https://restv2.fireant.vn/symbols/NT2/full-financial-reports?type=4&year=2025&quarter=4&limit=33")
-    response_data =response.json()
-lf = pl.LazyFrame(response_data)
-lf = lf.explode("values").unnest("values").collect().select([
-          pl.col("id").alias("indicator_id"),     # Lấy cột id và đổi tên
-          pl.col("name").alias("indicator_name"), # Lấy cột name và đổi tên
-          "year",                                 # Mấy cột này giữ nguyên
-          "quarter",
-          "value"
-      ])
-lf.glimpse()
+    response = s.get("https://restv2.fireant.vn/symbols/AAA")
+    print(response.json())
+    
 
 
 # %%
@@ -49,6 +41,19 @@ load_main(
     model_cls=KafkaMetadataFinancialReports
 )
 
+# %%
+from schema.producer_schema import KafkaMetadataFundamental_1, KafkaMetadataFundamental_2
+from ingestion.ingest_main import ingest_main
+from ingestion.generate_data_metadata import _generate_metadata_fundamental
+ingest_main(
+    model_cls=KafkaMetadataFundamental_2,
+    generate_metadata_callable=_generate_metadata_fundamental
+)
+# %%
+from load.lakehouse_loader import LakehouseLoader
+from schema.producer_schema import OriginalTickerList
+loader = LakehouseLoader()
+loader._put_original_ticker_list(OriginalTickerList)
 # %%
 
 # %%

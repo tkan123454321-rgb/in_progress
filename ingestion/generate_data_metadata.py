@@ -1,7 +1,7 @@
 import math
 from typing import Any, Iterable, Callable, Literal, List, Tuple, Generator
 import uuid
-from schema.producer_schema import KafkaMetadataFinancialReports, KafkaMetadataHistoricalQuotes
+from schema.producer_schema import HistoricalQuotes, Fundamental, FinancialReports
 from utils import metadata_manager
 from utils.logger_config import setup_logger
 from utils.metadata_manager import MetadataManager
@@ -10,25 +10,23 @@ from utils.lakehouse_client import LakeHouseClient
 
 
 
-from ingestion.ingest_main import KafkaMetadataFundamental
-
 logger = setup_logger(component="extract")
 
-def _generate_metadata_fundamental(
-    config: KafkaMetadataFundamental, 
+def _generate_metadata_fundamental(batch_id: str,
+    config: Fundamental, 
     ticker_list: Iterable[str],
-    metadata_manager: MetadataManager | None = None
+    metadata_manager: MetadataManager | None = None,
 ) -> Iterable[Tuple[str, List[bytes]]]:
     """Chỉ gọi hàm nhân bản cực nhẹ của object."""
     for ticker in ticker_list:
-        ticker, message_bytes = config._create_kafka_message(ticker=ticker)
+        ticker, message_bytes = config._create_kafka_message(ticker=ticker, batch_id=batch_id)
         
         # Bọc cái message_bytes vào trong 1 cái list
         
         yield ticker, [message_bytes]
 
 
-def _generate_metadata_historical(config: KafkaMetadataHistoricalQuotes,  ticker_list: list[str], metadata_manager: MetadataManager
+def _generate_metadata_historical(config: HistoricalQuotes,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
 )-> Iterable[Tuple[str, List[bytes]]]:
     metadata_manager.sync_historical_watermark_tickers(table_name_watermark_postgres=config.table_watermark_name_postgres) # type: ignore
     for ticker in ticker_list:
@@ -43,13 +41,14 @@ def _generate_metadata_historical(config: KafkaMetadataHistoricalQuotes,  ticker
             ticker, message_bytes = config._create_kafka_message(
                 ticker=ticker,
                 start_date=start_date,
-                offset=current_offset
+                offset=current_offset,
+                batch_id = batch_id
             )
             # Nhét vào giỏ
             batch_messages.append(message_bytes)
             yield ticker, batch_messages
 
-def _generate_metadata_financial_reports(config: KafkaMetadataFinancialReports,  ticker_list: list[str], metadata_manager: MetadataManager
+def _generate_quarter_metadata_financial_reports(config: FinancialReports,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
 )-> Iterable[Tuple[str, List[bytes]]]:
     metadata_manager.sync_historical_watermark_tickers(table_name_watermark_postgres=config.table_watermark_name_postgres) # type: ignore
     for ticker in ticker_list:
@@ -69,7 +68,8 @@ def _generate_metadata_financial_reports(config: KafkaMetadataFinancialReports, 
         ticker, message_bytes = config._create_kafka_message(
             ticker=ticker,
             limit=limit,
-            type_id=config.type_id
+            type_id=config.type_id,
+            batch_id=batch_id
         )
         # Nhét vào giỏ
         yield ticker, [message_bytes]

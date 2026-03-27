@@ -16,6 +16,9 @@ from utils.metadata_manager import MetadataManager
 from utils.postgres_client import PostgresClient
 from utils.lakehouse_client import LakeHouseClient
 from utils.other_utils import get_target_anchor
+from vnstock import Listing
+
+
 logger = setup_logger(component="schema")
 class BaseMetadata(BaseModel,ABC):
     """Lớp cha để định danh mọi loại Metadata trong hệ thống"""
@@ -24,6 +27,7 @@ class BaseMetadata(BaseModel,ABC):
         str_strip_whitespace=True, 
         extra='ignore'
     )
+    ticker_list_mode: str = "other_data" # default, có thể override ở class con nếu muốn
     batch_size: int
     table_name_postgres: str 
     topic: str
@@ -65,24 +69,37 @@ class BaseMetadata(BaseModel,ABC):
             raise ValueError(f"Chưa định nghĩa Partition cho loại dữ liệu: {self.topic}")
         return TABLE_REGISTRY[self.topic]["partition_spec"]
 
+class OriginalTickerList(BaseMetadata):
+    data_type: str = "original_ticker_list"
+    table_name_postgres: str = "not_used"
+    topic: str = "original_ticker_list"
+    url_template: str = ""
+    batch_size: int = 1000
+    
+    def _build_arrow_payload_lazy(self) -> pa.Table:
+        listing = Listing(source='VCI')
+        df = listing.symbols_by_industries()
+        df = pl.from_pandas(df)
+        df = df.with_columns(pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time"))
+        return df.to_arrow()
+    
 
-
-class KafkaMetadataFundamental(BaseMetadata):
+class Fundamental(BaseMetadata):
     batch_size : int = 100
     table_name_postgres: str = "ingestion_metadata_fundamental"
-    topic: str = "fundamental"
-    data_type: str = "fundamental"
-    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/fundamental"
+    ticker_list_mode : str = "fundamental"
 
     @computed_field
     def url(self) -> str:
         return self.url_template.format(ticker=self.ticker)
 
 
-    def _create_kafka_message(self, ticker: str) -> Tuple[str, bytes]:
+    def _create_kafka_message(self, ticker: str, batch_id: str) -> Tuple[str, bytes]:
         """Tạo payload và trả về (ticker, bytes)"""
         # model_copy update data động cực nhanh mà không chạy lại validation rule
-        updated_instance = self.model_copy(update={"ticker": ticker})
+        updated_instance = self.model_copy(update={"ticker": ticker,
+                                                   "batch_id": batch_id
+                                                   })
         
         message_bytes = updated_instance.model_dump_json(
             include={ # những field data nào sẽ được đưa vào message Kafka, có thể tùy chỉnh ở đây nếu muốn
@@ -117,9 +134,20 @@ class KafkaMetadataFundamental(BaseMetadata):
             pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC")
         )
         return df.to_arrow()
+    
+class Fundamental_1(Fundamental):
+    data_type: str = "fundamental_1"
+    topic: str = "fundamental_1"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/fundamental"
+
+class Fundamental_2(Fundamental):
+    data_type: str = "fundamental_2"
+    topic: str = "fundamental_2"
+    url_template: str = "https://restv2.fireant.vn/symbols/{ticker}"
+    
 
 
-class KafkaMetadataHistoricalQuotes(BaseMetadata):
+class HistoricalQuotes(BaseMetadata):
     batch_size: int = 10
     default_limit: int = 500
     default_offset: int = 0
@@ -142,13 +170,14 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
             limit=self.default_limit
         )
 
-    def _create_kafka_message(self, ticker: str, start_date: date, offset: int) -> Tuple[str, bytes]:
+    def _create_kafka_message(self, ticker: str, start_date: date, offset: int, batch_id: str) -> Tuple[str, bytes]:
         
         updated_instance = self.model_copy(update={
             "ticker": ticker, 
             "start_date": start_date,
-            "default_offset": offset # Ghi đè cái 2018 bằng ngày thực tế từ Postgres
-            # end_date không cần update vì mặc định nó đã là hôm qua rồi!
+            "default_offset": offset,
+            "batch_id": batch_id
+
         })
         
         message_bytes = updated_instance.model_dump_json(
@@ -196,15 +225,15 @@ class KafkaMetadataHistoricalQuotes(BaseMetadata):
             raise e
   
 
-class KafkaMetadataFinancialReports(BaseMetadata):
+class FinancialReports(BaseMetadata):
     batch_size: int = 10
     default_limit : int = 0
-    table_name_postgres: str = "ingestion_metadata_financial_reports"
-    table_watermark_name_postgres : str = "ingestion_financial_reports_watermark"
-    topic: str = "financial_reports"
+    table_name_postgres: str = "ingestion_metadata_financial_reports_quarter"
+    table_watermark_name_postgres : str = "ingestion_financial_reports_watermark_quarter"
+    topic: str = "financial_reports_quarter"
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/full-financial-reports?type={type_id}&year={year}&quarter={quarter}&limit={limit}"
-    target_year: int = Field(default_factory=lambda: get_target_anchor()[0])
-    target_quarter: int = Field(default_factory=lambda: get_target_anchor()[1])
+    target_year: int = Field(default_factory=lambda: get_target_anchor("quarter")[0])
+    target_quarter: int = Field(default_factory=lambda: get_target_anchor("quarter")[1])
     type_id : int = Field(default=0, description="""
                           1: Báo cáo cân đối kế toán(Quarterly)
                           2: Báo cáo kết quả kinh doanh(Quarterly)
@@ -225,12 +254,13 @@ class KafkaMetadataFinancialReports(BaseMetadata):
         )
     
     
-    def _create_kafka_message(self, ticker: str, limit: int, type_id: int) -> Tuple[str, bytes]:
+    def _create_kafka_message(self, ticker: str, limit: int, type_id: int, batch_id: str) -> Tuple[str, bytes]:
         
         updated_instance = self.model_copy(update={
             "ticker": ticker, 
             "default_limit": limit,
-            "type_id": type_id
+            "type_id": type_id,
+            "batch_id": batch_id
         })
         
         message_bytes = updated_instance.model_dump_json(
@@ -271,18 +301,35 @@ class KafkaMetadataFinancialReports(BaseMetadata):
     ])
         return df.collect().to_arrow()
 
-class KafkaMetadataBalanceSheet(KafkaMetadataFinancialReports):
+class FinancialReportsQuarterBalanceSheet(FinancialReports):
     data_type: str = "balance_sheet"
     type_id: int = 1
 
-class KafkaMetadataIncomeStatement(KafkaMetadataFinancialReports):
+class FinancialReportsQuarterIncomeStatement(FinancialReports):
     data_type: str = "income_statement"
     type_id: int = 2
 
-class KafkaMetadataCashFlowDirect(KafkaMetadataFinancialReports):
+class FinancialReportsQuarterCashFlowDirect(FinancialReports):
     data_type: str = "cash_flow_direct"
     type_id: int = 3
 
-class KafkaMetadataCashFlowIndirect(KafkaMetadataFinancialReports):
+class FinancialReportsQuarterCashFlowIndirect(FinancialReports):
     data_type: str = "cash_flow_indirect"
     type_id: int = 4
+    
+
+class FinancialReportsDataYear(FinancialReports):
+    batch_size: int = 10
+    default_limit : int = 0
+    table_name_postgres: str = "ingestion_metadata_financial_reports_year"
+    table_watermark_name_postgres : str = "ingestion_financial_reports_watermark_year"
+    topic: str = "financial_reports_year"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/full-financial-reports?type={type_id}&year={year}&quarter=0&limit={limit}"
+    target_year: int = Field(default_factory=lambda: get_target_anchor("year")[0])
+    type_id : int = Field(default=0, description="""
+                          1: Báo cáo cân đối kế toán(Quarterly)
+                          2: Báo cáo kết quả kinh doanh(Quarterly)
+                          3: Báo cáo lưu chuyển tiền tệ trực tiếp(Quarterly)
+                          4: Báo cáo lưu chuyển tiền tệ gián tiếp(Quarterly)
+                          """)
+    pass

@@ -7,7 +7,7 @@ transform:
       user: admin
       host: trino
       port: 8080
-      catalog: lakehouse_dev
+      catalog: lakehouse_main
       schema: bronze
       threads: 4
       timezone: Asia/Ho_Chi_Minh

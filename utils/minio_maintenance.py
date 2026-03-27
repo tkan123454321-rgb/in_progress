@@ -15,7 +15,7 @@ class LakehouseMaintenance:
         Maintenance chỉ làm nhiệm vụ điều phối (Orchestrator).
         """
         self.pg_conn = pg_client.get_db_connection(db_name="platform_db")
-        self.trino_conn = lake_client._get_trino_connection(type="maintenance")
+        self.trino_conn = lake_client._get_trino_connection()
         self.s3_client = lake_client.s3_client
         self.catalog = lake_client.catalog
         self.REQUIRED_SCHEMAS = lake_client.REQUIRED_SCHEMAS
