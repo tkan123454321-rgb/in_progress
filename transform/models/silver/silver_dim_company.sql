@@ -1,25 +1,27 @@
-{{ config( materialized='table' ) }}
+{{ config( materialized='table',
+            unique_key='ticker'
+) }}
 
 WITH cleaned_data AS (
     SELECT
         *,
         ROW_NUMBER() OVER (
             PARTITION BY ticker 
-            ORDER BY inserted_bronze_time DESC ) as rn
-    FROM {{ ref('raw_dim_company') }}
+            ORDER BY bronze_ingested_time DESC ) as rn
+    FROM {{ ref('staging_dim_company') }}
     WHERE 
         ticker IS NOT NULL
         AND regexp_like(ticker, '^[A-Z0-9]{3}$')
-),
-final AS (
-    SELECT 
-        ticker,
-        COALESCE(company_name, 'Unknown Company') AS company_name,
-        COALESCE(industry_group, 'Unclassified') AS industry_group,
-        COALESCE(sector_detail, 'Unclassified') AS sector_detail,
-        {{ generate_audit_columns('silver') }}
-    FROM cleaned_data
-    WHERE rn = 1
+        AND com_type_code IS NOT NULL
 )
 
-SELECT * FROM final
+SELECT 
+    ticker,
+    COALESCE(company_name, 'Unknown Company') AS company_name,
+    COALESCE(industry_group, 'Unclassified') AS industry_group,
+    COALESCE(sector_detail, 'Unclassified') AS sector_detail,
+    com_type_code as company_type,
+    {{ generate_audit_columns('silver') }}
+FROM cleaned_data
+WHERE rn = 1
+

@@ -36,19 +36,25 @@ with _get_session() as s:
 
 # %%
 from load.load_main import load_main
-from schema.producer_schema import KafkaMetadataFinancialReports
-load_main(
-    model_cls=KafkaMetadataFinancialReports
-)
+from schema.producer_schema import Fundamental_1, Fundamental_2
+fundamental_list = [Fundamental_1, Fundamental_2]
+for model_cls in fundamental_list:
+    load_main(
+        model_cls=model_cls,
+    )
+
 
 # %%
-from schema.producer_schema import KafkaMetadataFundamental_1, KafkaMetadataFundamental_2
+from schema.producer_schema import Fundamental_1, Fundamental_2
 from ingestion.ingest_main import ingest_main
 from ingestion.generate_data_metadata import _generate_metadata_fundamental
-ingest_main(
-    model_cls=KafkaMetadataFundamental_2,
-    generate_metadata_callable=_generate_metadata_fundamental
-)
+fundamental_list = [Fundamental_1, Fundamental_2]
+for model_cls in fundamental_list:
+    ingest_main(
+        model_cls=model_cls,
+        generate_metadata_callable=_generate_metadata_fundamental
+    )
+
 # %%
 from load.lakehouse_loader import LakehouseLoader
 from schema.producer_schema import OriginalTickerList

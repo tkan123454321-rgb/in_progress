@@ -21,9 +21,11 @@ models:
     silver:
       +materialized: incremental
       +schema: silver
+      +enabled: true
     gold:
       +schema: gold
       +materialized: table
+      +enabled: true
 
   elementary:
     +schema: elementary

@@ -2,88 +2,97 @@ version: 2
 
 models:
   - name: gold_dim_company
-    description: "Dimension table storing the list of listed companies across 3 exchanges (HOSE, HNX, UPCOM). Data has been cleansed, validated, and categorized to serve as the core Data Model for BI Dashboards."
+    description: "The master dimension table for listed companies, optimized for Corporate Finance analytics. This Gold layer integrates company profiles with fundamental metrics and applies strict business rules (e.g., minimum liquidity > 10k, market cap > 500B VND, and excluding financial institutions). Data is tagged as 'qualified' for dashboard consumption or 'unqualified' if it violates investment criteria."
     
-    # BÀI TEST BẢO VỆ MẶT TIỀN (SCHEMA ENFORCEMENT)
+    # 1. TEST BẢO VỆ MẶT TIỀN (SCHEMA ENFORCEMENT)
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           column_list: [
-            "ticker", "company_name", "industry_group", "sector_detail",
+            "ticker", "company_name", "industry_group", "sector_detail", "company_type",
             "shares_outstanding", "floating_shares", "market_cap", "avg_volume_3m",
-            "insider_ownership", "institution_ownership", "foreign_ownership",
+            "exchange", "is_listing",
             "status", "gold_unqualified_reason", "gold_invocation_id", "gold_updated_at"
           ]
-      - dbt_utils.recency:
-          field: gold_updated_at
-          datepart: day
-          interval: 30
 
     columns:
       - name: ticker
         data_type: varchar
-        description: "Stock ticker symbol (Primary Key)."
+        description: "The primary key. The unique stock symbol of the company."
         data_tests:
           - unique
-          - not_null
+          - relationships: # Kiểm tra xem ticker này có tồn tại trong bảng gốc không
+            to: ref('silver_dim_company')
+            field: ticker
 
       - name: company_name
         data_type: varchar
-        description: "Full name of the listed company."
+        description: "The full legal name of the company."
 
       - name: industry_group
         data_type: varchar
-        description: "Level 1 industry group (e.g., Banking, Real Estate, Manufacturing)."
+        description: "The high-level industry classification (e.g., Real Estate, Manufacturing)."
 
       - name: sector_detail
         data_type: varchar
-        description: "Level 2/3 detailed business sector."
+        description: "The granular sub-sector classification."
+
+      - name: company_type
+        data_type: varchar
+        description: "The type of entity. 'CT' represents standard Corporate entities. Financials/Funds are excluded from the qualified set."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['CT']
+              row_condition: "status = 'qualified'"
 
       - name: shares_outstanding
         data_type: double
-        description: "Total number of outstanding shares."
+        description: "Total number of shares currently outstanding."
         data_tests:
           - dbt_expectations.expect_column_values_to_not_be_null:
               row_condition: "status = 'qualified'"
 
       - name: floating_shares
         data_type: double
-        description: "Number of free-floating shares available for public trading."
+        description: "Number of shares available for public trading."
 
+      # LUẬT 2: VỐN HÓA LỚN HƠN 500 TỶ
       - name: market_cap
         data_type: double
-        description: "Market Capitalization in VND."
+        description: "Total market capitalization (in VND)."
         data_tests:
-          - dbt_expectations.expect_column_values_to_not_be_null:
-              row_condition: "status = 'qualified'"
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 500000000000
               row_condition: "status = 'qualified'"
 
+      # LUẬT 3: THANH KHOẢN > 10K CỔ PHIẾU/NGÀY
       - name: avg_volume_3m
         data_type: double
-        description: "3-month average daily trading volume."
+        description: "Average daily trading volume over the last 3 months."
         data_tests:
-          - dbt_expectations.expect_column_values_to_not_be_null:
-              row_condition: "status = 'qualified'"
           - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 100000
+              min_value: 10000
               row_condition: "status = 'qualified'"
 
-      - name: insider_ownership
-        data_type: double
-        description: "Percentage of shares held by insiders and management."
+      - name: exchange
+        data_type: varchar
+        description: "The listing exchange (HOSE, HNX, UPCOM)."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['HNX', 'UPCOM', 'HSX']
+              row_condition: "status = 'qualified'"
 
-      - name: institution_ownership
-        data_type: double
-        description: "Percentage of shares held by institutional investors."
+      - name: is_listing
+        data_type: boolean
+        description: "Flag indicating if the stock is actively trading (True) or delisted (False)."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [true]
+              row_condition: "status = 'qualified'"
 
-      - name: foreign_ownership
-        data_type: double
-        description: "Percentage of shares held by foreign investors."
-
+      # LUẬT 4: MÁC QUALIFIED LÀ KHÔNG ĐƯỢC CÓ LỖI
       - name: status
         data_type: varchar
-        description: "Data quality and investment criteria status: 'qualified' (investable) or 'unqualified' (penny/illiquid/error)."
+        description: "The final business status. 'qualified' means the stock meets all investment criteria and DQ rules."
         data_tests:
           - not_null
           - accepted_values:
@@ -91,17 +100,27 @@ models:
 
       - name: gold_unqualified_reason
         data_type: varchar
-        description: "Reason for being excluded from the qualified set (e.g., [API Error], [Silver Error], or [Gold Rule])."
+        description: "A semicolon-separated list of business rule violations. Must be strictly Null if status is 'qualified'."
         data_tests:
           - dbt_expectations.expect_column_values_to_be_null:
               row_condition: "status = 'qualified'"
 
+      # KIỂM TRA AUDIT THEO ĐÚNG CHUẨN SILVER
       - name: gold_invocation_id
         data_type: varchar
-        description: "dbt invocation ID generated during the Gold layer run for audit trail."
+        description: "Audit column: The unique dbt invocation ID for the Gold layer run."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
 
       - name: gold_updated_at
         data_type: timestamp(6) with time zone
-        description: "Timestamp indicating when the Gold table was last updated (Output SLA)."
+        description: "Audit column: Timestamp of the latest transformation in the Gold layer."
         data_tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32

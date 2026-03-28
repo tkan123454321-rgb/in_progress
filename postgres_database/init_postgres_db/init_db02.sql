@@ -49,13 +49,22 @@ ON finops.trino_finops_logs (cpu_time_s DESC NULLS LAST);
 
 
 ------------Job_ingestion------------------------------------------------------------------------------------------------- (Partition theo start_time)
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental (
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental_1 (
     batch_id VARCHAR(50),
     topic_name VARCHAR(50),
     data_type VARCHAR(50),
     ticker VARCHAR(20),
     created_time TIMESTAMPTZ
 );
+
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental_2 (
+    batch_id VARCHAR(50),
+    topic_name VARCHAR(50),
+    data_type VARCHAR(50),
+    ticker VARCHAR(20),
+    created_time TIMESTAMPTZ
+);
+
 
 CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_historical_quotes (
     batch_id VARCHAR(50),

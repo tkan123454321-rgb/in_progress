@@ -3,10 +3,10 @@ sources:
     schema: bronze
     description: "Dữ liệu thô, chưa qua xử lý, được lấy trực tiếp từ nguồn. Đây là nơi lưu trữ dữ liệu gốc, chưa được làm sạch hay biến đổi."
     tables:
-      - name: raw_companies_listing
-        description: "Danh sách công ty niêm yết trên 3 sàn chứng khoán Việt Nam: HOSE, HNX, UPCOM."
+      - name: original_ticker_list
+        description: "Danh sách công ty niêm yết trên 3 sàn chứng khoán Việt Nam: HOSE, HNX, UPCOM phân theo mã ngành và loại hình doanh nghiệp"
         config:
-          loaded_at_field: ingestion_time
+          loaded_at_field: bronze_ingested_time
           freshness:
             warn_after: 
               count: 35
@@ -15,10 +15,10 @@ sources:
               count: 60
               period: day
       
-      - name: fundamental
+      - name: fundamental_1
         description: "Dữ liệu cơ bản của các công ty niêm yết, bao gồm vốn hoá thị trường, số lượng cổ phiếu đang lưu hành,..."
         config:
-          loaded_at_field: inserted_time
+          loaded_at_field: bronze_ingested_time
           freshness:
             warn_after: 
               count: 35
@@ -26,7 +26,18 @@ sources:
             error_after:
               count: 60
               period: day
-        
+      
+      - name: fundamental_2
+        description: "Dữ liệu về sàn giao dịch, trạng thái niêm yết của công ty, phục vụ cho việc phân loại công ty theo sàn HOSE, HNX, UPCOM"
+        config:
+          loaded_at_field: bronze_ingested_time
+          freshness:
+            warn_after: 
+              count: 35
+              period: day
+            error_after:
+              count: 60
+              period: day
      
       
 

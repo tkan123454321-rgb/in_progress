@@ -3,7 +3,7 @@ models:
     description: "dim_company's silver layer, applying data quality tests, de-duplications and transformations to prepare the data for analytics and reporting. It ensures that the data is clean, consistent, and ready for use in the business intelligence layer."
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
-          column_list: ["staging_invocation_id", "staged_at","silver_invocation_id", "silver_updated_at"]
+          column_list: ["bronze_ingested_time", "staging_invocation_id", "staged_at","silver_invocation_id", "silver_updated_at"]
     columns:
 
       - name: ticker
@@ -15,6 +15,11 @@ models:
           - relationships: # Kiểm tra xem ticker này có tồn tại trong bảng gốc không
               to: ref('raw_dim_company')
               field: ticker
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z0-9]{3}$"
+              config:
+                severity: error
+                error_if: "> 50"
 
       - name: company_name
         data_type: varchar
@@ -34,62 +39,82 @@ models:
         description: "sector detail of the company, e.g. Software, Hardware, etc."
         data_tests:
           - not_null
+      
+      - name: company_type
+        data_type: varchar
+        description: "company type code, CT: công ty, BH: bảo hiểm, NH: ngân hàng, CK: chứng khoán"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['CT', 'BH', 'NH', 'CK']
+          - not_null
+
+      - name: bronze_ingested_time
+        data_type: timestamp(6) with time zone
+        description: "timestamp when the data was ingested into the bronze layer"
 
       - name: staged_at
         data_type: timestamp(6) with time zone
         description: "timestamp when the data was staged in the silver layer"
-        data_tests:
-          - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 32
+
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone
         description: "timestamp when the data was last updated in the silver layer"
         data_tests:
           - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32
            
       - name: silver_invocation_id
         data_type: varchar
         description: "unique identifier for the silver layer invocation, used for debugging processes"
         data_tests:
           - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
 
       - name: staging_invocation_id
         data_type: varchar
         description: "unique identifier for the staging layer invocation, used for debugging processes"
-        data_tests:
-          - not_null
 
-  - name: silver_fundamental
-    description: "fundamental data in the silver layer, applying data business tests, de-duplications and transformations to prepare the data for analytics and reporting. It ensures that the data is clean, consistent, and ready for use in the business intelligence layer."
+
+  - name: silver_fundamental_1
+    description: "Cleaned and validated fundamental data (part 1) focusing on share structure, valuation, and ownership metrics. This layer applies data quality (DQ) rules, de-duplication, and business logic to ensure the data is accurate, consistent, and ready for the Gold layer."
     data_tests:
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: shares_outstanding
+          column_B: floating_shares
+          or_equal: true
       - dbt_expectations.expect_table_columns_to_contain_set:
-          column_list: ["staging_invocation_id", "staged_at","silver_invocation_id", "silver_updated_at"]
+          column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
     columns:
       - name: ticker
         data_type: varchar
-        description: "ticker symbol of the company, e.g. VIC, FPT, etc."
+        description: "The unique stock symbol/ticker of the company (e.g., VCB, FPT)."
         data_tests:
           - unique
-          - relationships: # Kiểm tra xem ticker này có tồn tại trong bảng dim_company không
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z0-9]{3}$"
+          - relationships:
               to: ref('silver_dim_company')
               field: ticker
 
       - name: shares_outstanding
         data_type: double
-        description: "total number of shares outstanding"
+        description: "Total number of shares outstanding for the company."
         data_tests:
           - null_rate:
               config:
-                warn_if: "> 300"
-                error_if: "> 600"
-        
+                error_if: "> 100"
 
       - name: floating_shares
         data_type: double
-        description: "number of shares available for trading"
+        description: "Number of shares available for public trading (excluding restricted shares)."
         data_tests:
           - null_rate:
               config:
@@ -98,7 +123,7 @@ models:
 
       - name: market_cap
         data_type: double
-        description: " total market capitalization of the company, calculated as shares_outstanding * closing_price"
+        description: "Total market capitalization of the company (shares_outstanding * closing_price)."
         data_tests:
           - null_rate:
               config:
@@ -106,7 +131,7 @@ models:
 
       - name: avg_volume_3m
         data_type: double
-        description: "average trading volume of the stock over the last 3 months"
+        description: "Average daily trading volume of the stock over the trailing 3-month period."
         data_tests:
           - null_rate:
               config:
@@ -114,7 +139,7 @@ models:
 
       - name: insider_ownership
         data_type: double
-        description: "percentage of outstanding shares held by company insiders (e.g. executives, founders)"
+        description: "Percentage of outstanding shares held by company insiders (e.g., executives, founders)."
         data_tests:
           - null_rate:
               config:
@@ -123,7 +148,7 @@ models:
 
       - name: institution_ownership
         data_type: double
-        description: "percentage of outstanding shares held by institutional investors (e.g. mutual funds, pension funds)"
+        description: "Percentage of outstanding shares held by institutional investors (e.g., mutual funds, pension funds)."
         data_tests:
           - null_rate:
               config:
@@ -132,41 +157,140 @@ models:
 
       - name: foreign_ownership
         data_type: double
-        description: "percentage of outstanding shares held by foreign investors"
+        description: "Percentage of outstanding shares held by foreign investors."
         data_tests:
           - null_rate:
               config:
                 warn_if: "> 300"
                 error_if: "> 600"
-      
+
+      - name: unqualified_reason
+        data_type: varchar
+        description: "A comma-separated list of data quality violations (e.g., 'market_cap < 0'). Null if the record passes all DQ checks."
+
       - name: status
         data_type: varchar
-        description: "data quality status of the record, determined by the business test: if shares_outstanding, floating_shares or market_cap is negative, then the record is marked as 'unqualified', otherwise it's 'qualified'"
+        description: "Data quality status indicator. Evaluated as 'qualified' if no DQ rules are violated, otherwise 'unqualified'."
         data_tests:
           - accepted_values:
               values: ['qualified', 'unqualified']
           - invalid_rate:
-              description: "Bài test tự chế để kiểm tra tỷ lệ rác (ví dụ: status = 'unqualified'). Nó sẽ đếm số dòng rác chia cho tổng số dòng"
+              description: "Custom test to check the ratio of unqualified records."
               arguments:
                 invalid_value: 'unqualified'
               config:
-                error_if: "> 500"
                 warn_if: "> 200"
+                error_if: "> 500"
+
+      - name: bronze_ingested_time
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the raw data was initially ingested into the Bronze layer."
 
       - name: staging_invocation_id
         data_type: varchar
-        description: "unique identifier for the staging layer invocation, used for debugging processes"
-
+        description: "Audit column: The unique dbt invocation ID generated during the Staging run, used for data lineage."
 
       - name: staged_at
         data_type: timestamp(6) with time zone
-        description: "timestamp when the data was staged in the staging layer"
+        description: "Audit column: Timestamp indicating when the record was processed and standardized in the Staging layer."
 
       - name: silver_invocation_id
         data_type: varchar
-        description: "unique identifier for the silver layer invocation, used for debugging processes"
-
+        description: "Audit column: The unique dbt invocation ID generated during the Silver run."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone
-        description: "timestamp when the data was last updated in the silver layer"
+        description: "Audit column: Timestamp indicating when the record was validated and updated in the Silver layer."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32
+
+  # ==========================================
+  # 2. SILVER FUNDAMENTAL 2 (Exchange & Listing)
+  # ==========================================
+  - name: silver_fundamental_2
+    description: "Cleaned and validated fundamental data (part 2) containing listing status and exchange information. This layer applies data quality (DQ) rules to filter out invalid exchanges and delisted stocks."
+    data_tests:
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker of the company."
+        data_tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z0-9]{3}$"
+          - relationships:
+              to: ref('silver_dim_company')
+              field: ticker
+
+      - name: exchange
+        data_type: varchar
+        description: "The stock exchange where the company is listed (e.g., HSX, HNX, UPCOM)."
+        data_tests:
+          - not_null
+
+      - name: is_listing
+        data_type: boolean
+        description: "Boolean flag indicating whether the stock is currently actively listed (True) or delisted/suspended (False)."
+        data_tests:
+          - not_null
+
+      - name: unqualified_reason
+        data_type: varchar
+        description: "A comma-separated list of data quality violations (e.g., 'invalid_exchange', 'delisted_or_inactive'). Null if the record passes all DQ checks."
+
+      - name: status
+        data_type: varchar
+        description: "Data quality status indicator. Evaluated as 'qualified' if no DQ rules are violated, otherwise 'unqualified'."
+        data_tests:
+          - accepted_values:
+              values: ['qualified', 'unqualified']
+          - invalid_rate:
+              description: "Custom test to check the ratio of unqualified records."
+              arguments:
+                invalid_value: 'unqualified'
+              config:
+                warn_if: "> 200"
+                error_if: "> 500"
+
+      - name: bronze_ingested_time
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the raw data was initially ingested into the Bronze layer."
+
+      - name: staging_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID generated during the Staging run, used for data lineage."
+
+      - name: staged_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the record was processed and standardized in the Staging layer."
+
+      - name: silver_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID generated during the Silver run."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+      - name: silver_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the record was validated and updated in the Silver layer."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32

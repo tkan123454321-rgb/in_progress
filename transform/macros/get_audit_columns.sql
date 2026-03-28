@@ -1,25 +1,25 @@
 {% macro generate_audit_columns(layer_name) %}
 
     {% if layer_name == 'staging' %}
-        -- Lớp Staging đẻ ra 2 cột mới
-        TRY_CAST(bronze_ingested_time AS TIMESTAMP) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS inserted_bronze_time,
-        '{{ invocation_id }}' AS staging_invocation_id,
-        from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AT TIME ZONE 'Asia/Ho_Chi_Minh' AS staged_at,
-        
+        -- 1. Lớp Staging: Đổi tên cột gốc và đẻ ra 2 mốc đánh dấu mới
+        bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS bronze_ingested_time,
+        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS staged_at,
+        '{{ invocation_id }}' AS staging_invocation_id
 
     {% elif layer_name == 'silver' %}
-        -- Lớp Silver: Kế thừa của Staging, và đẻ thêm 2 cột mới của Silver
-        staging_invocation_id,
+        -- 2. Lớp Silver: Chỉ GỌI TÊN 3 cột cũ để kéo lên, và đẻ thêm 2 cột mới
+        bronze_ingested_time,
         staged_at,
-        '{{ invocation_id }}' AS silver_invocation_id,
-        from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AT TIME ZONE 'Asia/Ho_Chi_Minh' AS silver_updated_at
-    {% elif layer_name == 'gold' %}
-        -- Lớp Gold: Kế thừa của Silver, và đẻ thêm 2 cột mới của Gold
-        '{{ invocation_id }}' AS gold_invocation_id,
-        from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AT TIME ZONE 'Asia/Ho_Chi_Minh' AS gold_updated_at
-    {% else %}
+        staging_invocation_id,
+        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS silver_updated_at,
+        '{{ invocation_id }}' AS silver_invocation_id
 
-        {{ exceptions.raise_compiler_error("Invalid layer_name passed to generate_audit_columns(). Choose 'staging', 'silver', or 'gold'.") }}
+    {% elif layer_name == 'gold' %}
+        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS gold_updated_at,
+        '{{ invocation_id }}' AS gold_invocation_id
+
+    {% else %}
+        {{ exceptions.raise_compiler_error("Tên layer_name không hợp lệ! Hãy chọn 'staging', 'silver', hoặc 'gold'.") }}
     {% endif %}
 
 {% endmacro %}

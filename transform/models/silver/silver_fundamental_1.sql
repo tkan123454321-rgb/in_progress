@@ -2,21 +2,21 @@
     materialized='table'
     ) }}
 
-{% set fields = get_fundamental_columns() %}
+{% set fields = get_fundamental_columns('fundamental_1') %}
 
 with deduped_data as (
     SELECT 
         *,
         ROW_NUMBER() OVER (
             PARTITION BY ticker 
-            ORDER BY inserted_bronze_time DESC ) as rn
-    FROM {{ ref('staging_fundamental') }} ),
+            ORDER BY bronze_ingested_time DESC ) as rn
+    FROM {{ ref('staging_fundamental_1') }} ),
 
 applied_dq_rules AS (
     SELECT 
         *,
         NULLIF(
-            CONCAT_WS('; ',
+            CONCAT_WS(', ',
                 {% for field in fields %}
                 CASE 
                     -- Nếu Macro đánh dấu là bắt buộc (True), thì nôn ra dòng check NULL này:

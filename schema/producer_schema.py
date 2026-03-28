@@ -86,12 +86,11 @@ class OriginalTickerList(BaseMetadata):
 
 class Fundamental(BaseMetadata):
     batch_size : int = 100
-    table_name_postgres: str = "ingestion_metadata_fundamental"
     ticker_list_mode : str = "fundamental"
 
     @computed_field
     def url(self) -> str:
-        return self.url_template.format(ticker=self.ticker)
+        return self.url_template.format(ticker=self.ticker, source=self.source)
 
 
     def _create_kafka_message(self, ticker: str, batch_id: str) -> Tuple[str, bytes]:
@@ -139,11 +138,13 @@ class Fundamental_1(Fundamental):
     data_type: str = "fundamental_1"
     topic: str = "fundamental_1"
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/fundamental"
+    table_name_postgres: str = "ingestion_metadata_fundamental_1"
 
 class Fundamental_2(Fundamental):
     data_type: str = "fundamental_2"
     topic: str = "fundamental_2"
-    url_template: str = "https://restv2.fireant.vn/symbols/{ticker}"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}"
+    table_name_postgres: str = "ingestion_metadata_fundamental_2"
     
 
 
