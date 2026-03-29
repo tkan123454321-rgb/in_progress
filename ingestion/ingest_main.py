@@ -1,12 +1,9 @@
 from typing import Any, Iterable, Callable, Literal
 import uuid
-from pydantic import ValidationError
 from utils.logger_config import datetime, setup_logger
 from ingestion.kafka_producer import StockTickerProducer
 from utils.postgres_client import PostgresClient
-from zoneinfo import ZoneInfo
 from schema.producer_schema import BaseMetadata
-from utils.kafka_client import KafkaClient
 from utils.lakehouse_client import LakeHouseClient
 from utils.metadata_manager import MetadataManager
 
@@ -34,8 +31,7 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable:
                 return
             
             logger.info(f"🚀 Bắt đầu tạo và bắn {len(missing_tickers)} mã vào Kafka. Batch ID: {BATCH_ID}")
-            metadata_generator = generate_metadata_callable(config=config, ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID) # type: ignore
-            for ticker, metadata_items in metadata_generator:
+            for ticker, metadata_items in config._generate_metadata_kafka(ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID): # type: ignore
                 
                 # Bắn vào Kafka (Không cần truyền topic_name nữa vì Producer đã nhớ)
                 is_sent = producer.batch_message_data(

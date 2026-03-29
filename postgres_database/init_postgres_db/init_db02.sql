@@ -83,22 +83,17 @@ CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_financial_reports (
 );
 
 
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_historical_quotes_watermark(
-    batch_id VARCHAR(50),
-    ticker VARCHAR(20),
-    last_ingested_date DATE NOT NULL,
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_historical_quotes_watermark (
+    ticker VARCHAR(20) PRIMARY KEY,
     ticker_status VARCHAR(20),
-    updated_at TIMESTAMPTZ,
-    PRIMARY KEY (ticker)
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_financial_reports_watermark(
-    batch_id VARCHAR(50),
-    ticker VARCHAR(20),
-    last_ingested_date DATE NOT NULL,
+-- 3. Xây lại bảng Watermark cho Financial Reports (Gọn gàng y hệt)
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_financial_reports_watermark (
+    ticker VARCHAR(20) PRIMARY KEY,
     ticker_status VARCHAR(20),
-    updated_at TIMESTAMPTZ,
-    PRIMARY KEY (ticker)
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- thiết lập Part_man ------------------------------------------------------------------------------------------------

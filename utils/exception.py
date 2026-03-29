@@ -25,3 +25,14 @@ class RetryableAPIError(PipelineBaseError):
                 "reason_msg": f"{type(reason).__name__}: {str(reason)}"
             }
         )
+
+class MetadataManagerError(PipelineBaseError):
+    """
+    Raised when metadata synchronization fails between storage layers,
+    typically due to missing audit records or database inconsistency.
+    """
+    def __init__(self, table_name: str, message: str, details: Optional[Dict[str, Any]] = None):
+        error_details = {"table_name": table_name}
+        if details:
+            error_details.update(details)
+        super().__init__(message=f"Metadata Sync Failed: {message}", details=error_details)

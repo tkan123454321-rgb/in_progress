@@ -1,1 +1,3 @@
-
+DROP TABLE IF EXISTS ingestion.ingestion_financial_reports_watermark_quarter;
+DROP TABLE IF EXISTS ingestion.ingestion_historical_quotes_watermark;
+DROP TABLE IF EXISTS ingestion.ingestion_financial_reports_watermark;

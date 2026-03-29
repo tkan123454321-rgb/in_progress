@@ -3,7 +3,7 @@ import json
 import os
 import polars as pl
 from pydantic import AliasPath, BaseModel, ConfigDict, computed_field, Field, ValidationError
-from typing import Any, ClassVar, Dict, List, Tuple, TypeVar
+from typing import Any, ClassVar, Dict, List, Tuple, TypeVar, Set, Iterable
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 import uuid
@@ -17,6 +17,7 @@ from utils.postgres_client import PostgresClient
 from utils.lakehouse_client import LakeHouseClient
 from utils.other_utils import get_target_anchor
 from vnstock import Listing
+import math
 
 
 logger = setup_logger(component="schema")
@@ -27,6 +28,8 @@ class BaseMetadata(BaseModel,ABC):
         str_strip_whitespace=True, 
         extra='ignore'
     )
+    
+    
     ticker_list_mode: str = "other_data" # default, có thể override ở class con nếu muốn
     batch_size: int
     table_name_postgres: str 
@@ -35,8 +38,10 @@ class BaseMetadata(BaseModel,ABC):
     
     # 1. static fields (lấy thẳng từ YAML, không động theo từng mã)
     source: str = Field(default_factory=lambda: os.getenv("MY_SOURCE", "UNKNOWN"))
-    created_at_ts: datetime = Field(default_factory=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+    created_at_ts: datetime = Field(default_factory=lambda: datetime.now(ZoneInfo("UTC")))
     batch_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    encountered_tickers: Set[str] = Field(default_factory=set, exclude=True)
+    unsuccessful_tickers: Set[str] = Field(default_factory=set, exclude=True)
     
     ticker: str = "UNKNOWN"
     
@@ -44,16 +49,50 @@ class BaseMetadata(BaseModel,ABC):
         """Khởi tạo tiêu chuẩn cho mọi class con"""
         logger.info(f"🚪 [BASE] Bắt đầu phiên làm việc với topic: {self.topic}")
         return self
+    
+    def _generate_metadata_kafka(self, 
+                                 ticker_list: list[str], 
+                                 metadata_manager: MetadataManager, 
+                                 batch_id: str ):       
+        """Hàm trừu tượng, bắt buộc class con phải implement để tạo message Kafka"""
+    pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Đóng phiên làm việc tiêu chuẩn"""
+        # 1. Logic xử lý lỗi chung (Nếu có lỗi văng ra trong khối with)
         if exc_type:
-            logger.warning(f"⚠️ [BASE] Phiên làm việc [{self.topic}] bị ngắt do lỗi: {exc_type.__name__}.")
-        else:
-            logger.info(f"✅ [BASE] Phiên làm việc [{self.topic}] hoàn tất êm đẹp.")
+            logger.error(f"🔥 [{self.topic.upper()}] Pipeline execution interrupted due to error: {exc_val}")
+            # Vẫn cho code chạy tiếp xuống dưới để vét cạn những mã đã kịp thành công!
+
+        # 2. Kiểm tra class con có dùng Watermark không (Ví dụ: Fundamental thì không)
+        watermark_table = getattr(self, "table_watermark_name_postgres", None)
+        if not watermark_table:
+            logger.info(f"⏭️ [{self.topic.upper()}] Watermark table not configured. Skipping commit phase.")
+            return
+
+        # 3. Phép trừ tập hợp để chốt danh sách thành công
+        successful_tickers = self.encountered_tickers - self.unsuccessful_tickers
+
+        # 4. CHẶN ĐỨNG THÙNG RỖNG: Không có mã thành công thì nghỉ luôn cho khỏe Database
+        if not successful_tickers:
+            logger.warning(f"⚠️ [{self.topic.upper()}] No fully successful tickers found. Skipping watermark commit.")
+            return
+
+        # 5. Ghi Log thống kê (Stats) và tiến hành update Database
+        logger.info(f"🔄 [{self.topic.upper()}] Committing watermark to table: {watermark_table}")
+        logger.info(f"📊 [{self.topic.upper()}] Stats | Encountered: {len(self.encountered_tickers)} | Failed: {len(self.unsuccessful_tickers)} | Successful: {len(successful_tickers)}")
         
-        # Luôn return False để Python không "nuốt" mất lỗi (nếu có)
-        return False
+        try:
+            with MetadataManager(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as metadata_manager:
+                metadata_manager._update_watermark(
+                    table_name_watermark_postgres=watermark_table, 
+                    successful_tickers=successful_tickers, 
+                    batch_time=self.created_at_ts # Dùng mốc thời gian đã 'đóng băng' lúc khởi tạo class
+                )
+            logger.info(f"✅ [{self.topic.upper()}] Watermark commit successful.")
+            
+        except Exception as e:
+            logger.error(f"❌ [{self.topic.upper()}] Database error during watermark commit on exit: {e}")
+            raise e
     
     @property
     def iceberg_schema(self) -> Schema:
@@ -91,7 +130,20 @@ class Fundamental(BaseMetadata):
     @computed_field
     def url(self) -> str:
         return self.url_template.format(ticker=self.ticker, source=self.source)
-
+    
+    def _generate_metadata_kafka(
+    self, 
+    batch_id: str,
+    ticker_list: Iterable[str],
+    metadata_manager: MetadataManager | None = None,
+) -> Iterable[Tuple[str, List[bytes]]]:
+        """Chỉ gọi hàm nhân bản cực nhẹ của object."""
+        for ticker in ticker_list:
+            ticker, message_bytes = self._create_kafka_message(ticker=ticker, batch_id=batch_id)
+            
+            # Bọc cái message_bytes vào trong 1 cái list
+            
+            yield ticker, [message_bytes]
 
     def _create_kafka_message(self, ticker: str, batch_id: str) -> Tuple[str, bytes]:
         """Tạo payload và trả về (ticker, bytes)"""
@@ -160,6 +212,7 @@ class HistoricalQuotes(BaseMetadata):
     end_date: date = Field(default_factory=lambda: date.today() - timedelta(days=1))
     table_watermark_name_postgres : str = "ingestion_historical_quotes_watermark"
     
+    
     @computed_field
     def url(self) -> str:
         return self.url_template.format(
@@ -170,6 +223,28 @@ class HistoricalQuotes(BaseMetadata):
             offset=self.default_offset, 
             limit=self.default_limit
         )
+    
+    def _generate_metadata_kafka(self, ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
+)-> Iterable[Tuple[str, List[bytes]]]:
+        metadata_manager.sync_historical_watermark_tickers(table_name_watermark_postgres=self.table_watermark_name_postgres) # type: ignore
+        for ticker in ticker_list:
+            start_date = metadata_manager._get_smart_start_date(ticker, table_name_watermark_postgres=self.table_watermark_name_postgres) # type: ignore
+            # 1. Tính số ngày theo lịch (Calendar Days)
+            calendar_days = (self.end_date - start_date).days 
+            if calendar_days < 0: 
+                continue
+            estimated_trading_days = int(calendar_days * (250 / 365)) + 20
+            batch_messages = []
+            for current_offset in range(self.default_offset, estimated_trading_days, self.default_limit):
+                ticker, message_bytes = self._create_kafka_message(
+                    ticker=ticker,
+                    start_date=start_date,
+                    offset=current_offset,
+                    batch_id = batch_id
+                )
+                # Nhét vào giỏ
+                batch_messages.append(message_bytes)
+            yield ticker, batch_messages
 
     def _create_kafka_message(self, ticker: str, start_date: date, offset: int, batch_id: str) -> Tuple[str, bytes]:
         
@@ -212,19 +287,7 @@ class HistoricalQuotes(BaseMetadata):
         )
         return df.collect().to_arrow()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        # 1. Gọi __exit__ của lớp cha để tận dụng cái log Cảnh báo/Thành công tiêu chuẩn
-        super().__exit__(exc_type, exc_val, exc_tb)
-
-        # 2. Bắt đầu xử lý logic đặc thù của riêng Historical Quotes
-        logger.info("🔄 [HISTORICAL] Bắt đầu chốt sổ Watermark cho Historical Quotes...")
-        try:
-            with MetadataManager(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as metadata_manager:
-                metadata_manager._update_max_ingested_date()
-        except Exception as e:
-            logger.error(f"❌ [HISTORICAL] Lỗi khi cố gắng cập nhật Watermark lúc thoát: {e}")
-            raise e
-  
+    
 
 class FinancialReports(BaseMetadata):
     batch_size: int = 10
@@ -251,9 +314,34 @@ class FinancialReports(BaseMetadata):
             quarter=self.target_quarter,
             limit=self.default_limit,
             type_id=self.type_id
-
         )
     
+    def _generate_metadata_kafka(self,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
+)-> Iterable[Tuple[str, List[bytes]]]:
+        metadata_manager.sync_historical_watermark_tickers(table_name_watermark_postgres=self.table_watermark_name_postgres) # type: ignore
+        for ticker in ticker_list:
+            start_date = metadata_manager._get_smart_start_date(ticker, table_name_watermark_postgres=self.table_watermark_name_postgres) # type: ignore
+            start_year = start_date.year
+            start_quarter = math.ceil(start_date.month / 3)
+            limit = (self.target_year - start_year) * 4 + (self.target_quarter - start_quarter) 
+            limit += 2
+            if limit <= 0:
+                logger.warning(
+                    f"[FINANCIAL_REPORTS][SKIP_TICKER] Bỏ qua mã {ticker:<5} | "
+                    f"Lý do: Watermark DB (Q{start_quarter}/{start_year}: {start_date}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
+                    f"Calc_Limit: {limit} <= 0"
+                )
+                continue
+
+            ticker, message_bytes = self._create_kafka_message(
+                ticker=ticker,
+                limit=limit,
+                type_id=self.type_id,
+                batch_id=batch_id
+            )
+            # Nhét vào giỏ
+            yield ticker, [message_bytes]
+        
     
     def _create_kafka_message(self, ticker: str, limit: int, type_id: int, batch_id: str) -> Tuple[str, bytes]:
         
