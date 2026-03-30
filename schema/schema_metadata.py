@@ -63,6 +63,21 @@ PARTITION_BY_EVENT_YEAR = PartitionSpec(
 PARTITION_BY_REPORT_YEAR = PartitionSpec(
     PartitionField(source_id=2, field_id=1000, transform=IdentityTransform(), name="report_year")
 )
+FINANCIAL_REPORTS_PARTITION = PartitionSpec(
+    PartitionField(
+        source_id=2,   # ID của cột 'year'
+        field_id=1000, 
+        transform=IdentityTransform(), 
+        name="year"
+    ),
+    PartitionField(
+        source_id=101, 
+        field_id=1001, 
+        transform=IdentityTransform(), 
+        name="data_type"
+    )
+)
+
 UNPARTITIONED = PartitionSpec()
 
 # 🔥 DUY NHẤT 1 LUẬT SORT DÙNG CHO CẢ LÀNG (Trỏ vào ID 106)
@@ -100,9 +115,14 @@ TABLE_REGISTRY = {
         "partition_spec": UNPARTITIONED,
         "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
     },
-    "financial_reports": {
+    "financial_reports_quarter": {
         "schema": FINANCIAL_REPORTS_SCHEMA,
-        "partition_spec": PARTITION_BY_REPORT_YEAR,
+        "partition_spec": FINANCIAL_REPORTS_PARTITION, # 💡 Thay bằng spec mới
+        "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
+    },
+    "financial_reports_year": {
+        "schema": FINANCIAL_REPORTS_SCHEMA,
+        "partition_spec": FINANCIAL_REPORTS_PARTITION, # 💡 Thay bằng spec mới
         "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
     }
 }

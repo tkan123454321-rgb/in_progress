@@ -1,3 +1,4 @@
-DROP TABLE IF EXISTS ingestion.ingestion_financial_reports_watermark_quarter;
-DROP TABLE IF EXISTS ingestion.ingestion_historical_quotes_watermark;
-DROP TABLE IF EXISTS ingestion.ingestion_financial_reports_watermark;
+select ticker, min(event_date) from bronze.historical_quotes
+group by ticker
+order by min(event_date) asc
+

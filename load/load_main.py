@@ -21,15 +21,15 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
     BATCH_SIZE = config.batch_size
     buffer = []
     if mode == "run_first":
-        target_table = config.topic                  # type: ignore # Luồng chính ghi vào bảng gốc
-        error_topic = f"{config.topic}_retry"     # type: ignore # Lỗi thì vứt vào Topic Retry
+        target_table = config.data_type                 # type: ignore # Luồng chính ghi vào bảng gốc
+        error_topic = f"{config.data_type}_retry"     # type: ignore # Lỗi thì vứt vào Topic Retry
         logger.info(f"🟢 [CHẾ ĐỘ: LẦN ĐẦU] Đọc từ {target_table} | Lỗi chuyển tiếp sang topic: '{error_topic}'")
     elif mode == "run_retry":
-        target_table = f"{config.topic}_retry"    # type: ignore # Luồng retry vẫn ghi vào bảng gốc
-        error_topic = f"{config.topic}_dlq"        # type: ignore # Cứu không được nữa thì vứt vào Nhà tù DLQ
+        target_table = f"{config.data_type}_retry"    # type: ignore # Luồng retry vẫn ghi vào bảng gốc
+        error_topic = f"{config.data_type}_dlq"        # type: ignore # Cứu không được nữa thì vứt vào Nhà tù DLQ
         logger.info(f"🟢 [CHẾ ĐỘ: RETRY] Đọc từ {target_table} | Lỗi chuyển tiếp sang topic: '{error_topic}'")
         
-    logger.info(f"🚀 Bắt đầu nạp dữ liệu vào lakehouse trên topic {config.topic}") # type: ignore
+    logger.info(f"🚀 Bắt đầu nạp dữ liệu vào lakehouse trên topic {config.data_type}") # type: ignore
     
     loader = LakehouseLoader()
     with _get_session() as s, \
@@ -44,12 +44,10 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
                     # 3. Nếu API trả về ngon lành thì nhét vào giỏ
                     if formatted_msg:
                         buffer.append(formatted_msg)
-                        config.encountered_tickers.add(ticker) # type: ignore
                         
                         
                         
                 except RetryableAPIError as e:
-                    config.unsuccessful_tickers.add(ticker)
                     logger.warning(f"🔄 Đẩy tin nhắn vào {error_topic} do lỗi: {e}")
                     producer.single_message_data(
                         message=json.dumps(raw_record).encode('utf-8'),
@@ -65,7 +63,7 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
                         consumer._flush_and_commit(buffer)
         except Exception as e:
             logger.critical(f"🔥 Lỗi nghiêm trọng toàn cục: {e}", exc_info=True)
-            sys.exit(1)
+            raise e
         except KeyboardInterrupt:
             logger.warning("⏹️ Nhận lệnh dừng từ bàn phím (KeyboardInterrupt). Dừng quá trình nạp.")
         finally:            
@@ -78,7 +76,7 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
                     logger.info(f"dừng thành công sau khi đã xử lý nốt buffer còn sót lại.")
                 except Exception as e:
                     logger.critical(f"🔥 Lỗi nghiêm trọng khi xử lý buffer còn sót lại: {e}", exc_info=True)
-                    buffer.clear()
+                    raise e
             logger.info("✅ Không còn tin nào trong buffer. Dừng thành công!")
 
 
@@ -86,13 +84,16 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
                     
         
 def load_main(model_cls: type[BaseMetadata]):
-    with model_cls() as config: # type: ignore
-        logger.info(f"🚀 KHỞI ĐỘNG BATCH PIPELINE CHO: {config.topic}") # type: ignore
-        
-        # BƯỚC 1: Chạy mẻ chính
-        _load_main_message(config = config, mode="run_first")
-        time.sleep(10)
-        # BƯỚC 2: Chạy mẻ vét đáy
-        _load_main_message(config = config, mode="run_retry")
-        logger.info(f"✅ HOÀN THÀNH TOÀN BỘ BATCH PIPELINE TỐT ĐẸP!")
-    
+    try:
+        with model_cls() as config: # type: ignore
+            logger.info(f"🚀 KHỞI ĐỘNG BATCH PIPELINE CHO: {config.data_type}") 
+            
+            # BƯỚC 1: Chạy mẻ chính
+            _load_main_message(config = config, mode="run_first")
+            time.sleep(10)
+            # BƯỚC 2: Chạy mẻ vét đáy
+            _load_main_message(config = config, mode="run_retry")
+            logger.info(f"✅ HOÀN THÀNH TOÀN BỘ BATCH PIPELINE TỐT ĐẸP!")
+    except Exception as e:
+        logger.critical(f"🔥 Lỗi nghiêm trọng toàn cục: {e}", exc_info=True)
+        sys.exit(1)

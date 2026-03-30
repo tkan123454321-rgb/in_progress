@@ -21,8 +21,8 @@ models:
         data_tests:
           - unique
           - relationships: # Kiểm tra xem ticker này có tồn tại trong bảng gốc không
-            to: ref('silver_dim_company')
-            field: ticker
+              to: ref('silver_dim_company')
+              field: ticker
 
       - name: company_name
         data_type: varchar

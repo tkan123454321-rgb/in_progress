@@ -32,7 +32,7 @@ class LakehouseLoader(LakeHouseClient):
             logger.error(f"❌ Input không phải PyArrow Table, nhận được: {type(arrow_table)}")
             raise TypeError("Input bắt buộc phải là PyArrow Table")
 
-        table_name = f"bronze.{config.topic}"
+        table_name = f"bronze.{config.bronze_layer_name}" # type: ignore
 
         try:
             # 2. Bảng ĐÃ TỒN TẠI -> Load, Đồng bộ Schema và Ghi theo Mode
@@ -64,7 +64,7 @@ class LakehouseLoader(LakeHouseClient):
 
 
     def _put_original_ticker_list(self, model_cls: type[OriginalTickerList]):
-        config = model_cls() 
+        config = model_cls()  # type: ignore
         arrow_table = config._build_arrow_payload_lazy()
         self._put_lakehouse(
             config=config,

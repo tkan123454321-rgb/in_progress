@@ -14,22 +14,24 @@ from utils.logger_config import setup_logger
 
 # %%
 from ingestion.ingest_main import ingest_main
-from schema.producer_schema import KafkaMetadataHistoricalQuotes, KafkaMetadataFundamental, KafkaMetadataFinancialReports, KafkaMetadataBalanceSheet, KafkaMetadataCashFlowDirect, KafkaMetadataIncomeStatement, KafkaMetadataCashFlowIndirect
-from ingestion.generate_data_metadata import _generate_metadata_fundamental, _generate_metadata_historical, _generate_metadata_financial_reports
-financiel_model_list =[KafkaMetadataBalanceSheet, KafkaMetadataCashFlowDirect, KafkaMetadataIncomeStatement, KafkaMetadataCashFlowIndirect]
-for model_cls in financiel_model_list:
-    ingest_main(
-            model_cls=model_cls,
-            generate_metadata_callable=_generate_metadata_financial_reports,
-            ticker_list_mode="other_data"
-        )
+from load.load_main import load_main
+from schema.producer_schema import FinancialReportsYearBalanceSheet, FinancialReportsYearIncomeStatement, FinancialReportsYearCashFlowDirect, FinancialReportsYearCashFlowIndirect, FinancialReportsYear, BaseMetadata, HistoricalQuotes, FinancialReportsQuarterCashFlowDirect, FinancialReportsQuarterCashFlowIndirect, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterBalanceSheet
+financial_report_list = [
+    FinancialReportsQuarterBalanceSheet,
+    FinancialReportsQuarterIncomeStatement,
+    FinancialReportsQuarterCashFlowDirect,
+    FinancialReportsQuarterCashFlowIndirect,
+]
+for model_cls in financial_report_list:
+    load_main(
+        model_cls=model_cls,
+    )
+
 
 # %%
 from utils.other_utils import _get_session
-import polars as pl
-
 with _get_session() as s:
-    response = s.get("https://restv2.fireant.vn/symbols/AAA")
+    response = s.get("https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate=2026-03-03&endDate=2026-03-30&offset=0&limit=100")
     print(response.json())
     
 
@@ -61,5 +63,18 @@ from schema.producer_schema import OriginalTickerList
 loader = LakehouseLoader()
 loader._put_original_ticker_list(OriginalTickerList)
 # %%
-
+from utils.metadata_manager import MetadataManager
+from utils.postgres_client import PostgresClient
+from utils.lakehouse_client import LakeHouseClient
+pg_client = PostgresClient()
+lake_client = LakeHouseClient()
+with MetadataManager(pg_client=pg_client, lake_client=lake_client) as m:
+    with m.trino_conn.cursor() as cur:
+        cur.execute("SELECT 1, 2")
+        print(type(cur.fetchall()))
+# %%
+from load.lakehouse_loader import LakehouseLoader
+from schema.producer_schema import OriginalTickerList
+loader = LakehouseLoader()
+loader._put_original_ticker_list(OriginalTickerList)
 # %%

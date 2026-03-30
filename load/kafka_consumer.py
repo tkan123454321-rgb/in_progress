@@ -116,14 +116,12 @@ class KafkaStockConsumer(KafkaClient):
             logger.info(f"✅ Đã đẩy MinIO và Commit Kafka thành công | {topic_partitions}")
             
         except KafkaException as e:
-            error = e.args[0]
-            if error.retriable():
-                # Lỗi mạng Kafka tạm thời chập chờn. Không sao, 
-                # để nguyên buffer đó, tí nữa mẻ sau nó sẽ thử commit lại.
-                logger.warning(f"⚠️ Lỗi có thể retriable khi commit: {error}. Sẽ thử lại sau.")
+            err = e.args[0]
+            if err.code() == KafkaError._NO_OFFSET: # type: ignore
+                logger.warning("⏩ Không có offset mới để commit (có thể do mẻ lẻ). Bỏ qua an toàn.")
             else:
-                # Lỗi chí mạng (Sai group_id, bị kick khỏi nhóm...) -> Chết luôn!
-                logger.error(f"❌ Lỗi chí mạng khi commit offsets: {error}", exc_info=True)
+                # Nếu là lỗi khác (như mất mạng, broker sập) thì văng lỗi ra ngoài!
+                logger.error(f"❌ Lỗi chí mạng khi commit offsets: {err}")
                 raise e
         finally:
             buffer.clear()
@@ -148,7 +146,7 @@ class KafkaStockConsumer(KafkaClient):
             api_data = response.json()
             
             if not api_data:
-                logger.info(f"Ticker {ticker} không có dữ liệu. Bỏ qua.")
+                logger.info(f"Ticker {ticker} không có dữ liệu cho url {url}. Bỏ qua.")
                 return None
             else:
                 logger.info(f"✅ API trả về dữ liệu cho ticker {ticker}: {url}. Đang xử lý transform...")

@@ -49,51 +49,23 @@ ON finops.trino_finops_logs (cpu_time_s DESC NULLS LAST);
 
 
 ------------Job_ingestion------------------------------------------------------------------------------------------------- (Partition theo start_time)
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental_1 (
-    batch_id VARCHAR(50),
-    topic_name VARCHAR(50),
-    data_type VARCHAR(50),
-    ticker VARCHAR(20),
-    created_time TIMESTAMPTZ
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_kafka_state (
+    batch_id VARCHAR(50),         -- Mã của mẻ chạy (UUID)
+    data_type VARCHAR(50),        -- Loại dữ liệu (VD: balance_sheet)
+    ticker VARCHAR(20),           -- Mã chứng khoán (VD: DSE, VCB)
+    created_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Thời gian nạp thành công
+    
+    -- Thiết lập Khóa chính kép (Composite Primary Key)
+    -- Giúp đảm bảo mỗi mã chứng khoán ứng với 1 loại dữ liệu chỉ có 1 bản ghi tồn tại
+    PRIMARY KEY (ticker, data_type) 
 );
 
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_fundamental_2 (
-    batch_id VARCHAR(50),
-    topic_name VARCHAR(50),
-    data_type VARCHAR(50),
+CREATE TABLE IF NOT EXISTS ingestion.ingestion_watermark (
     ticker VARCHAR(20),
-    created_time TIMESTAMPTZ
-);
-
-
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_historical_quotes (
-    batch_id VARCHAR(50),
-    topic_name VARCHAR(50),
-    data_type VARCHAR(50),
-    ticker VARCHAR(20),
-    created_time TIMESTAMPTZ
-);
-
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_metadata_financial_reports (
-    batch_id VARCHAR(50),
-    topic_name VARCHAR(50),
-    data_type VARCHAR(50),
-    ticker VARCHAR(20),
-    created_time TIMESTAMPTZ
-);
-
-
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_historical_quotes_watermark (
-    ticker VARCHAR(20) PRIMARY KEY,
+    data_type VARCHAR(50), 
     ticker_status VARCHAR(20),
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-
--- 3. Xây lại bảng Watermark cho Financial Reports (Gọn gàng y hệt)
-CREATE TABLE IF NOT EXISTS ingestion.ingestion_financial_reports_watermark (
-    ticker VARCHAR(20) PRIMARY KEY,
-    ticker_status VARCHAR(20),
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (ticker, data_type)
 );
 
 -- thiết lập Part_man ------------------------------------------------------------------------------------------------

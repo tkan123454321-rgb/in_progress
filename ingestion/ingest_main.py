@@ -10,7 +10,7 @@ from utils.metadata_manager import MetadataManager
 logger = setup_logger(component="extract")
 type GeneratorFunc[T] = Callable[[T, Iterable[str]], Iterable[tuple[str, bytes]]]
 
-def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable: GeneratorFunc[T]) -> None:
+def ingest_main[T: BaseMetadata](model_cls: type[T]) -> None:
     BATCH_ID = str(uuid.uuid4())
     logger.info(f"🔖 Khởi tạo batch_id: {BATCH_ID} cho quá trình ingest này.")
     config = model_cls() # type: ignore
@@ -18,10 +18,10 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable:
         pg_client=PostgresClient(),
         lake_client=LakeHouseClient())
     try:
-        with metadata_manager as metadata_manager, StockTickerProducer.managed(topic_name=config.topic) as producer: # type: ignore
+        with metadata_manager as metadata_manager, StockTickerProducer.managed(topic_name=config.data_type) as producer: 
         # Lấy danh sách tổng và ép kiểu Set
-            ticker_list = metadata_manager._get_ticker_list_raw(mode=config.ticker_list_mode) # type: ignore
-            metadata_manager.cleanup_state_table(table_name=config.table_name_postgres) # type: ignore
+            ticker_list = metadata_manager._get_ticker_list_raw(mode=config.ticker_list_mode)  # type: ignore
+            metadata_manager.cleanup_kafka_state(table_name=config.table_name_postgres, data_type=config.data_type) # type: ignore
             missing_tickers = metadata_manager.get_missing_tickers(table_name=config.table_name_postgres, 
                                                                    tickers_set=ticker_list, 
                                                                    data_type=config.data_type # type: ignore
@@ -31,7 +31,7 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable:
                 return
             
             logger.info(f"🚀 Bắt đầu tạo và bắn {len(missing_tickers)} mã vào Kafka. Batch ID: {BATCH_ID}")
-            for ticker, metadata_items in config._generate_metadata_kafka(ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID): # type: ignore
+            for ticker, metadata_items in config._generate_kafka_message(ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID): # type: ignore
                 
                 # Bắn vào Kafka (Không cần truyền topic_name nữa vì Producer đã nhớ)
                 is_sent = producer.batch_message_data(
@@ -42,7 +42,7 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], generate_metadata_callable:
                 if not is_sent:
                     raise RuntimeError(f"❌ Mất kết nối/Lỗi Kafka khi bắn mã {ticker}. Ngừng toàn bộ batch!")
                     # Ghi nhận trạng thái vào DB (Chỉ cần 2 tham số, mọi thứ khác class tự lo)
-                metadata_manager.log_metadata_to_db(ticker=ticker, batch_id=BATCH_ID, topic=config.topic, data_type=config.data_type, table_name=config.table_name_postgres)                    # type: ignore
+                metadata_manager.log_metadata_to_db(ticker=ticker, batch_id=BATCH_ID, data_type=config.data_type, table_name=config.table_name_postgres)                    # type: ignore
             logger.info(f"🏁 Đã đẩy xong batch {BATCH_ID} vào Kafka. Chi tiết giám sát xem trên Grafana Dashboard.")
     except KeyboardInterrupt:
         logger.warning("⏹️ Nhận lệnh dừng từ bàn phím (KeyboardInterrupt). Dừng quá trình nạp.")
