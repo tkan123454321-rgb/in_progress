@@ -4,6 +4,6 @@ packages:
   - package: metaplane/dbt_expectations
     version: 0.10.10
   - package: elementary-data/elementary
-    version: 0.22.1
+    version: 0.23.0
   - package: dbt-labs/codegen
     version: 0.14.0

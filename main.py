@@ -29,11 +29,12 @@ for model_cls in financial_report_list:
 
 
 # %%
-from utils.other_utils import _get_session
-with _get_session() as s:
-    response = s.get("https://restv2.fireant.vn/symbols/VNM/historical-quotes?startDate=2026-03-03&endDate=2026-03-30&offset=0&limit=100")
-    print(response.json())
-    
+from utils.minio_maintenance import LakehouseMaintenance
+from utils.lakehouse_client import LakeHouseClient
+from utils.postgres_client import PostgresClient
+with LakehouseMaintenance(lake_client=LakeHouseClient(), pg_client=PostgresClient()) as maintenance:
+    maintenance.run_full_iceberg_maintenance()
+
 
 
 # %%

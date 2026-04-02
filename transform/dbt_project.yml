@@ -20,6 +20,7 @@ models:
       +schema: staging
     silver:
       +materialized: incremental
+      +views_enabled: false
       +schema: silver
       +enabled: true
     gold:

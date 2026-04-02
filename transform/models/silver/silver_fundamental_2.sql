@@ -3,6 +3,7 @@
     ) }}
 
 {% set fields = get_fundamental_columns('fundamental_2') %}
+{% set audit_cols = get_audit_columns('silver') %}
 
 with deduped_data as (
     SELECT 
@@ -54,5 +55,9 @@ SELECT
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
-    {{ generate_audit_columns('silver') }}
+    
+    {% for col in audit_cols %}
+    {{ col.expr }} AS {{ col.alias }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+    
 FROM applied_dq_rules

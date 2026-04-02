@@ -1,6 +1,7 @@
 {{ config(materialized='table') }}
 {% set fields1 = get_fundamental_columns('fundamental_1') %}
 {% set fields2 = get_fundamental_columns('fundamental_2') %}
+{% set audit_cols = get_audit_columns('gold') %}
 
 -- 2. Bốc 3 bảng Silver đã được dọn sạch lên
 WITH dim AS (
@@ -90,6 +91,9 @@ SELECT
     END AS status,
     gold_unqualified_reason,
     
-    {{ generate_audit_columns('gold') }}
+    -- Vòng lặp đẻ cột Audit cho lớp Gold
+    {% for col in audit_cols %}
+    {{ col.expr }} AS {{ col.alias }}{% if not loop.last %},{% endif %}
+    {% endfor %}
 
 FROM applied_gold_rules

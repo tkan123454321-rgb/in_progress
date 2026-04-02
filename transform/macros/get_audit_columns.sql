@@ -1,22 +1,28 @@
-{% macro generate_audit_columns(layer_name) %}
+{% macro get_audit_columns(layer_name) %}
 
     {% if layer_name == 'staging' %}
-        -- 1. Lớp Staging: Đổi tên cột gốc và đẻ ra 2 mốc đánh dấu mới
-        bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS bronze_ingested_time,
-        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS staged_at,
-        '{{ invocation_id }}' AS staging_invocation_id
+        {{ return([
+            {'alias': 'bronze_ingested_time', 'expr': "bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': True, 'is_from_staging': False},
+            {'alias': 'staged_at', 'expr': "CAST(from_iso8601_timestamp('" ~ run_started_at.isoformat() ~ "') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': False, 'is_from_staging': False},
+            {'alias': 'staging_invocation_id', 'expr': "'" ~ invocation_id ~ "'", 'needs_agg': False, 'is_from_staging': False}
+        ]) }}
 
     {% elif layer_name == 'silver' %}
-        -- 2. Lớp Silver: Chỉ GỌI TÊN 3 cột cũ để kéo lên, và đẻ thêm 2 cột mới
-        bronze_ingested_time,
-        staged_at,
-        staging_invocation_id,
-        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS silver_updated_at,
-        '{{ invocation_id }}' AS silver_invocation_id
+        {{ return([
+            {'alias': 'bronze_ingested_time', 'expr': 'bronze_ingested_time', 'needs_agg': True, 'is_from_staging': False},
+            
+            {'alias': 'staged_at', 'expr': 'staged_at', 'needs_agg': True, 'is_from_staging': True},
+            {'alias': 'staging_invocation_id', 'expr': 'staging_invocation_id', 'needs_agg': True, 'is_from_staging': True},
+            
+            {'alias': 'silver_updated_at', 'expr': "CAST(from_iso8601_timestamp('" ~ run_started_at.isoformat() ~ "') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': False, 'is_from_staging': False},
+            {'alias': 'silver_invocation_id', 'expr': "'" ~ invocation_id ~ "'", 'needs_agg': False, 'is_from_staging': False}
+        ]) }}
 
     {% elif layer_name == 'gold' %}
-        CAST(from_iso8601_timestamp('{{ run_started_at.isoformat() }}') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' AS gold_updated_at,
-        '{{ invocation_id }}' AS gold_invocation_id
+        {{ return([
+            {'alias': 'gold_updated_at', 'expr': "CAST(from_iso8601_timestamp('" ~ run_started_at.isoformat() ~ "') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': False, 'is_from_staging': False},
+            {'alias': 'gold_invocation_id', 'expr': "'" ~ invocation_id ~ "'", 'needs_agg': False, 'is_from_staging': False}
+        ]) }}
 
     {% else %}
         {{ exceptions.raise_compiler_error("Tên layer_name không hợp lệ! Hãy chọn 'staging', 'silver', hoặc 'gold'.") }}

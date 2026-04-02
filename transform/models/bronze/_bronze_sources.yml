@@ -38,6 +38,15 @@ sources:
             error_after:
               count: 60
               period: day
+      
+      - name: financial_reports_quarter
+        description: "Quarterly financial statements (Income Statement, Balance Sheet, Cash Flow) of listed companies. Stored in an Entity-Attribute-Value (EAV) format."
+        config:
+          loaded_at_field: bronze_ingested_time
+        freshness:
+          warn_after: {count: 120, period: day}
+          error_after: {count: 180, period: day}
+
      
       
 

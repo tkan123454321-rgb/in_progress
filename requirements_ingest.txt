@@ -1,31 +1,27 @@
-confluent-kafka
-python-dateutil
-pytz
+confluent-kafka==2.13.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
 
-vnstock
+vnstock==3.4.2
 
-psycopg[binary]
-connectorx
+psycopg[binary]==3.3.3
+connectorx==0.4.5
 
+requests==2.32.5
+python-dotenv==1.2.1
+PyYAML==6.0.3
+pydantic==2.12.5
+tenacity==9.1.3
 
+python-json-logger==4.0.0
+python-logging-loki==0.3.1
+boto3==1.42.42
 
-requests
-python-dotenv
-pyyaml
-pydantic
-tenacity
+polars==1.38.1
+pyarrow==23.0.0
+pyiceberg[s3fs,pyarrow,polars]==0.10.0
+ipykernel==7.2.0
 
-
-
-python-json-logger
-python-logging-loki
-boto3
-
-polars
-pyarrow
-pyiceberg[s3fs,pyarrow,polars]
-ipykernel
-
-fastavro
-cython
-trino
+fastavro==1.12.1
+Cython==3.2.4
+trino==0.336.0
