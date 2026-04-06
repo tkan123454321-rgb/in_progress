@@ -26,6 +26,7 @@ class LakeHouseClient:
         "bronze", 
         "staging", 
         "silver", 
+        "intermediate",
         "gold"
     ]
     

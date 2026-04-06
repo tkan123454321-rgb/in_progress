@@ -53,6 +53,14 @@ FINANCIAL_REPORTS_SCHEMA = Schema(
     *COMMON_META_FIELDS  # Tự động nhét 7 cột hệ thống vào đây
 )
 
+FUNDAMENTAL_QUARTER_SCHEMA = Schema(
+    NestedField(field_id=1, name="ticker", field_type=StringType(), required=False),
+    NestedField(field_id=2, name="year", field_type=IntegerType(), required=False),
+    NestedField(field_id=3, name="quarter", field_type=IntegerType(), required=False),
+    NestedField(field_id=4, name="value", field_type=StringType(), required=False), # Lưu JSON dưới dạng chuỗi String
+    *COMMON_META_FIELDS  # Tự động nhét 7 cột hệ thống vào đây
+)
+
 # =======================================================================
 # 3. ĐỊNH NGHĨA PARTITION & SORT (Gộp làm 1 duy nhất)
 # =======================================================================
@@ -123,6 +131,11 @@ TABLE_REGISTRY = {
     "financial_reports_year": {
         "schema": FINANCIAL_REPORTS_SCHEMA,
         "partition_spec": FINANCIAL_REPORTS_PARTITION, # 💡 Thay bằng spec mới
+        "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
+    },
+    "fundamental_quarter": {
+        "schema": FUNDAMENTAL_QUARTER_SCHEMA,
+        "partition_spec": PARTITION_BY_REPORT_YEAR, # Dùng IdentityTransform vì year đã là Integer
         "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
     }
 }

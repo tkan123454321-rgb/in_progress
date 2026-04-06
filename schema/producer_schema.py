@@ -357,6 +357,89 @@ class FinancialReportsQuarter(BaseMetadata):
     ])
         return df.collect().to_arrow()
 
+class FundamentalQuarter(FinancialReportsQuarter):
+    data_type: str = "fundamental_quarter"
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/financial-data?type=Q&count={limit}"
+    bronze_layer_name: str = "fundamental_quarter"
+    
+    
+    @computed_field
+    def url(self) -> str:
+        return self.url_template.format(
+            source=self.source, 
+            ticker=self.ticker, 
+            limit=self.default_limit,
+        )
+    
+    def _generate_kafka_message(self,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
+)-> Iterable[Tuple[str, List[bytes]]]:
+        if not self.table_watermark_name_postgres:
+            raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+        metadata_manager.sync_watermark(config=self) 
+        for ticker in ticker_list:
+            start_date = metadata_manager._get_smart_start_date(ticker, config=self) 
+            start_year = start_date.year
+            start_quarter = math.ceil(start_date.month / 3)
+            limit = (self.target_year - start_year) * 4 + (self.target_quarter - start_quarter) 
+            limit += 2
+            if limit <= 0:
+                logger.warning(
+                    f"[FINANCIAL_REPORTS][SKIP_TICKER] Bỏ qua mã {ticker:<5} | "
+                    f"Lý do: Watermark DB (Q{start_quarter}/{start_year}: {start_date}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
+                    f"Calc_Limit: {limit} <= 0"
+                )
+                continue
+
+            ticker, message_bytes = self._create_kafka_message(
+                ticker=ticker,
+                limit=limit,
+                batch_id=batch_id
+            )
+            # Nhét vào giỏ
+            yield ticker, [message_bytes]
+    
+    def _create_kafka_message(self, ticker: str, limit: int, batch_id: str) -> Tuple[str, bytes]:
+        
+        updated_instance = self.model_copy(update={
+            "ticker": ticker, 
+            "default_limit": limit,
+            "batch_id": batch_id
+        })
+        
+        message_bytes = updated_instance.model_dump_json(
+            include={ 
+                "ticker", "batch_id", "data_type", "source", 
+                "created_at_ts", "url" 
+            },
+            ensure_ascii=False
+        ).encode('utf-8')
+        return ticker, message_bytes
+    
+
+    def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
+        # Khởi tạo LazyFrame từ list các message Kafka
+        lf = pl.LazyFrame(buffer)
+        
+        df = (
+            lf.explode("data")   # 1. Tách list các quý thành từng dòng
+            .unnest("data")    # 2. Đập vỡ vỏ bọc để lòi ra year, quarter, financialValues...
+            .select([
+                # --- Các cột Metadata (Giữ nguyên như schema cũ của bác) ---
+                pl.col("ticker"),
+                pl.col("batch_id"),
+                pl.col("data_type"),
+                pl.col("source"),
+                pl.col("url"),
+                pl.col("year").cast(pl.Int32),
+                pl.col("quarter").cast(pl.Int32),
+                pl.col("financialValues").struct.json_encode().alias("value"),
+                pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
+                pl.col("message_processed_time"),
+                pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
+            ])
+        )
+        return df.collect().to_arrow()
+    
 class FinancialReportsQuarterBalanceSheet(FinancialReportsQuarter):
     data_type: str = "balance_sheet_quarter"
     type_id: int = 1

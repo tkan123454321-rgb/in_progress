@@ -23,6 +23,11 @@
             {'alias': 'gold_updated_at', 'expr': "CAST(from_iso8601_timestamp('" ~ run_started_at.isoformat() ~ "') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': False, 'is_from_staging': False},
             {'alias': 'gold_invocation_id', 'expr': "'" ~ invocation_id ~ "'", 'needs_agg': False, 'is_from_staging': False}
         ]) }}
+    {% elif layer_name == 'intermediate' %}
+        {{ return([
+            {'alias': 'int_updated_at', 'expr': "CAST(from_iso8601_timestamp('" ~ run_started_at.isoformat() ~ "') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh'", 'needs_agg': False, 'is_from_staging': False},
+            {'alias': 'int_invocation_id', 'expr': "'" ~ invocation_id ~ "'", 'needs_agg': False, 'is_from_staging': False}
+        ]) }}
 
     {% else %}
         {{ exceptions.raise_compiler_error("Tên layer_name không hợp lệ! Hãy chọn 'staging', 'silver', hoặc 'gold'.") }}

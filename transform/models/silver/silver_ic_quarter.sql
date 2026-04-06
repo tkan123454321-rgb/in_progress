@@ -65,15 +65,7 @@ pivoted_data AS (
 --bước 3: Áp dụng quy tắc DQ để tạo cột unqualified_reason
 applied_dq_rules AS (
     SELECT *,
-        NULLIF(
-            CONCAT_WS(', ',
-                {% for ind in indicators %}
-                    CASE WHEN {{ ind.alias }} IS NULL THEN '{{ ind.alias }} is null' END
-                    {% if not loop.last %},{% endif %}
-                {% endfor %}
-            ), 
-            '' -- THÊM DÒNG NÀY ĐỂ NULLIF HOẠT ĐỘNG
-        ) AS unqualified_reason
+        {{ dq_check_financial_reports('income_statement') }} AS unqualified_reason
     FROM pivoted_data
 )
 SELECT 
@@ -81,17 +73,22 @@ SELECT
     year,
     quarter,
     
+    -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
     {% for ind in indicators %}
-        {{ ind.alias }},
+        COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
     {% endfor %}
 
-    {% for col in audit_cols if not col.is_from_staging %}
-        {{ col.alias }}{% if not loop.last %},{% endif %}
-    {% endfor %},
+    -- Cột Audit
+    {% for col in audit_cols %}
+        {% if not col.is_from_staging %}
+            {{ col.alias }},
+        {% endif %}
+    {% endfor %}
     
+    -- Đánh cờ trạng thái
     CASE 
-        WHEN unqualified_reason IS NOT NULL THEN 'unqualified' 
-        ELSE 'qualified' 
+        WHEN unqualified_reason IS NULL THEN 'qualified'
+        ELSE 'unqualified'
     END AS status,
     unqualified_reason
 FROM applied_dq_rules

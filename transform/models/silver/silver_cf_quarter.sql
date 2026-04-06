@@ -6,7 +6,7 @@
     incremental_strategy='merge'
 ) }}
 
-{% set indicators = get_financial_reports_column('cash_flow') %}
+{% set indicators = get_financial_reports_column('cash_flow_indirect') %}
 {% set audit_cols = get_audit_columns('silver') %} 
 {% set is_pivot = true %}
 
@@ -14,12 +14,12 @@
 WITH deduped_bronze AS (
     SELECT *,
             ROW_NUMBER() OVER (
-                PARTITION BY ticker, year, quarter, data_type, indicator_id 
+                PARTITION BY ticker, year, quarter, indicator_id 
                 ORDER BY bronze_ingested_time DESC 
             ) as rn
         FROM {{ source('bronze', 'financial_reports_quarter') }}
         WHERE year >= 2018 
-          AND data_type IN ('cash_flow_indirect_quarter', 'cash_flow_direct_quarter')
+          AND data_type IN ('cash_flow_indirect_quarter')
     {% if is_incremental() %}
         AND bronze_ingested_time > (
             SELECT COALESCE(MAX(bronze_ingested_time), CAST('1900-01-01 00:00:00 UTC' AS TIMESTAMP WITH TIME ZONE)) 
@@ -56,12 +56,6 @@ pivoted_data AS (
         {% endif %}
     {% endfor %}
 
-    {% for ind in indicators %}
-        {% if ind.check_conflict %}
-    , COUNT(DISTINCT CASE WHEN indicator_id = {{ ind.id }} THEN CAST(value AS {{ ind.type }}) END) AS conflict_check_{{ ind.alias }}
-        {% endif %}
-    {% endfor %}
-
     FROM deduped_bronze
     WHERE rn = 1 
     GROUP BY ticker, year, quarter
@@ -69,30 +63,7 @@ pivoted_data AS (
 -- BƯỚC 3: lọc null, lọc conflict rows, và đánh dấu unqualified reason
 applied_dq_rules AS (
     SELECT *,
-            NULLIF(
-                    CONCAT_WS(', ',
-                        {% for ind in indicators %}
-                            {% if ind.check_conflict %}
-                        CASE WHEN conflict_check_{{ ind.alias }} > 1 THEN 'Data Conflict: {{ ind.alias }} differs between reports' END,
-                            {% endif %}
-                        {% endfor %}
-
-                        {% for ind in indicators %}
-                            {% if ind.is_mandatory %}
-                        CASE WHEN {{ ind.alias }} IS NULL THEN '{{ ind.alias }} is null' END,
-                            {% endif %}
-                        {% endfor %}
-
-                        {% for ind in indicators %}
-                            {% if ind.must_be_positive %}
-                        CASE WHEN {{ ind.alias }} IS NOT NULL AND {{ ind.alias }} < 0 THEN '{{ ind.alias }} is negative' END,
-                            {% endif %}
-                        {% endfor %}
-                        CASE WHEN cfo_indirect IS NULL AND cfo_direct IS NULL THEN 'Both CFO Indirect and Direct are null' END,
-                        NULL
-                    ), 
-            ''
-        ) AS unqualified_reason
+        {{ dq_check_financial_reports('cash_flow_indirect') }} AS unqualified_reason
     FROM pivoted_data
 )
 
@@ -100,20 +71,26 @@ SELECT
     ticker,
     year,
     quarter,
+    
+    -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
     {% for ind in indicators %}
-        {{ ind.alias }},
+        COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
     {% endfor %}
 
+    -- Cột Audit
     {% for col in audit_cols %}
         {% if not col.is_from_staging %}
             {{ col.alias }},
         {% endif %}
     {% endfor %}
+    
+    -- Đánh cờ trạng thái
     CASE 
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
     unqualified_reason
+
 FROM applied_dq_rules
 
     

@@ -23,6 +23,12 @@ models:
       +views_enabled: false
       +schema: silver
       +enabled: true
+      +tags: ["silver", "cleansed_data"]
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+      +enabled: true
+      +tags: ["intermediate", "cleansed_data"]
     gold:
       +schema: gold
       +materialized: table
