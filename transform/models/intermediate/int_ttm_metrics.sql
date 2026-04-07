@@ -44,7 +44,8 @@ WITH ttm_calc AS (
         long_term_debt,
         market_cap,
         shares_outstanding,
-        preferred_stock
+        preferred_stock,
+        retained_earnings
 
         {% set audit_cols = get_audit_columns('intermediate') %}
         {% for col in audit_cols %}
@@ -60,13 +61,15 @@ WITH ttm_calc AS (
 rf_rate AS (
     SELECT 
         absolute_quarter,
-        risk_free_rate
+        risk_free_rate,
+        cpi_index
     FROM {{ ref('macro_risk_free_rate') }}
 )
 
 SELECT 
     t.*,
     r.risk_free_rate,
+    r.cpi_index,
     -- 6. GÁN NHÃN SỐ PHẬN CHUẨN XÁC
     CASE 
         WHEN quarter_gap = 3 THEN 'valid_ttm'

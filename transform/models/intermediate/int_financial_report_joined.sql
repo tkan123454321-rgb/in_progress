@@ -59,6 +59,7 @@ joined_data AS (
         bs.total_liabilities,
         bs.short_term_debt,
         bs.long_term_debt,
+        bs.retained_earnings,
 
         -- 4. NHẶT NGUYÊN LIỆU TỪ CASH FLOW
         cf.cfo,

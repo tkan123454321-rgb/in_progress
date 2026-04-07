@@ -33,6 +33,34 @@
                 CASE WHEN delta_gmar IS NULL THEN 'delta_gmar is null' ELSE NULL END
             ), 
         '')
+    {% elif factor_type == 'o_score_safety' %} 
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Check NULL cho 8 chỉ số O-Score
+                CASE WHEN quarter_gap_4 IS NULL OR quarter_gap_4 != 4 
+                    THEN 'Err: Broken history for O-Score (Gap != 4)' 
+                    ELSE NULL END,
+                CASE WHEN log_size IS NULL THEN 'log_size is null (Check Assets/CPI)' ELSE NULL END,
+                CASE WHEN tlta IS NULL THEN 'tlta is null' ELSE NULL END,
+                CASE WHEN wcta IS NULL THEN 'wcta is null' ELSE NULL END,
+                CASE WHEN clca IS NULL THEN 'clca is null' ELSE NULL END,
+                CASE WHEN oeneg IS NULL THEN 'oeneg is null' ELSE NULL END,
+                CASE WHEN nita IS NULL THEN 'nita is null' ELSE NULL END,
+                CASE WHEN futl IS NULL THEN 'futl is null' ELSE NULL END,
+                CASE WHEN intwo IS NULL THEN 'intwo is null' ELSE NULL END,
+                CASE WHEN chin IS NULL THEN 'chin is null' ELSE NULL END
+            ), 
+        '')
+    {% elif factor_type == 'z_score_safety' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Altman dùng data tại chỗ, không cần Lag, chỉ cần check các biến thành phần
+                CASE WHEN working_capital IS NULL THEN 'wc is null' ELSE NULL END,
+                CASE WHEN retained_earnings IS NULL THEN 're is null' ELSE NULL END,
+                CASE WHEN ebit_ttm IS NULL THEN 'ebit is null' ELSE NULL END,
+                CASE WHEN market_cap IS NULL THEN 'market_cap is null' ELSE NULL END,
+                CASE WHEN net_revenue_ttm IS NULL THEN 'revenue is null' ELSE NULL END
+            ), '')
     {% endif %}
 
 {% endmacro %}
