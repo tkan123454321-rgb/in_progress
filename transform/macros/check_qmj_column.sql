@@ -17,6 +17,22 @@
                 CASE WHEN acc IS NULL THEN 'acc is null' ELSE NULL END
             ), 
         '')
+    {% elif factor_type == 'growth' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Check gap 16 quý (4 năm) để đảm bảo không bị đứt gãy data
+                CASE WHEN quarter_gap_16 IS NULL OR quarter_gap_16 != 16 
+                    THEN 'Err: Broken history for Growth (Gap != 16)' 
+                    ELSE NULL END,
+
+                -- Check NULL cho 5 chỉ số tăng trưởng
+                CASE WHEN delta_gpoa IS NULL THEN 'delta_gpoa is null' ELSE NULL END,
+                CASE WHEN delta_roe IS NULL THEN 'delta_roe is null' ELSE NULL END,
+                CASE WHEN delta_roa IS NULL THEN 'delta_roa is null' ELSE NULL END,
+                CASE WHEN delta_cfoa IS NULL THEN 'delta_cfoa is null' ELSE NULL END,
+                CASE WHEN delta_gmar IS NULL THEN 'delta_gmar is null' ELSE NULL END
+            ), 
+        '')
     {% endif %}
 
 {% endmacro %}
@@ -33,6 +49,17 @@
                 CASE WHEN z_gmar IS NULL THEN 'z_gmar is null' ELSE NULL END,
                 CASE WHEN z_cfoa IS NULL THEN 'z_cfoa is null' ELSE NULL END,
                 CASE WHEN z_acc IS NULL THEN 'z_acc is null' ELSE NULL END
+             ), 
+        '')
+    {% elif factor_type == 'growth' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- CHECK NULL CHO 5 Z-SCORE ĐÃ TÍNH TOÁN
+                CASE WHEN z_delta_gpoa IS NULL THEN 'z_delta_gpoa is null' ELSE NULL END,
+                CASE WHEN z_delta_roe IS NULL THEN 'z_delta_roe is null' ELSE NULL END,
+                CASE WHEN z_delta_roa IS NULL THEN 'z_delta_roa is null' ELSE NULL END,
+                CASE WHEN z_delta_gmar IS NULL THEN 'z_delta_gmar is null' ELSE NULL END,
+                CASE WHEN z_delta_cfoa IS NULL THEN 'z_delta_cfoa is null' ELSE NULL END
              ), 
         '')
     {% endif %}

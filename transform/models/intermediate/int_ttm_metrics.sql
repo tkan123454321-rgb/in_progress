@@ -56,13 +56,22 @@ WITH ttm_calc AS (
     WINDOW 
         w_ttm AS (PARTITION BY ticker ORDER BY year, quarter ROWS BETWEEN 3 PRECEDING AND CURRENT ROW),
         w_window AS (PARTITION BY ticker ORDER BY year, quarter)
+),
+rf_rate AS (
+    SELECT 
+        absolute_quarter,
+        risk_free_rate
+    FROM {{ ref('macro_risk_free_rate') }}
 )
 
 SELECT 
-    *,
+    t.*,
+    r.risk_free_rate,
     -- 6. GÁN NHÃN SỐ PHẬN CHUẨN XÁC
     CASE 
         WHEN quarter_gap = 3 THEN 'valid_ttm'
         ELSE 'broken_ttm' 
     END AS ttm_status
-FROM ttm_calc
+FROM ttm_calc t
+LEFT JOIN rf_rate r 
+ON t.absolute_quarter = r.absolute_quarter

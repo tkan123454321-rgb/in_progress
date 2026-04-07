@@ -2,3 +2,4 @@ dbt-trino==1.10.1
 dbt-core==1.11.3
 sqlfmt==0.0.3
 elementary-data==0.22.0
+pandas==3.0.2

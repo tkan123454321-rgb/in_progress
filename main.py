@@ -75,7 +75,7 @@ with MetadataManager(pg_client=pg_client, lake_client=lake_client) as m:
 # %%
 from utils.other_utils import _get_session
 with _get_session() as session:
-    response = session.get("https://restv2.fireant.vn/symbols/HT1/financial-data?type=Q&count=34")
+    response = session.get("https://www.worldgovernmentbonds.com/wp-json/common/v1/historical")
     print(response.json())
 # %%
 import polars as pl

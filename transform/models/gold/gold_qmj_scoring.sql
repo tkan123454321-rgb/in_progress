@@ -5,7 +5,7 @@
 
 
 WITH intermediate_data AS (
-    SELECT * FROM {{ ref('int_qmj_scoring') }}
+    SELECT * FROM {{ ref('int_qmj_scoring_profitability') }}
     WHERE status = 'qualified' -- Chỉ lấy hàng tuyển lên lớp Gold
 ),
 
