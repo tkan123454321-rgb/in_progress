@@ -4,9 +4,18 @@
     order_by=['ticker', 'date'] 
 ) }}
 
-WITH daily_data AS (
+WITH daily_data_raw AS (
     SELECT * FROM {{ ref('int_qmj_beta_vol') }} -- Trỏ vào bảng vol bác vừa làm xong
     WHERE status = 'qualified'
+),
+daily_data AS (
+    -- Bước 2: Dùng hàm bác tìm được để loại bỏ 2 cột gây tranh chấp
+    SELECT * FROM TABLE(
+        exclude_columns(
+            input => TABLE(daily_data_raw),
+            columns => DESCRIPTOR(status, unqualified_reason)
+        )
+    )
 ),
 three_day_calculation AS (
     -- Bước 1: Tính Lợi nhuận gộp 3 ngày (Overlapping)
@@ -51,11 +60,42 @@ applied_dq_rules AS (
         -- Gọi Macro DQ cho bước tính Beta
         {{ check_qmj_column('beta_final_calculation') }} AS unqualified_reason
     FROM final_beta_logic
-)
+),
+quarter_data AS(
+    SELECT 
+        ticker,
+        date,
+        EXTRACT(YEAR FROM date) AS year,
+        EXTRACT(QUARTER FROM date) AS quarter,
+        (EXTRACT(YEAR FROM date) * 4) + EXTRACT(QUARTER FROM date) AS absolute_quarter,
+        vol_stock_1y,
+        vol_mkt_1y,
+        stock_ret_3d,
+        mkt_ret_3d,
+        rho_4y,
+        count_corr_days,
+        beta_ts,
+        (0.6 * beta_ts + (0.4 * 1.0)) AS beta_final,
+        -1 * ((0.6 * beta_ts) + 0.4) AS bab_score,
 
+        -- Data Quality columns
+        CASE 
+            WHEN unqualified_reason IS NULL THEN 'qualified'
+            ELSE 'unqualified'
+        END AS status,
+        unqualified_reason,
+        ROW_NUMBER() OVER (
+                PARTITION BY ticker, EXTRACT(YEAR FROM date), EXTRACT(QUARTER FROM date) 
+                ORDER BY date DESC
+            ) AS rn
+
+    FROM applied_dq_rules
+)
 SELECT 
     ticker,
-    date,
+    year,
+    quarter,
+    absolute_quarter,
     vol_stock_1y,
     vol_mkt_1y,
     stock_ret_3d,
@@ -63,18 +103,14 @@ SELECT
     rho_4y,
     count_corr_days,
     beta_ts,
-    (0.6 * beta_ts + (0.4 * 1.0)) AS beta_final,
-
-    -- Data Quality columns
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
+    beta_final,
+    bab_score,
+    status,
     unqualified_reason
-    -- Audit Columns
+    
     {% set audit_cols = get_audit_columns('intermediate') %}
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
-
-FROM applied_dq_rules
+FROM quarter_data
+WHERE rn = 1 

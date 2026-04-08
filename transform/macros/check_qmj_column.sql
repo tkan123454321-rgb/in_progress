@@ -84,6 +84,20 @@
                 NULL
             ), 
         '')
+    {% elif factor_type == 'safety' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Check lịch sử EVOL trước
+                CASE WHEN count_roe_quarters < 12 THEN 'Err: Not enough ROE history for EVOL (<12 quarters)' ELSE NULL END,
+
+                -- Check 5 thành phần cốt lõi của Safety
+                CASE WHEN bab_score IS NULL THEN 'missing_bab_score' ELSE NULL END,
+                CASE WHEN altman_z_score IS NULL THEN 'missing_altman_z_score' ELSE NULL END,
+                CASE WHEN ohlson_o_score IS NULL THEN 'missing_ohlson_o_score' ELSE NULL END,
+                CASE WHEN lev_score IS NULL THEN 'missing_lev_score' ELSE NULL END,
+                CASE WHEN evol_raw IS NULL THEN 'missing_evol' ELSE NULL END
+            ), 
+        '')
     {% endif %}
 
 {% endmacro %}
@@ -111,6 +125,26 @@
                 CASE WHEN z_delta_roa IS NULL THEN 'z_delta_roa is null' ELSE NULL END,
                 CASE WHEN z_delta_gmar IS NULL THEN 'z_delta_gmar is null' ELSE NULL END,
                 CASE WHEN z_delta_cfoa IS NULL THEN 'z_delta_cfoa is null' ELSE NULL END
+             ), 
+        '')
+    {% elif factor_type == 'safety' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- CHECK NULL CHO 5 Z-SCORE ĐÃ TÍNH TOÁN CỦA NHÓM SAFETY
+                CASE WHEN z_bab IS NULL THEN 'z_bab is null' ELSE NULL END,
+                CASE WHEN z_lev IS NULL THEN 'z_lev is null' ELSE NULL END,
+                CASE WHEN z_o IS NULL THEN 'z_o is null' ELSE NULL END,
+                CASE WHEN z_z IS NULL THEN 'z_z is null' ELSE NULL END,
+                CASE WHEN z_evol IS NULL THEN 'z_evol is null' ELSE NULL END
+             ), 
+        '')
+    {% elif factor_type == 'qmj_final' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- CHECK ĐỦ 3 CHÂN KIỀNG CỦA CHỈ SỐ CHẤT LƯỢNG
+                CASE WHEN qmj_profitability_score IS NULL THEN 'Missing Profitability Score' ELSE NULL END,
+                CASE WHEN qmj_growth_score IS NULL THEN 'Missing Growth Score' ELSE NULL END,
+                CASE WHEN qmj_safety_score IS NULL THEN 'Missing Safety Score' ELSE NULL END
              ), 
         '')
     {% endif %}
