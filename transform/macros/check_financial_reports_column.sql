@@ -148,6 +148,25 @@
                 CASE WHEN market_cap = 0 THEN 'Err: Market Cap is zero' ELSE NULL END
             ), 
         '')
+    {% elif report_type == 'historical_quotes' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- 1. TỰ ĐỘNG CHECK NULL CÁC CỘT BẮT BUỘC (price_basic, price_close, ticker...)
+                {% for ind in indicators %}
+                    {% if ind.is_mandatory %}
+                CASE WHEN {{ ind.alias }} IS NULL THEN '{{ ind.alias }} is mandatory but null' ELSE NULL END,
+                    {% endif %}
+                {% endfor %}
+
+                -- 2. TỰ ĐỘNG CHECK LUẬT KHÔNG ĐƯỢC ÂM (các loại giá, volume)
+                {% for ind in indicators %}
+                    {% if ind.must_be_positive %}
+                CASE WHEN {{ ind.alias }} < 0 THEN '{{ ind.alias }} cannot be negative' ELSE NULL END,
+                    {% endif %}
+                {% endfor %}
+                NULL
+            ), 
+        '')
     {% endif %}
 
 {% endmacro %}

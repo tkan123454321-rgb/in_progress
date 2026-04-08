@@ -57,6 +57,17 @@ sources:
             error_after:
               count: 180
               period: day
+      - name: historical_quotes
+        description: "Historical daily stock price data for listed companies, including open, high, low, close prices, and trading volume. This data is essential for time-series analysis and modeling."
+        config:
+          loaded_at_field: bronze_ingested_time
+          freshness:
+            warn_after: 
+              count: 7
+              period: day
+            error_after: 
+              count: 30
+              period: day
 
      
       

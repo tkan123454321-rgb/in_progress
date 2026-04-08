@@ -3,7 +3,7 @@ import json
 import os
 import polars as pl
 from pydantic import AliasPath, BaseModel, ConfigDict, computed_field, Field, ValidationError
-from typing import Any, ClassVar, Dict, List, Tuple, TypeVar, Set, Iterable, Optional
+from typing import Any, ClassVar, Dict, List, Tuple, TypeVar, Set, Iterable, Optional, Literal
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 import uuid
@@ -29,7 +29,7 @@ class BaseMetadata(BaseModel,ABC):
         extra='ignore'
     )
     
-    ticker_list_mode: str = "other_data" # default, có thể override ở class con nếu muốn
+    ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "other_data" # default, có thể override ở class con nếu muốn
     batch_size: int 
     table_name_postgres: str = "ingestion_kafka_state"
     table_watermark_name_postgres: Optional[str] = "ingestion_watermark"
@@ -265,6 +265,10 @@ class HistoricalQuotes(BaseMetadata):
         ]
         )
         return df.collect().to_arrow()
+
+class VNINDEXHistoricalQuotes(HistoricalQuotes):
+    ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "vnindex"
+    
 
 class FinancialReportsQuarter(BaseMetadata):
     bronze_layer_name: str = "financial_reports_quarter"

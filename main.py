@@ -15,7 +15,7 @@ from utils.logger_config import setup_logger
 # %%
 from ingestion.ingest_main import ingest_main
 from load.load_main import load_main
-from schema.producer_schema import FinancialReportsYearBalanceSheet, FinancialReportsYearIncomeStatement, FinancialReportsYearCashFlowDirect, FinancialReportsYearCashFlowIndirect, FinancialReportsYear, BaseMetadata, HistoricalQuotes, FinancialReportsQuarterCashFlowDirect, FinancialReportsQuarterCashFlowIndirect, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterBalanceSheet, FundamentalQuarter
+from schema.producer_schema import FinancialReportsYearBalanceSheet, FinancialReportsYearIncomeStatement, FinancialReportsYearCashFlowDirect, FinancialReportsYearCashFlowIndirect, FinancialReportsYear, BaseMetadata, HistoricalQuotes, FinancialReportsQuarterCashFlowDirect, FinancialReportsQuarterCashFlowIndirect, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterBalanceSheet, FundamentalQuarter, VNINDEXHistoricalQuotes
 financial_report_list = [
     FinancialReportsQuarterBalanceSheet,
     FinancialReportsQuarterIncomeStatement,
@@ -23,7 +23,7 @@ financial_report_list = [
     FinancialReportsQuarterCashFlowIndirect,
 ]
 load_main(
-        model_cls=FundamentalQuarter,
+        model_cls=VNINDEXHistoricalQuotes,
     )
 
 

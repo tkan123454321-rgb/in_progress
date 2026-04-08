@@ -61,6 +61,29 @@
                 CASE WHEN market_cap IS NULL THEN 'market_cap is null' ELSE NULL END,
                 CASE WHEN net_revenue_ttm IS NULL THEN 'revenue is null' ELSE NULL END
             ), '')
+     {% elif factor_type == 'beta_volatility' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- 1. Check phép tính Log Return có bị NULL do lỗi chia 0 không
+                CASE WHEN stock_ret IS NULL THEN 'stock_ret (log return) is null' ELSE NULL END,
+                CASE WHEN mkt_ret IS NULL THEN 'mkt_ret (market log return) is null' ELSE NULL END,
+                
+                -- 2. Check luật 120 ngày của giáo sư AQR
+                CASE WHEN count_trading_days < 120 THEN 'Err: Not enough trading days (<120)' ELSE NULL END,
+                
+                -- 3. Check kết quả Độ lệch chuẩn cuối cùng
+                CASE WHEN vol_stock_1y IS NULL THEN 'vol_stock_1y is null' ELSE NULL END,
+                CASE WHEN vol_mkt_1y IS NULL THEN 'vol_mkt_1y is null' ELSE NULL END
+            ), 
+        '')
+    {% elif factor_type == 'beta_final_calculation' %}
+        NULLIF(
+            CONCAT_WS(' | ',
+                CASE WHEN count_corr_days < 750 THEN 'Err: Not enough data for correlation (<750 days)' ELSE NULL END,
+                CASE WHEN beta_ts IS NULL THEN 'beta_ts is null (check vol_mkt_1y)' ELSE NULL END,
+                NULL
+            ), 
+        '')
     {% endif %}
 
 {% endmacro %}

@@ -31,7 +31,7 @@ class MetadataManager:
         self.catalog = lake_client.catalog
         self.pg_conn_str : str = pg_client._build_conn_str(db_name=self.DB_NAME)
     
-    def _get_ticker_list_raw(self, mode : Literal["fundamental", "other_data"] = "fundamental" ) -> set[str]:
+    def _get_ticker_list_raw(self, mode : Literal["fundamental", "other_data", "vnindex"] = "fundamental" ) -> set[str]:
         try:
             if mode == "fundamental":
                 table = "silver.silver_dim_company"
@@ -47,6 +47,8 @@ class MetadataManager:
                 result = set(tbl["ticker"].to_list())
                 logger.info(f"Successfully fetch {len(result)} tickers")
                 return result
+            elif mode == "vnindex":
+                return {'VNINDEX'}
             else:
                 raise ValueError(f"Invalid mode '{mode}' for fetching ticker list.")
         except NoSuchTableError as e:
@@ -131,7 +133,7 @@ class MetadataManager:
         if not config.table_watermark_name_postgres:
             raise ValueError(f"⚠️ [{config.data_type}] Thiếu tên bảng Watermark Postgres!")
         # 1. Lấy danh sách Gold Tickers
-        gold_tickers = self._get_ticker_list_raw(mode="other_data")
+        gold_tickers = self._get_ticker_list_raw(mode= config.ticker_list_mode)
 
         # 2. Lấy danh sách đang có trong DB Postgres
         with self.pg_conn.cursor() as cur:

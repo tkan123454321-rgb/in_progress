@@ -93,7 +93,16 @@
             {'json_key': 'MarketCapAtPeriodEnd', 'alias': 'market_cap', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Vốn hóa thị trường cuối kỳ'},
             {'json_key': 'ShareAtPeriodEnd', 'alias': 'shares_outstanding', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Số lượng cổ phiếu lưu hành'}
         ]) }}
-        
+    {% elif report_type == 'historical_quotes' %}
+        {{ return([
+            {'json_key': 'priceBasic', 'alias': 'price_basic', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Giá tham chiếu'},
+            {'json_key': 'priceOpen', 'alias': 'price_open', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': True, 'name_vn': 'Giá mở cửa'},
+            {'json_key': 'priceHigh', 'alias': 'price_high', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': True, 'name_vn': 'Giá cao nhất'},
+            {'json_key': 'priceLow', 'alias': 'price_low', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': True, 'name_vn': 'Giá thấp nhất'},
+            {'json_key': 'priceClose', 'alias': 'price_close', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Giá đóng cửa'},
+            {'json_key': 'totalVolume', 'alias': 'total_volume', 'type': 'DOUBLE', 'is_mandatory': False, 'must_be_positive': True, 'name_vn': 'Tổng khối lượng'},
+            {'json_key': 'totalValue', 'alias': 'total_value', 'type': 'DOUBLE', 'is_mandatory': False, 'must_be_positive': True, 'name_vn': 'Tổng giá trị'}
+        ]) }}
         
     {% else %}
         {{ exceptions.raise_compiler_error("Bác nhập sai loại báo cáo rồi: " ~ report_type) }}
