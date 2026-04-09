@@ -35,6 +35,13 @@ applied_dq_rules AS (
 SELECT 
     ticker,
     date,
+    EXTRACT(YEAR FROM date) AS year,
+    EXTRACT(MONTH FROM date) AS month,
+    EXTRACT(QUARTER FROM date) AS quarter,
+    
+    -- Absolute IDs để phục vụ LAG/LEAD mượt mà ở các tầng sau
+    (EXTRACT(YEAR FROM date) * 12 + EXTRACT(MONTH FROM date)) AS absolute_month,
+    (EXTRACT(YEAR FROM date) * 4 + EXTRACT(QUARTER FROM date)) AS absolute_quarter,
     
     -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
     {% for ind in indicators %}
