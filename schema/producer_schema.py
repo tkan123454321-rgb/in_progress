@@ -216,6 +216,7 @@ class HistoricalQuotes(BaseMetadata):
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
             raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+        metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config = self) 
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config = self) 
@@ -259,6 +260,7 @@ class HistoricalQuotes(BaseMetadata):
         df = lf.explode("data")
         df = df.with_columns([
             pl.col("data").struct.field("date").cast(pl.Datetime).dt.date().alias("event_date"),
+            pl.col("data").struct.field("date").cast(pl.Datetime).dt.year().cast(pl.Int32).alias("year"),
             pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
             pl.col("data").struct.json_encode().alias("data"),
             pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
@@ -268,6 +270,7 @@ class HistoricalQuotes(BaseMetadata):
 
 class VNINDEXHistoricalQuotes(HistoricalQuotes):
     ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "vnindex"
+    data_type : str = "vnindex_historical_quotes"
     
 
 class FinancialReportsQuarter(BaseMetadata):
@@ -299,6 +302,7 @@ class FinancialReportsQuarter(BaseMetadata):
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
             raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+        metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config=self) 
@@ -379,6 +383,7 @@ class FundamentalQuarter(FinancialReportsQuarter):
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
             raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+        metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config=self) 

@@ -4,6 +4,7 @@ __pycache__/
 .ipynb_checkpoints
 .venv_dbt/
 .venv_ingest/
+.venv_api/
 logs/
 *.log
 .DS_Store

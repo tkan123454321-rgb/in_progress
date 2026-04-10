@@ -18,6 +18,7 @@ models:
       +schema: bronze    
     staging:
       +schema: staging
+      +views_enabled: false
     silver:
       +materialized: incremental
       +views_enabled: false
@@ -31,6 +32,10 @@ models:
       +tags: ["intermediate", "cleansed_data"]
     gold:
       +schema: gold
+      +materialized: table
+      +enabled: true
+    obt:
+      +schema: obt
       +materialized: table
       +enabled: true
 

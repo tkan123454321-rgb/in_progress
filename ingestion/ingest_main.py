@@ -31,7 +31,7 @@ def ingest_main[T: BaseMetadata](model_cls: type[T]) -> None:
                 return
             
             logger.info(f"🚀 Bắt đầu tạo và bắn {len(missing_tickers)} mã vào Kafka. Batch ID: {BATCH_ID}")
-            for ticker, metadata_items in config._generate_kafka_message(ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID): # type: ignore
+            for ticker, metadata_items in config._generate_kafka_message(ticker_list=missing_tickers, metadata_manager=metadata_manager, batch_id=BATCH_ID):  # type: ignore
                 
                 # Bắn vào Kafka (Không cần truyền topic_name nữa vì Producer đã nhớ)
                 is_sent = producer.batch_message_data(

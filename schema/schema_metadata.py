@@ -32,8 +32,9 @@ ORIGINAL_TICKER_SCHEMA = Schema(
 # =======================================================================
 HISTORICAL_QUOTES_SCHEMA = Schema(
     NestedField(field_id=1, name="ticker", field_type=StringType(), required=False),
-    NestedField(field_id=2, name="event_date", field_type=DateType(), required=False),
-    NestedField(field_id=3, name="data", field_type=StringType(), required=False),
+    NestedField(field_id=2, name="year", field_type=IntegerType(), required=False),
+    NestedField(field_id=3, name="event_date", field_type=DateType(), required=False),
+    NestedField(field_id=4, name="data", field_type=StringType(), required=False),
     *COMMON_META_FIELDS  # Tự động nhét 7 cột hệ thống vào đây
 )
 
@@ -66,7 +67,7 @@ FUNDAMENTAL_QUARTER_SCHEMA = Schema(
 # =======================================================================
 
 PARTITION_BY_EVENT_YEAR = PartitionSpec(
-    PartitionField(source_id=2, field_id=1000, transform=YearTransform(), name="event_year")
+    PartitionField(source_id=2, field_id=1000, transform=IdentityTransform(), name="event_year")
 )
 PARTITION_BY_REPORT_YEAR = PartitionSpec(
     PartitionField(source_id=2, field_id=1000, transform=IdentityTransform(), name="report_year")

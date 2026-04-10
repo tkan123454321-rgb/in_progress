@@ -70,7 +70,8 @@ class MetadataManager:
         }
         
         try:
-            self.pg_conn.execute(query, data) # type: ignore
+            self.pg_conn.execute(query, data) 
+            logger.debug(f"Logged metadata for ticker '{ticker}' with batch_id '{batch_id}' and data_type '{data_type}' into Postgres.")
         except psycopg.Error as e:
             logger.error(f"⚠️ Lỗi Database khi ghi log cho mã {ticker}: {e.sqlstate}, {e}")
             raise
@@ -229,6 +230,19 @@ class MetadataManager:
             raise ValueError(f"⚠️ [{config.data_type}] Thiếu tên bảng Watermark Postgres!")
         
         logger.info(f"🔍 [LAKEHOUSE SYNC] Bắt đầu quét dữ liệu 2 năm gần nhất cho {config.data_type}...")
+        check_table_query = f"""
+            SELECT 1 FROM information_schema.tables 
+            WHERE table_schema = 'bronze' AND table_name = '{config.bronze_layer_name}'
+        """
+        with self.trino_conn.cursor() as cursor:
+            cursor.execute(check_table_query)
+            table_exists = cursor.fetchone() 
+            
+        # Nếu bảng vừa bị Drop tay, gọi hàm dọn dẹp Postgres là xong
+        if not table_exists:
+            logger.warning(f"⚠️ Bảng bronze.{config.bronze_layer_name} CHƯA TỒN TẠI, bắt đầu hard reset hệ thống.")
+            self._reset_postgres_state(config)
+            return
         
         current_year = datetime.now(ZoneInfo("UTC")).year
         lookback_year = current_year - 3
@@ -287,6 +301,31 @@ class MetadataManager:
                     pg_cur.executemany(update_query, payload)
             logger.info(f"✅ Đồng bộ bảng watermark thành công cho loại dữ liệu:'{config.data_type}' hoàn tất cho {len(payload)} mã!")
             
+    def _reset_postgres_state(self, config: BaseMetadata) -> None:
+        """
+        Hàm nội bộ: Dọn dẹp sạch sẽ toàn bộ trạng thái kéo API và Kafka 
+        của một data_type cụ thể trong Postgres.
+        """
+        logger.info(f"🧹 Bắt đầu dọn dẹp toàn bộ trạng thái cũ của '{config.data_type}' trong Postgres...")
+        with self.pg_conn.transaction():
+            with self.pg_conn.cursor() as pg_cur:
+                if config.table_watermark_name_postgres:
+                # 1. Xóa trạng thái trong bảng Watermark chính
+                    cleanup_watermark_sql = sql.SQL("""
+                        DELETE FROM ingestion.{table}
+                        WHERE data_type = %(data_type)s;
+                    """).format(table=sql.Identifier(config.table_watermark_name_postgres))
+                    pg_cur.execute(cleanup_watermark_sql, {"data_type": config.data_type})
+                    
+                # 2. Xóa trạng thái trong bảng Kafka Metadata (nếu có)
+                if config.table_name_postgres:
+                    cleanup_kafka_sql = sql.SQL("""
+                        DELETE FROM ingestion.{table}
+                        WHERE data_type = %(data_type)s;
+                    """).format(table=sql.Identifier(config.table_name_postgres))
+                    pg_cur.execute(cleanup_kafka_sql, {"data_type": config.data_type})
+        
+        logger.info(f"✅ Đã reset toàn bộ trạng thái kéo API và Kafka của '{config.data_type}'.")
 
     def __enter__(self):
         return self

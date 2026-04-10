@@ -35,14 +35,14 @@ ranked_metrics AS (
         -- Rank Value: Càng cao (rẻ) càng tốt -> DESC
         CASE 
             WHEN value_raw_score IS NOT NULL 
-            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY value_raw_score DESC) 
+            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY value_raw_score ASC) 
             ELSE NULL 
         END AS value_rank,
         
         -- Rank Momentum: Càng cao (đà mạnh) càng tốt -> DESC
         CASE 
             WHEN momentum_raw_score IS NOT NULL 
-            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY momentum_raw_score DESC) 
+            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY momentum_raw_score ASC) 
             ELSE NULL 
         END AS momentum_rank
     FROM joined_metrics
