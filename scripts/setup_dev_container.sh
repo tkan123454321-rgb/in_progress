@@ -39,19 +39,6 @@ else
     echo "⏩ [DBT] Môi trường đã tồn tại. Bỏ qua."
 fi
 
-if [ ! -d ".venv_api" ]; then
-    echo "🌐 [API] Chưa thấy venv, đang tạo mới và cài thư viện..."
-    python3 -m venv .venv_api
-    
-    # Kích hoạt tạm thời để cài
-    source .venv_api/bin/activate
-    pip install -r requirements_api.txt
-    deactivate
-    
-    echo "✅ [API] Cài đặt xong."
-else
-    echo "⏩ [API] Môi trường đã tồn tại. Bỏ qua."
-fi
 
 source .venv_dbt/bin/activate
 
@@ -64,6 +51,5 @@ echo "🎉 [AUTO-SETUP] Hoàn tất! Ông chủ có thể làm việc."
 
 grep -qq "alias ai=" ~/.bashrc || echo 'alias ai="source /app/.venv_ingest/bin/activate"' >> ~/.bashrc
 grep -qq "alias ad=" ~/.bashrc || echo 'alias ad="source /app/.venv_dbt/bin/activate"' >> ~/.bashrc
-grep -qq "alias aa=" ~/.bashrc || echo 'alias aa="source /app/.venv_api/bin/activate"' >> ~/.bashrc
 
 source ~/.bashrc

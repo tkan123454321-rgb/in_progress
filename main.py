@@ -101,3 +101,9 @@ with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient())
     loader.sync_obt_to_postgres()
 
 # %%
+from load.web_serving_loader import WebServingLoader
+from utils.lakehouse_client import LakeHouseClient
+from utils.postgres_client import PostgresClient
+with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
+    loader.export_web_data()
+# %%

@@ -1,4 +1,5 @@
 from utils.lakehouse_client import LakeHouseClient
+from pathlib import Path
 from utils.postgres_client import PostgresClient
 from utils.logger_config import setup_logger
 from utils.other_utils import map_trino_to_pg_type
@@ -15,6 +16,7 @@ class WebServingLoader:
         """
         self.pg_conn = pg_client.get_db_connection(db_name="ops_db")
         self.trino_conn = lake_client._get_trino_connection()
+        self.catalog = lake_client.catalog
     
     def __enter__(self):
         return self
@@ -126,6 +128,24 @@ class WebServingLoader:
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("year", "quarter", "qmj_rank")')
         logger.info("✅ Đã đánh Index xong! Bảng tạm sẵn sàng lên sóng.")
 
+    def export_web_data(self):
+        try:
+            # 1. Load bảng OBT (bảng cuối cùng đã qua dbt xào nấu)
+            table_path = "obt.obt_web" 
+            logger.info(f"🚀 Đang bắt đầu xuất dữ liệu từ {table_path}...")
+            
+            table = self.catalog.load_table(table_path)
+            
+            df = table.scan().to_polars()
+            
+            project_root = Path(__file__).resolve().parents[1]
+            output_path = project_root / "web_ui" / "data_qmj.csv"
+            df.write_csv(output_path)
+            
+            logger.info(f"✅ Đã xuất {df.height} dòng ra {output_path} thành công!")
+            
+        except Exception as e:
+            logger.error(f"❌ Lỗi khi xuất dữ liệu: {str(e)}")
                 
                  
                     
