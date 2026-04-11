@@ -13,16 +13,9 @@ def transform_data():
         return None
     df = df.with_columns( # type: ignore
         pl.concat_str([
-            pl.lit("Q"), pl.col("quarter"), pl.lit(" - "), pl.col("year")
+            pl.lit("Quý"),pl.lit(" "), pl.col("quarter"), pl.lit(" - "), pl.col("year")
         ]).alias("ui_label")
     )
-    # # Lấy danh sách quý duy nhất (mới nhất lên đầu)
-    # unique_quarters = (
-    #     df_with_labels.select(["ui_label", "absolute_quarter"])
-    #     .unique()
-    #     .sort("absolute_quarter", descending=True)
-    # )
-    # list_quarters = unique_quarters["ui_label"].to_list()
     return df
 
 def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
