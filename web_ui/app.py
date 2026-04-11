@@ -22,4 +22,4 @@ if df is not None:
     st.header(" bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
     st.dataframe(df)
 select_box = [1,2,3,4,5]  # Đây là ví dụ, bác có thể thay bằng list các kỳ báo cáo thực tế
-selected_q = st.sidebar.selectbox("Chọn Kỳ Báo Cáo:", select_box)
+selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", select_box)
