@@ -10,7 +10,6 @@ logs/
 .DS_Store
 loki-data/
 !.devcontainer.json
-*.csv
 *.parquet
 *.json
 *.avro
