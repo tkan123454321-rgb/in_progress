@@ -1,0 +1,2 @@
+streamlit==1.56.0
+polars==1.38.1
