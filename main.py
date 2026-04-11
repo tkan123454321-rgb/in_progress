@@ -107,3 +107,10 @@ from utils.postgres_client import PostgresClient
 with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
     loader.export_web_data()
 # %%
+import polars as pl
+from web_ui.app import transform_data
+from rich import print as rprint
+
+df = transform_data()
+print(df.glimpse())
+# %%

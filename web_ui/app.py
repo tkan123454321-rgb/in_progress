@@ -2,24 +2,46 @@ import streamlit as st
 import polars as pl
 from pathlib import Path
 
-# Tìm file CSV nằm ngay cạnh file app.py này
-csv_path = Path(__file__).parent / "data_qmj.csv"
+
+
 
 @st.cache_data
-def load_data():
-    """Hàm này chỉ chạy đúng 1 lần khi bác mở web hoặc F5"""
-    if csv_path.exists():
-        return pl.read_csv(csv_path)
-    return None
+def transform_data():
+    csv_path = Path(__file__).parent / "data_qmj.csv"
+    df = pl.read_csv(csv_path)
+    if df is None:
+        return None
+    df = df.with_columns( # type: ignore
+        pl.concat_str([
+            pl.lit("Q"), pl.col("quarter"), pl.lit(" - "), pl.col("year")
+        ]).alias("ui_label")
+    )
+    # # Lấy danh sách quý duy nhất (mới nhất lên đầu)
+    # unique_quarters = (
+    #     df_with_labels.select(["ui_label", "absolute_quarter"])
+    #     .unique()
+    #     .sort("absolute_quarter", descending=True)
+    # )
+    # list_quarters = unique_quarters["ui_label"].to_list()
+    return df
 
-# --- BÂY GIỜ GỌI HÀM NHƯ BÌNH THƯỜNG ---
-df = load_data()
+def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
+    # Lấy danh sách quý duy nhất (mới nhất lên đầu)
+    unique_quarters = (
+        df.select(["ui_label", "absolute_quarter"])
+        .unique()
+        .sort("absolute_quarter", descending=True)
+    )
+    list_quarters = unique_quarters["ui_label"].to_list()
+    return list_quarters
+
+
+
 
 st.title("Demo Dữ liệu QMJ")
 
-if df is not None:
     # Đoạn logic filter của bác đặt ở dưới này...
-    st.header(" bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
-    st.dataframe(df)
-select_box = [1,2,3,4,5]  # Đây là ví dụ, bác có thể thay bằng list các kỳ báo cáo thực tế
-selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", select_box)
+df = transform_data()
+st.header(" bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
+st.dataframe(df)
+selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", _get_quarters_for_selectbox(df))
