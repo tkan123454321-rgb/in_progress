@@ -75,17 +75,11 @@ super_obt AS (
         c.current_market_cap,
         c.avg_volume_3m,
         c.current_shares_outstanding,
-        c.floating_shares,
-        c.insider_ownership,
-        c.institution_ownership,
-        c.foreign_ownership,
-
-        -- D. QUY MÔ THEO QUÝ
         qi.quarter_market_cap,
         qi.quarter_shares_outstanding,
-        qi.preferred_stock,
 
         -- E. SỨC MẠNH CHẤT LƯỢNG (QMJ)
+
         ROUND(q.qmj_profitability_score, 3) AS qmj_profitability,
         ROUND(q.qmj_growth_score, 3) AS qmj_growth,
         ROUND(q.qmj_safety_score, 3) AS qmj_safety,
@@ -95,6 +89,10 @@ super_obt AS (
         -- F. SỨC MẠNH ĐỊNH GIÁ & ĐÀ TĂNG TRƯỞNG
         ROUND(vm.z_value, 3) AS z_value_historical,
         ROUND(vm.z_momentum, 3) AS z_momentum_historical,
+        ROUND(vm.value_raw_score, 3) AS value_raw_score,
+        ROUND(vm.momentum_raw_score, 3) AS momentum_raw_score,
+        ROUND(rvm.value_recent_score, 3) AS value_recent_score,
+        ROUND(rvm.momentum_recent, 3) AS momentum_recent_score,
         ROUND(rvm.z_value_recent, 3) AS z_value_recent,
         ROUND(rvm.z_momentum_recent, 3) AS z_momentum_recent
 
