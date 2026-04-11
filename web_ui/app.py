@@ -36,5 +36,12 @@ st.title("Demo Dữ liệu QMJ")
     # Đoạn logic filter của bác đặt ở dưới này...
 df = transform_data()
 st.header(" bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
-st.dataframe(df)
-selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", _get_quarters_for_selectbox(df))
+list_q = _get_quarters_for_selectbox(df)
+    
+    # Thiết lập mặc định là quý đầu tiên trong list (quý mới nhất)
+selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", options=list_q)
+
+    # 3. LOGIC LỌC: Đây là chỗ then chốt bác đang cần
+    # Khi người dùng chọn selected_q, Polars sẽ lọc lại bảng ngay lập tức
+df_filtered = df.filter(pl.col("ui_label") == selected_q)
+st.dataframe(df_filtered)
