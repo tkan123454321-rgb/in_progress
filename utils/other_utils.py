@@ -51,3 +51,52 @@ def get_fallback_year(lookback_years: int = 8) -> int:
     Mặc định lùi lại 8 năm.
     """
     return datetime.now(ZoneInfo("UTC")).year - lookback_years
+
+def map_trino_to_pg_type(trino_type: str) -> str:
+    """
+    Máy dịch kiểu dữ liệu từ Trino sang Postgres.
+    Input: col[1] (Ví dụ: 'double', 'varchar', 'decimal(20,4)')
+    Output: Kiểu Postgres chuẩn (Ví dụ: 'DOUBLE PRECISION', 'TEXT', 'DECIMAL(20,4)')
+    """
+    # Xóa khoảng trắng thừa và đưa về chữ thường để dễ so sánh
+    t = trino_type.lower().strip()
+
+    # 1. Nhóm Chuỗi (String)
+    # Bất kể là varchar, varchar(255) hay char, cứ ép hết về TEXT cho an toàn,
+    # Postgres xử lý TEXT cực nhanh và không bao giờ lo bị cắt xén dữ liệu.
+    if t.startswith('varchar') or t.startswith('char'):
+        return 'TEXT'
+
+    # 2. Nhóm Số thực (Floating Point) - Kẻ thù số 1
+    if t == 'double':
+        return 'DOUBLE PRECISION'
+    if t == 'real':
+        return 'REAL'
+
+    # 3. Nhóm Số chính xác (Decimal/Numeric)
+    # Nó có dạng decimal(20,4). Mình chỉ cần in hoa lên là Postgres hiểu y xì đúc.
+    if t.startswith('decimal') or t.startswith('numeric'):
+        return t.upper()
+
+    # 4. Nhóm Ngày Giờ (Date/Time)
+    if t.startswith('timestamp'):
+        if 'with time zone' in t:
+            return 'TIMESTAMP WITH TIME ZONE'
+        return 'TIMESTAMP'
+    
+    if t == 'date':
+        return 'DATE'
+
+    # 5. Nhóm Số nguyên (Integer)
+    if t == 'bigint':
+        return 'BIGINT'
+    if t in ('integer', 'int'):
+        return 'INTEGER'
+    if t in ('smallint', 'tinyint'):
+        return 'SMALLINT'
+
+    # 6. Boolean (Đúng/Sai)
+    if t == 'boolean':
+        return 'BOOLEAN'
+
+    return 'TEXT'

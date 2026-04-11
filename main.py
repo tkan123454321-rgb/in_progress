@@ -94,3 +94,10 @@ with LakehouseMaintenance(lake_client=LakeHouseClient(), pg_client=PostgresClien
 
 
 # %%
+from load.web_serving_loader import WebServingLoader
+from utils.lakehouse_client import LakeHouseClient
+from utils.postgres_client import PostgresClient
+with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
+    loader.sync_obt_to_postgres()
+
+# %%

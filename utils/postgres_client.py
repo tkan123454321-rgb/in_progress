@@ -4,8 +4,6 @@ from psycopg.rows import dict_row, DictRow
 from utils.logger_config import setup_logger
 import os
 from datetime import datetime, timedelta, timezone
-import polars as pl
-from polars.exceptions import PolarsError, ColumnNotFoundError, SQLInterfaceError, SQLSyntaxError
 from typing import ClassVar, Generator, Sequence
 
 logger = setup_logger(component="utils")
@@ -33,7 +31,23 @@ class PostgresClient:
             logger.critical(f"🔥 Không thể kết nối DB| mã lỗi: {e.sqlstate} {e}")
             raise
 
-
+    def get_pgbouncer_connection(self, db_name: str | None = None) -> psycopg.Connection:
+        """
+        Kết nối chuyên dụng qua PgBouncer (Cổng 6432).
+        Dùng riêng cho FastAPI để tối ưu connection pooling.
+        """
+      
+        
+        # Hardcode 'pgbouncer' vì mình chạy trong Docker network
+        conn_str = f"postgresql://{self._USER}:{self._PASS}@pgbouncer:6432/{db_name}"
+        
+        try:
+            # Vẫn giữ dict_row để FastAPI trả về JSON cho sướng
+            conn = psycopg.connect(conninfo=conn_str, autocommit=True, row_factory=dict_row) # type: ignore
+            return conn
+        except psycopg.Error as e:
+            logger.critical(f"🔥 Lỗi kết nối qua PgBouncer | mã lỗi: {e.sqlstate} {e}")
+            raise
 
      
     

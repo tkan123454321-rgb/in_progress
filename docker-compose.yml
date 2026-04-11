@@ -166,6 +166,36 @@ services:
       start_period: 5s
     mem_limit: 512m
 
+  pgbouncer:
+    image: edoburu/pgbouncer
+    container_name: pgbouncer
+    restart: unless-stopped
+    ports:
+      - "6432:6432"
+    environment:
+      - LISTEN_PORT=6432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=ops_db
+      - DB_HOST=postgres
+      - POOL_MODE=transaction
+      - LISTEN_ADDR=0.0.0.0
+      - MAX_CLIENT_CONN=100
+      - DEFAULT_POOL_SIZE=20
+      - AUTH_TYPE=scram-sha-256
+      - AUTH_FILE=/etc/pgbouncer/userlist.txt
+    networks:
+      - monitoring_net
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./config/config_docker/pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt
+
   kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
