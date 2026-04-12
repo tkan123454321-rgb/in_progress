@@ -126,74 +126,58 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     view_config = {
         "qmj_rank": st.column_config.NumberColumn(
             "Hạng (Rank)",
-            help="Thứ tự xếp hạng của doanh nghiệp dựa trên điểm QMJ tổng hợp trong kỳ báo cáo."
+            width="small", # Hạng chỉ là số nhỏ
+            help="Thứ tự xếp hạng của doanh nghiệp dựa trên điểm QMJ tổng hợp."
         ),
         "ticker": st.column_config.TextColumn(
             "Mã Cổ Phiếu (Ticker)", 
-            width="small",
+            width="small", # Mã CK thường chỉ 3 ký tự
             help="Mã niêm yết của cổ phiếu trên các sàn giao dịch chứng khoán."
         ),
         "company_name": st.column_config.TextColumn(
             "Tên Công Ty (Company Name)",
+            width="large", # Tên công ty thường rất dài
             help="Tên đầy đủ của pháp nhân phát hành cổ phiếu."
         ),
-        "exchange": "Sàn (Exchange)",
-        "industry_group": "Nhóm Ngành (Industry Group)",
-        "sector_detail": "Lĩnh vực (Sector)",
-        "ui_label": "Kỳ báo cáo (Period)",
+        "exchange": st.column_config.TextColumn("Sàn (Exchange)", width="small"),
+        "industry_group": st.column_config.TextColumn("Nhóm Ngành (Industry Group)", width="medium"),
+        "sector_detail": st.column_config.TextColumn("Lĩnh vực (Sector)", width="medium"),
+        "ui_label": st.column_config.TextColumn("Kỳ báo cáo (Period)", width="medium"),
         
-        "qmj_score": st.column_config.ProgressColumn(
+        "qmj_score": st.column_config.NumberColumn(
             "Điểm QMJ (QMJ Score)", 
-            help="Điểm chất lượng tổng hợp được chuẩn hóa từ ba nhóm nhân tố: Lợi nhuận (P), Tăng trưởng (G) và An toàn (S).",
+            width="medium",
+            help="Điểm chất lượng tổng hợp từ Profitability, Growth và Safety.",
             format="%.2f", min_value=0, max_value=1
         ),
+        # Các cột điểm Z thường có header dài, nên để "medium" để không bị mất chữ
         "qmj_profitability": st.column_config.NumberColumn(
             "Lợi nhuận (Profitability Z)", 
-            help="Nhân tố đo lường hiệu quả sinh lời trên tài sản và nguồn vốn (Profitability).",
+            width="medium",
+            help="Nhân tố đo lường hiệu quả sinh lời trên tài sản và nguồn vốn.",
             format="%.2f"
         ),
         "qmj_growth": st.column_config.NumberColumn(
             "Tăng trưởng (Growth Z)", 
-            help="Nhân tố đo lường tốc độ tăng trưởng của các chỉ tiêu tài chính cốt lõi trong 1 giai đoạn(Growth).",
+            width="medium",
+            help="Nhân tố đo lường tốc độ tăng trưởng tài chính.",
             format="%.2f"
         ),
         "qmj_safety": st.column_config.NumberColumn(
             "An Toàn (Safety Z)", 
-            help="Nhân tố đo lường mức độ an toàn tài chính dựa trên đòn bẩy, biến động giá và rủi ro phá sản (Safety).",
+            width="medium",
+            help="Nhân tố đo lường mức độ an toàn tài chính.",
             format="%.2f"
         ),
         
-        "current_market_cap": st.column_config.NumberColumn(
-            "Vốn Hoá Gần Đây (Mkt Cap - Recent)", 
-            help="Giá trị vốn hóa thị trường hiện tại của doanh nghiệp (tỷ đồng).",
-            format="%.0f"
-        ),
-        "quarter_market_cap": st.column_config.NumberColumn(
-            "Vốn Hoá Chốt Quý (Mkt Cap - Quarter End)", 
-            help="Giá trị vốn hóa thị trường tại ngày kết thúc quý báo cáo (tỷ đồng).",
-            format="%.0f"
-        ),
+        "current_market_cap": st.column_config.NumberColumn("Vốn Hoá Gần Đây", width="medium", format="%.0f"),
+        "quarter_market_cap": st.column_config.NumberColumn("Vốn Hoá Chốt Quý", width="medium", format="%.0f"),
         
-        "z_value_historical": st.column_config.NumberColumn(
-            "Định giá Lịch Sử (Value Z-Historical)", 
-            help="Điểm Z-Score trung bình của các chỉ số định giá trong các giai đoạn quá khứ.",
-            format="%.2f"
-        ),
-        "z_momentum_historical": st.column_config.NumberColumn(
-            "Đà tăng Lịch Sử (Momentum Z-Historical)", 
-            help="Điểm Z-Score trung bình của đà tăng trưởng giá trong các giai đoạn quá khứ.",
-            format="%.2f"
-        ),
-        "z_value_recent": st.column_config.NumberColumn(
-            "Định Giá Gần Đây (Value Z-Recent)", 
-            help="Điểm Z-Score phản ánh mức độ định giá hiện tại so với tập hợp dữ liệu so sánh.",
-            format="%.2f"
-        ),
-        "z_momentum_recent": st.column_config.NumberColumn(
-            "Đà tăng Gần Đây (Momentum Z-Recent)", 
-            help="Điểm Z-Score phản ánh cường độ đà tăng trưởng giá hiện tại (Price Momentum).",
-            format="%.2f"
-        ),
+        # Các cột Z-score lịch sử và hiện tại
+        "z_value_historical": st.column_config.NumberColumn("Định giá LS (Value Z-H)", width="medium", format="%.2f"),
+        "z_momentum_historical": st.column_config.NumberColumn("Đà tăng LS (Mom Z-H)", width="medium", format="%.2f"),
+        "z_value_recent": st.column_config.NumberColumn("Định Giá Gần Đây (Value Z)", width="medium", format="%.2f"),
+        "z_momentum_recent": st.column_config.NumberColumn("Đà tăng Gần Đây (Mom Z)", width="medium", format="%.2f"),
     }
 
     # 4. VẼ BẢNG
