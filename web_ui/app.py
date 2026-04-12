@@ -123,9 +123,9 @@ with col2:
             value=_get_top_qmj_rank(df_filtered), 
             step=1
         )
-df_final = (
+df = (
         df_filtered
         .filter(pl.col("qmj_rank") <= selected_top_n)
         .sort("qmj_rank") # Đảm bảo rank 1 luôn nằm trên cùng
     )
-render_main_content(df_filtered, selected_q)
+render_main_content(df, selected_q)
