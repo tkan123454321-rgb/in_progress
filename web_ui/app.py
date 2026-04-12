@@ -12,11 +12,13 @@ def transform_data():
     if not csv_path.exists():
         return None
     df = pl.read_csv(csv_path)
-    df = df.with_columns(
+    df = df.with_columns([
         pl.concat_str([
             pl.lit("Quý"), pl.lit(" "), pl.col("quarter"), pl.lit(" - "), pl.col("year")
-        ]).alias("ui_label")
-    )
+        ]).alias("ui_label"),
+        (pl.col("current_market_cap") / 1_000_000_000).alias("current_market_cap"),
+        (pl.col("quarter_market_cap") / 1_000_000_000).alias("quarter_market_cap")
+    ])
     return df
 
 def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
@@ -108,8 +110,7 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "qmj_score",         # Điểm tổng
         "qmj_profitability", # P
         "qmj_growth",        # G
-        "qmj_safety",        # S
-        "ui_label",          # Kỳ báo cáo
+        "qmj_safety",        # S         # Kỳ báo cáo
         "current_market_cap",# Vốn hóa hiện tại
         "quarter_market_cap",# Vốn hóa chốt quý
         "z_value_historical",
