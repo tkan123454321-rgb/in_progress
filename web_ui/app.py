@@ -93,7 +93,7 @@ def render_filters(df: pl.DataFrame):
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
-    st.header(f"Báo cáo QMJ - {selected_q}", divider="gray")
+    st.header(f"{selected_q}", divider="gray")
     st.caption(f"⏱️ Cập nhật lần cuối: {updated_time}")
 
     # 1. ĐỊNH NGHĨA THỨ TỰ HIỂN THỊ (Sắp xếp lại danh sách cột)
@@ -239,7 +239,7 @@ def main():
             insight_text = f"Trong **{selected_q}**, nếu chỉ xét trong **Top {selected_top_n}** cổ phiếu chất lượng nhất, thì những mã nào đang có **định giá rẻ và hấp dẫn nhất**?"
         else:
             insight_text = f"Danh sách cổ phiếu theo {selected_criteria}."
-        st.info(f"**Bảng dưới đây trả lời cho câu hỏi:** *{insight_text}*")
+        st.caption(f"**Bảng dưới đây trả lời cho câu hỏi:** *{insight_text}*")
         
         # 3. Đưa dữ liệu đã lọc lên bảng vẽ
         render_main_content(df_filtered, selected_q, updated_time)
