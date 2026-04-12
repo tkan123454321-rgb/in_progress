@@ -89,7 +89,7 @@ def render_filters(df: pl.DataFrame):
         .sort(sort_col, descending=is_desc) # Hạng 1 lên đầu
     )
     
-    return df_final, selected_q
+    return df_final, selected_q, selected_top_n, selected_criteria
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
@@ -230,7 +230,16 @@ def main():
     if df_raw is not None:
         # 2. Đưa dữ liệu qua bộ lọc (Lấy về dữ liệu đã lọc và quý đang chọn)
         updated_time = _get_latest_update_time(df_raw)
-        df_filtered, selected_q = render_filters(df_raw)
+        df_filtered, selected_q, selected_top_n, selected_criteria = render_filters(df_raw)
+        if selected_criteria == "Hạng QMJ":
+            insight_text = f"Trong **{selected_q}**, những cổ phiếu nào lọt vào **Top {selected_top_n}** doanh nghiệp có nền tảng chất lượng nhất (theo QMJ Score)?"
+        elif selected_criteria == "Đà tăng trưởng (Top Momentum)":
+            insight_text = f"Trong **{selected_q}**, nếu chỉ xét trong **Top {selected_top_n}** cổ phiếu chất lượng nhất, thì những mã nào đang có **đà tăng trưởng mạnh nhất**?"
+        elif selected_criteria == "Định giá hấp dẫn (Top Value)":
+            insight_text = f"Trong **{selected_q}**, nếu chỉ xét trong **Top {selected_top_n}** cổ phiếu chất lượng nhất, thì những mã nào đang có **định giá rẻ và hấp dẫn nhất**?"
+        else:
+            insight_text = f"Danh sách cổ phiếu theo {selected_criteria}."
+        st.info(f"**Bảng dưới đây trả lời cho câu hỏi:** *{insight_text}*")
         
         # 3. Đưa dữ liệu đã lọc lên bảng vẽ
         render_main_content(df_filtered, selected_q, updated_time)
