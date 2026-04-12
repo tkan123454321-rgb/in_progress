@@ -34,7 +34,7 @@ def _get_latest_update_time(df: pl.DataFrame) -> str:
     """Lấy thời gian cập nhật mới nhất từ cột obt_updated_at"""
     latest_time = str(df["obt_updated_at"].max())
     dt_obj = datetime.strptime(latest_time[:19], "%Y-%m-%dT%H:%M:%S")
-    return dt_obj.strftime("%d-%m-%y %H-%M-%S")
+    return dt_obj.strftime("%d-%m-%y %H:%M:%S")
 # ==========================================
 # 2. UI COMPONENTS (CÁC THÀNH PHẦN GIAO DIỆN)
 # ==========================================
