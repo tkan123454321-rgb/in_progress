@@ -44,7 +44,7 @@ def render_filters(df: pl.DataFrame):
     """Hàm này chỉ chuyên lo việc vẽ bộ lọc và trả về dữ liệu đã lọc"""
     list_q = _get_quarters_for_selectbox(df)
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([1,1,1])
     
     # Cột 1: Chọn Quý
     with col1:
@@ -72,6 +72,8 @@ def render_filters(df: pl.DataFrame):
             options=list(criteria_dict.keys()),
             help=help_text  
         )
+    with col3:
+        search_ticker = st.text_input("🔍 Tìm nhanh mã CK:", placeholder="VD: VNM, HPG...").upper().strip()
     
     max_rank = _get_top_qmj_rank(df_filtered_by_q)
     selected_top_n = st.slider(
@@ -85,11 +87,14 @@ def render_filters(df: pl.DataFrame):
     is_desc = criteria_dict[selected_criteria]["desc"]
         
     # Lọc lần cuối theo Rank
-    df_final = (
-        df_filtered_by_q
-        .filter(pl.col("qmj_rank") <= selected_top_n)
-        .sort(sort_col, descending=is_desc) # Hạng 1 lên đầu
-    )
+    if search_ticker:
+        df_final = df_filtered_by_q.filter(pl.col("ticker").str.contains(search_ticker)).sort(sort_col, descending=is_desc)
+    else:
+        df_final = (
+            df_filtered_by_q
+            .filter(pl.col("qmj_rank") <= selected_top_n)
+            .sort(sort_col, descending=is_desc) # Hạng 1 lên đầu
+        )
     
     return df_final, selected_q, selected_top_n, selected_criteria
 
