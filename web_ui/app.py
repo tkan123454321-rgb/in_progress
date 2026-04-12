@@ -176,13 +176,13 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
             "Vốn Hoá Gần Đây (Mkt Cap - Recent)", 
             width="medium",
             help="Giá trị vốn hóa thị trường hiện tại của doanh nghiệp (tỷ đồng).",
-            format="%.0f"
+            format="%,.0f"
         ),
         "quarter_market_cap": st.column_config.NumberColumn(
             "Vốn Hoá Chốt Quý (Mkt Cap - Quarter End)", 
             width="medium",
             help="Giá trị vốn hóa thị trường tại ngày kết thúc quý báo cáo (tỷ đồng).",
-            format="%.0f"
+            format="%,.0f"
         ),
         
         "z_value_historical": st.column_config.NumberColumn(
