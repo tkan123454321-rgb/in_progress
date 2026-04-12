@@ -99,19 +99,35 @@ def render_filters(df: pl.DataFrame):
     return df_final, selected_q, selected_top_n, selected_criteria
 
 def _introduction():
-    with st.expander("📌 Về dự án này (About this Project) & Phương pháp luận"):
-                st.markdown("""
-                **1. Mục tiêu dự án (Project Objective):**
-                Đây là một *Proof of Concept (PoC)* được xây dựng để chứng minh khả năng thiết kế và vận hành một **Data Pipeline End-to-End**. 
-                Hệ thống tự động thu thập dữ liệu, xử lý qua kiến trúc Lakehouse (Apache Iceberg), kiểm soát chất lượng bằng dbt và trực quan hóa lên Dashboard.
+    with st.expander("📌 Về dự án này: Từ câu chuyện cá nhân đến Tư duy Hệ thống"):
+        
+        st.markdown("""
+        ### 1. Câu chuyện khởi nguồn: Khi công thức tài chính là chưa đủ
+        Đầu năm 3 đại học, khi cầm trên tay kết quả pass CFA Level 1 với số điểm 1755/1900, tôi từng nghĩ mình đã nắm được "chìa khóa" vững chắc để bước vào các quỹ đầu tư hay khối phân tích của một công ty chứng khoán. Kế hoạch lúc đó của tôi rất đơn giản (và có phần lý tưởng hóa): Chọn một mã cổ phiếu bất kỳ, lôi hết giáo trình và công thức định giá ra để viết một bản báo cáo phân tích chuyên sâu thật hoành tráng, đính kèm vào CV và nộp đi.
 
-                **2. Phương pháp luận Tài chính (Methodology):**
-                Thay vì lọc cổ phiếu cảm tính, dữ liệu đầu ra được tính toán (Z-Score) dựa trên các bài báo học thuật của quỹ AQR Capital Management:
-                * **Quality Minus Junk (QMJ):** Lọc các doanh nghiệp có Lợi nhuận cao, Tăng trưởng đều và Rủi ro tài chính thấp.
-                * **Value & Momentum Everywhere:** Kết hợp tìm kiếm định giá rẻ và đà tăng trưởng dòng tiền.
+        Nhưng khi thực sự bắt tay vào làm, tôi nhanh chóng đâm sầm vào thực tế.
+        Việc bóc tách báo cáo tài chính, tính toán từng chỉ số rời rạc (như P/E, P/B, ROE...) cho *một* mã cổ phiếu ngốn của tôi quá nhiều thời gian. Điều tồi tệ nhất là: Sau nhiều ngày hì hục phân tích, tôi ngậm ngùi nhận ra doanh nghiệp đó vốn dĩ không có tiềm năng dài hạn. Thế là mọi công sức đổ sông đổ biển. Tôi lại cặm cụi chọn một mã khác, lặp lại quy trình vắt kiệt sức lực đó, và cầu may rằng lần này mình sẽ chọn đúng.
 
-                *Lưu ý: Bảng dữ liệu này phục vụ mục đích trình diễn năng lực xử lý dữ liệu (Data Engineering), không phải là lời khuyên đầu tư (Not Financial Advice).*
-                """)
+        Tôi tự hỏi: *"Chẳng lẽ công việc của một chuyên viên phân tích tài chính là cứ phải thử-và-sai thủ công một cách tuyệt vọng giữa biển 1,600+ mã chứng khoán trên cả 3 sàn như vậy sao?"*
+
+        ### 2. Sự chuyển dịch tư duy: Lùi lại để nhìn toàn cảnh
+        Sự bế tắc đó đã buộc tôi phải lùi lại một bước. Tôi nhận ra mình đang làm việc ngược quy trình. Trước khi dùng kính lúp để soi thật kỹ một cái cây, mình phải dùng radar để quét xem khu rừng nào đáng để bước vào.
+
+        Để giải quyết bài toán đó, tôi không cần thêm một công thức định giá phức tạp nào nữa. Thứ tôi cần là một **Hệ thống Sàng lọc (Screening System)** khách quan, tự động và dựa trên dữ liệu lớn (Data-driven). Một hệ thống đủ thông minh để tìm ra những cổ phiếu thực sự xứng đáng để mình đầu tư quỹ thời gian hạn hẹp vào phân tích chuyên sâu.
+
+        Đó là lý do dự án này ra đời.
+
+        ### 3. Giải pháp: Data Pipeline kết hợp Phương pháp luận AQR
+        Thay vì để người dùng "bơi" trong dữ liệu thô, sản phẩm này được thiết kế với tư duy **"Data as a Product"**. Hệ thống phía sau tự động thu thập, chuẩn hóa và xử lý dữ liệu của toàn thị trường.
+
+        **Cốt lõi của bộ lọc dựa trên nghiên cứu học thuật từ quỹ AQR Capital Management:**
+        * **Quality Minus Junk (QMJ):** Tổng hợp hàng loạt báo cáo tài chính phức tạp thành một điểm số Z-Score duy nhất. Nó đánh giá toàn diện dựa trên 3 trụ cột: Lợi nhuận (Profitability), Tăng trưởng (Growth) và An toàn (Safety) để loại trừ triệt để những cổ phiếu "Rác".
+        * **Tối ưu hóa thời gian:** Bằng cách kết hợp QMJ với các nhân tố Định giá (Value) và Đà tăng trưởng (Momentum), hệ thống thu hẹp góc nhìn từ vĩ mô xuống vi mô chỉ trong vài cú click.
+
+        Thay vì mất hàng giờ tìm kiếm lan man, giờ đây nhà đầu tư và chuyên viên phân tích có thể dành toàn bộ trí lực để đào sâu vào một nhóm nhỏ các "cổ phiếu kim cương" đã được hệ thống bảo chứng về nền tảng cơ bản.
+
+        > *Lưu ý: Bảng dữ liệu này phục vụ mục đích trình diễn năng lực xây dựng Kiến trúc Dữ liệu (Data Engineering) và tự động hóa hệ thống. Đây không phải là lời khuyên hay khuyến nghị đầu tư.*
+        """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
