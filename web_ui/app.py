@@ -28,7 +28,10 @@ def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
 
 def _get_top_qmj_rank(df_filtered_by_quarter: pl.DataFrame) -> int:
     return int(df_filtered_by_quarter["qmj_rank"].max()) # type: ignore
-
+def _get_latest_update_time(df: pl.DataFrame) -> str:
+    """Lấy thời gian cập nhật mới nhất từ cột obt_updated_at"""
+    latest_time = str(df["obt_updated_at"].max())
+    return latest_time[:19]
 # ==========================================
 # 2. UI COMPONENTS (CÁC THÀNH PHẦN GIAO DIỆN)
 # ==========================================
@@ -73,10 +76,10 @@ def render_filters(df: pl.DataFrame):
     
     return df_final, selected_q
 
-def render_main_content(df: pl.DataFrame, selected_q: str):
+def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm này chỉ chuyên lo việc vẽ bảng dữ liệu (đã được làm đẹp)"""
     st.header(f"Báo cáo QMJ - {selected_q}", divider="gray")
-    
+    st.caption(f"Thời gian cập nhật: {updated_time}")
     view_config = {
         "year": None, "quarter": None, "absolute_quarter": None,
         "obt_updated_at": None, "obt_invocation_id": None,
@@ -119,10 +122,11 @@ def main():
     
     if df_raw is not None:
         # 2. Đưa dữ liệu qua bộ lọc (Lấy về dữ liệu đã lọc và quý đang chọn)
+        updated_time = _get_latest_update_time(df_raw)
         df_filtered, selected_q = render_filters(df_raw)
         
         # 3. Đưa dữ liệu đã lọc lên bảng vẽ
-        render_main_content(df_filtered, selected_q)
+        render_main_content(df_filtered, selected_q, updated_time)
     else:
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
 
