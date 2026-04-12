@@ -27,6 +27,11 @@ def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
     )
     list_quarters = unique_quarters["ui_label"].to_list()
     return list_quarters
+
+def _get_top_qmj_rank(df_filtered_by_quarter: pl.DataFrame) -> int:
+    max_rank = int(df_filtered_by_quarter["qmj_rank"].max()) # type: ignore
+    return max_rank
+
 def render_main_content(df, selected_q):
     st.header(f"Báo cáo QMJ - {selected_q}", divider="gray")
     
@@ -61,6 +66,16 @@ def render_main_content(df, selected_q):
         # --- CHỈ SỐ THỊ TRƯỜNG ---
         "current_market_cap": st.column_config.NumberColumn("Vốn hóa (Market Cap - Bn)", format="%.0f"),
         "avg_volume_3m": st.column_config.NumberColumn("KLGD TB 3T (Avg Vol 3M)", format="%.0f"),
+        "quarter_market_cap": st.column_config.NumberColumn(
+            "Vốn hóa chốt Quý (Quarter Mkt Cap)", 
+            help="Vốn hóa tính tại thời điểm kết thúc quý báo cáo",
+            format="%.0f"
+        ),
+        "quarter_shares_outstanding": st.column_config.NumberColumn(
+            "CP Lưu hành chốt Quý (Quarter Shares)", 
+            help="Số lượng cổ phiếu lưu hành tại thời điểm kết thúc quý",
+            format="%.0f"
+        ),
         
         # --- CÁC CHỈ SỐ ĐỊNH GIÁ & ĐÀ TĂNG ---
         "z_value_historical": st.column_config.NumberColumn(
@@ -96,6 +111,16 @@ st.title("Demo Dữ liệu QMJ")
 df = transform_data()
 st.header(" bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
 list_q = _get_quarters_for_selectbox(df)
-selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", options=list_q)
-df_filtered = df.filter(pl.col("ui_label") == selected_q)
+col1, col2 = st.columns([1, 2])
+with col1:
+    selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", options=list_q)
+    df_filtered = df.filter(pl.col("ui_label") == selected_q)
+with col2:
+    selected_top_n = st.slider(
+            "Hiển thị Top cổ phiếu (theo Hạng QMJ):",
+            min_value=1,
+            max_value=_get_top_qmj_rank(df_filtered),
+            value=_get_top_qmj_rank(df_filtered), 
+            step=1
+        )
 render_main_content(df_filtered, selected_q)
