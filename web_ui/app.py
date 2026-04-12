@@ -99,34 +99,28 @@ def render_filters(df: pl.DataFrame):
     return df_final, selected_q, selected_top_n, selected_criteria
 
 def _introduction():
-    with st.expander("📌 Về dự án này: Từ câu chuyện cá nhân đến Tư duy Hệ thống"):
+    with st.expander(" Tại sao hệ thống này ra đời? (The 'Why' behind the Product) "):
         
         st.markdown("""
-        ### 1. Câu chuyện khởi nguồn: Khi công thức tài chính là chưa đủ
-        Đầu năm 3 đại học, khi cầm trên tay kết quả pass CFA Level 1 với số điểm 1755/1900, tôi từng nghĩ mình đã nắm được "chìa khóa" vững chắc để bước vào các quỹ đầu tư hay khối phân tích của một công ty chứng khoán. Kế hoạch lúc đó của tôi rất đơn giản (và có phần lý tưởng hóa): Chọn một mã cổ phiếu bất kỳ, lôi hết giáo trình và công thức định giá ra để viết một bản báo cáo phân tích chuyên sâu thật hoành tráng, đính kèm vào CV và nộp đi.
+        ### 1. Câu chuyện của mình: khi kiến thức tài chính là không đủ.
+        Đầu năm 3 đại học, sau khi nhận email báo đỗ CFA Level 1, mình từng nghĩ: Mình sẽ chọn một mã cổ phiếu, áp dụng đống công thức định giá xịn vừa học được, viết một cái report thật chất lượng 20-30 trang PDF rồi tự tin gửi CV ứng tuyển vào khối phân tích của các công ty chứng khoán hoặc các quỹ đầu tư thì bao pass cv và vào thẳng phỏng vấn.
 
-        Nhưng khi thực sự bắt tay vào làm, tôi nhanh chóng đâm sầm vào thực tế.
-        Việc bóc tách báo cáo tài chính, tính toán từng chỉ số rời rạc (như P/E, P/B, ROE...) cho *một* mã cổ phiếu ngốn của tôi quá nhiều thời gian. Điều tồi tệ nhất là: Sau nhiều ngày hì hục phân tích, tôi ngậm ngùi nhận ra doanh nghiệp đó vốn dĩ không có tiềm năng dài hạn. Thế là mọi công sức đổ sông đổ biển. Tôi lại cặm cụi chọn một mã khác, lặp lại quy trình vắt kiệt sức lực đó, và cầu may rằng lần này mình sẽ chọn đúng.
+        Nhưng hiện thực nó không vận hành như vậy. Bắt tay vào làm thì mới thấy khó khăn xuất hiện dần dần.
+        Việc chọn ra 1 mã cổ phiếu bất kỳ để phân tích, Lôi báo cáo tài chính ra để xuất excel xong bóc tách, xong lại "kéo Excel" để tính P/E, P/B, ROE... cho một công ty sẽ mất vô cùng nhiều thời gian. Điều tệ nhất là hì hục làm mới nhận ra mã đó vốn dĩ không có tiềm năng dài hạn, nền tảng của nó không đủ tốt thì lúc đó chắc chắn công sức đổ sông đổ biển. Nó giống như việc đãi cát tìm vàng trong danh sách 1,600 mã cổ phiếu trên sàn chứng khoán Việt Nam.
 
-        Tôi tự hỏi: *"Chẳng lẽ công việc của một chuyên viên phân tích tài chính là cứ phải thử-và-sai thủ công một cách tuyệt vọng giữa biển 1,600+ mã chứng khoán trên cả 3 sàn như vậy sao?"*
+        Sự bế tắc đó làm mình nhận ra: nếu như đi theo con đường truyền thống bằng cách chọn từng mã phân tích thủ công thì sẽ vô cùng may rủi và tốn thời gian.
+        Do đó, thay vì cố chấp làm một chuyên viên phân tích tài chính chọn mã bằng sức người, mình chọn lùi lại 1 bước để nhìn toàn cảnh. Mình đã chọn trở thành một data engineer để xây một hệ thống pipeline dữ liệu sàng lọc tự động, khách quan, tự động quét qua hàng ngàn mã cổ phiếu và chỉ để lại những cổ phiếu chất lượng tốt nhất cho công việc phân tích chuyên sâu.
 
-        ### 2. Sự chuyển dịch tư duy: Lùi lại để nhìn toàn cảnh
-        Sự bế tắc đó đã buộc tôi phải lùi lại một bước. Tôi nhận ra mình đang làm việc ngược quy trình. Trước khi dùng kính lúp để soi thật kỹ một cái cây, mình phải dùng radar để quét xem khu rừng nào đáng để bước vào.
+        ### 2. Thế là sản phẩm này ra đời:
+        Dự án được xây dựng với mục tiêu biến dữ liệu thành sản phẩm (**Data as a Product**). Tức là hệ thống Data Pipeline phía sau sẽ tự động cào, làm sạch và tính toán mọi thứ.
 
-        Để giải quyết bài toán đó, tôi không cần thêm một công thức định giá phức tạp nào nữa. Thứ tôi cần là một **Hệ thống Sàng lọc (Screening System)** khách quan, tự động và dựa trên dữ liệu lớn (Data-driven). Một hệ thống đủ thông minh để tìm ra những cổ phiếu thực sự xứng đáng để mình đầu tư quỹ thời gian hạn hẹp vào phân tích chuyên sâu.
+        Để bộ lọc thực sự chất lượng, tôi áp dụng phương pháp luận từ quỹ AQR Capital Management:
+        * **Quality Minus Junk (QMJ):** Nén toàn bộ mớ bòng bong báo cáo tài chính thành một điểm số Z-Score duy nhất. Nó đánh giá sức khỏe doanh nghiệp qua 3 trụ cột (Lợi nhuận, Tăng trưởng, An toàn) để gạt bỏ mấy công ty "rác" và giữ lại hàng chất lượng.
+        * **Tối ưu thời gian:** Kết hợp thêm Định giá hấp dẫn (Value) và Đà tăng (Momentum), hệ thống thu hẹp danh sách 1600 mã xuống còn vài chục mã tiềm năng chỉ trong vài cú click chuột.
 
-        Đó là lý do dự án này ra đời.
+        Tóm lại, thời gian là thứ đắt đỏ nhất. Thay vì kiệt sức vì đi tìm data, giờ đây chúng ta có thể dành 100% năng lượng não bộ để đào sâu vào những "viên kim cương" đã được hệ thống chuẩn bị sẵn.
 
-        ### 3. Giải pháp: Data Pipeline kết hợp Phương pháp luận AQR
-        Thay vì để người dùng "bơi" trong dữ liệu thô, sản phẩm này được thiết kế với tư duy **"Data as a Product"**. Hệ thống phía sau tự động thu thập, chuẩn hóa và xử lý dữ liệu của toàn thị trường.
-
-        **Cốt lõi của bộ lọc dựa trên nghiên cứu học thuật từ quỹ AQR Capital Management:**
-        * **Quality Minus Junk (QMJ):** Tổng hợp hàng loạt báo cáo tài chính phức tạp thành một điểm số Z-Score duy nhất. Nó đánh giá toàn diện dựa trên 3 trụ cột: Lợi nhuận (Profitability), Tăng trưởng (Growth) và An toàn (Safety) để loại trừ triệt để những cổ phiếu "Rác".
-        * **Tối ưu hóa thời gian:** Bằng cách kết hợp QMJ với các nhân tố Định giá (Value) và Đà tăng trưởng (Momentum), hệ thống thu hẹp góc nhìn từ vĩ mô xuống vi mô chỉ trong vài cú click.
-
-        Thay vì mất hàng giờ tìm kiếm lan man, giờ đây nhà đầu tư và chuyên viên phân tích có thể dành toàn bộ trí lực để đào sâu vào một nhóm nhỏ các "cổ phiếu kim cương" đã được hệ thống bảo chứng về nền tảng cơ bản.
-
-        > *Lưu ý: Bảng dữ liệu này phục vụ mục đích trình diễn năng lực xây dựng Kiến trúc Dữ liệu (Data Engineering) và tự động hóa hệ thống. Đây không phải là lời khuyên hay khuyến nghị đầu tư.*
+        > *Lưu ý: Bảng dữ liệu này là một Proof of Concept (PoC) phục vụ mục đích trình diễn năng lực xây dựng Kiến trúc Dữ liệu (Data Engineering). Đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
