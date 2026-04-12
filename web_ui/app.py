@@ -79,9 +79,10 @@ def render_filters(df: pl.DataFrame):
     
     return df_final, selected_q
 
-def render_main_content(df: pl.DataFrame, selected_q: str):
+def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
     st.header(f"Báo cáo QMJ - {selected_q}", divider="gray")
+    st.caption(f"⏱️ Cập nhật lần cuối: {updated_time}")
 
     # 1. ĐỊNH NGHĨA THỨ TỰ HIỂN THỊ (Sắp xếp lại danh sách cột)
     # Bác liệt kê các cột muốn HIỆN THEO THỨ TỰ từ trái sang phải ở đây
