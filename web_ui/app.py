@@ -47,6 +47,7 @@ def render_filters(df: pl.DataFrame):
         # Tạo một từ điển map giữa Tên hiển thị và Cột tương ứng trong data
         # desc=True nghĩa là điểm cao xếp trên, desc=False là hạng thấp (số 1) xếp trên
         criteria_dict = {
+            "Hạng QMJ": {"col": "qmj_rank", "desc": False},
             "Đà tăng trưởng (Top Momentum)": {"col": "z_momentum_recent", "desc": True},
             "Định giá hấp dẫn (Top Value)": {"col": "z_value_recent", "desc": True}
         }
