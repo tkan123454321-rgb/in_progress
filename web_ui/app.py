@@ -235,7 +235,7 @@ def main():
             insight_text = f"Trong **{selected_q}**, những cổ phiếu nào lọt vào **Top {selected_top_n}** doanh nghiệp có nền tảng chất lượng nhất (theo QMJ Score)?"
         elif selected_criteria == "Đà tăng trưởng (Top Momentum)":
             insight_text = f"Trong **{selected_q}**, nếu chỉ xét trong **Top {selected_top_n}** cổ phiếu chất lượng nhất, thì những mã nào đang có **đà tăng trưởng mạnh nhất**?"
-        elif selected_criteria == "Định giá hấp dẫn (Top Value)":
+        elif selected_criteria == "Định giá (Top Value)":
             insight_text = f"Trong **{selected_q}**, nếu chỉ xét trong **Top {selected_top_n}** cổ phiếu chất lượng nhất, thì những mã nào đang có **định giá rẻ và hấp dẫn nhất**?"
         else:
             insight_text = f"Danh sách cổ phiếu theo {selected_criteria}."
