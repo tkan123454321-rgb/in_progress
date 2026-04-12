@@ -1,6 +1,7 @@
 import streamlit as st
 import polars as pl
 from pathlib import Path
+import datetime
 
 # ==========================================
 # 1. DATA PROCESSING (XỬ LÝ DỮ LIỆU)
@@ -28,10 +29,12 @@ def _get_quarters_for_selectbox(df: pl.DataFrame) -> list[str]:
 
 def _get_top_qmj_rank(df_filtered_by_quarter: pl.DataFrame) -> int:
     return int(df_filtered_by_quarter["qmj_rank"].max()) # type: ignore
+
 def _get_latest_update_time(df: pl.DataFrame) -> str:
     """Lấy thời gian cập nhật mới nhất từ cột obt_updated_at"""
     latest_time = str(df["obt_updated_at"].max())
-    return latest_time[:19]
+    dt_obj = datetime.strptime(latest_time[:19], "%Y-%m-%dT%H:%M:%S")
+    return dt_obj.strftime("%d-%m-%y %H-%M-%S")
 # ==========================================
 # 2. UI COMPONENTS (CÁC THÀNH PHẦN GIAO DIỆN)
 # ==========================================
