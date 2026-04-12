@@ -79,39 +79,72 @@ def render_filters(df: pl.DataFrame):
     
     return df_final, selected_q
 
-def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
-    """Hàm này chỉ chuyên lo việc vẽ bảng dữ liệu (đã được làm đẹp)"""
+def render_main_content(df: pl.DataFrame, selected_q: str):
+    """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
     st.header(f"Báo cáo QMJ - {selected_q}", divider="gray")
-    st.caption(f"Thời gian cập nhật: {updated_time}")
+
+    # 1. ĐỊNH NGHĨA THỨ TỰ HIỂN THỊ (Sắp xếp lại danh sách cột)
+    # Bác liệt kê các cột muốn HIỆN THEO THỨ TỰ từ trái sang phải ở đây
+    display_order = [
+        "qmj_rank",          # Đưa Hạng lên đầu tiên
+        "ticker",            # Mã CK
+        "company_name",      # Tên công ty
+        "exchange",          # Sàn
+        "industry_group",    # Nhóm ngành
+        "sector_detail",     # Lĩnh vực
+        "qmj_score",         # Điểm tổng
+        "qmj_profitability", # P
+        "qmj_growth",        # G
+        "qmj_safety",        # S
+        "ui_label",          # Kỳ báo cáo
+        "current_market_cap",# Vốn hóa hiện tại
+        "quarter_market_cap",# Vốn hóa chốt quý
+        # Đẩy các chỉ số Z ra cuối cùng
+        "z_value_historical",
+        "z_momentum_historical",
+        "z_value_recent",
+        "z_momentum_recent"
+    ]
+
+    # 2. CHỈ CHỌN CÁC CỘT TRÊN (Tự động ẩn các cột shares, volume, kỹ thuật...)
+    # Việc dùng .select ở đây sẽ loại bỏ hoàn toàn các cột bác không liệt kê ở trên
+    df_display = df.select(display_order)
+
+    # 3. CẤU HÌNH HIỂN THỊ (Làm đẹp tên cột)
     view_config = {
-        "year": None, "quarter": None, "absolute_quarter": None,
-        "obt_updated_at": None, "obt_invocation_id": None,
-        "ui_label": st.column_config.TextColumn("Kỳ báo cáo (Period)", width="medium"),
+        "qmj_rank": "Hạng (Rank)",
         "ticker": st.column_config.TextColumn("Mã CK (Ticker)", width="small"),
         "company_name": "Tên Công ty (Company Name)",
         "exchange": "Sàn (Exchange)",
         "industry_group": "Nhóm Ngành (Industry Group)",
         "sector_detail": "Lĩnh vực (Sector)",
+        "ui_label": "Kỳ báo cáo (Period)",
+        
         "qmj_score": st.column_config.ProgressColumn(
-            "Điểm QMJ (QMJ Score)", help="Quality Minus Junk Total Score",
+            "Điểm QMJ (QMJ Score)", 
+            help="Quality Minus Junk Total Score",
             format="%.2f", min_value=0, max_value=1
         ),
-        "qmj_profitability": st.column_config.NumberColumn("Lợi nhuận (Profitability)", format="%.2f"),
-        "qmj_growth": st.column_config.NumberColumn("Tăng trưởng (Growth)", format="%.2f"),
-        "qmj_safety": st.column_config.NumberColumn("An toàn (Safety)", format="%.2f"),
-        "qmj_rank": "Hạng (Rank)",
-        "current_market_cap": st.column_config.NumberColumn("Vốn hóa (Market Cap - Bn)", format="%.0f"),
-        "avg_volume_3m": st.column_config.NumberColumn("KLGD TB 3T (Avg Vol 3M)", format="%.0f"),
+        "qmj_profitability": st.column_config.NumberColumn("Lợi nhuận (P)", format="%.2f"),
+        "qmj_growth": st.column_config.NumberColumn("Tăng trưởng (G)", format="%.2f"),
+        "qmj_safety": st.column_config.NumberColumn("An toàn (S)", format="%.2f"),
+        
+        "current_market_cap": st.column_config.NumberColumn("Vốn hóa (Mkt Cap - Bn)", format="%.0f"),
         "quarter_market_cap": st.column_config.NumberColumn("Vốn hóa chốt Quý", format="%.0f"),
-        "quarter_shares_outstanding": st.column_config.NumberColumn("CP Lưu hành chốt Quý", format="%.0f"),
-        "z_value_historical": st.column_config.NumberColumn("Định giá lịch sử (Value Z)", format="%.2f"),
-        "z_momentum_historical": st.column_config.NumberColumn("Đà tăng lịch sử (Momentum Z)", format="%.2f"),
+        
+        "z_value_historical": st.column_config.NumberColumn("Định giá LS (Value Z-H)", format="%.2f"),
+        "z_momentum_historical": st.column_config.NumberColumn("Đà tăng LS (Mom Z-H)", format="%.2f"),
         "z_value_recent": st.column_config.NumberColumn("Định giá (Value Z)", format="%.2f"),
-        "z_momentum_recent": st.column_config.NumberColumn("Đà tăng (Momentum Z)", format="%.2f"),
+        "z_momentum_recent": st.column_config.NumberColumn("Đà tăng (Mom Z)", format="%.2f"),
     }
 
-    st.dataframe(df, column_config=view_config, use_container_width=True, hide_index=True)
-
+    # 4. VẼ BẢNG
+    st.dataframe(
+        df_display, 
+        column_config=view_config, 
+        use_container_width=True, 
+        hide_index=True
+    )
 # ==========================================
 # 3. ORCHESTRATOR (NHẠC TRƯỞNG ĐIỀU PHỐI)
 # ==========================================
