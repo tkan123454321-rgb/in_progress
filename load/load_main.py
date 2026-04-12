@@ -3,13 +3,9 @@ from load.kafka_consumer import KafkaStockConsumer
 from ingestion.kafka_producer import StockTickerProducer
 from load.lakehouse_loader import LakehouseLoader
 from utils.logger_config import setup_logger
-from utils.minio_maintenance import LakeHouseClient
-from utils.metadata_manager import MetadataManager
-from utils.postgres_client import PostgresClient
 from utils.other_utils import _get_session
 from schema.producer_schema import BaseMetadata
 import sys
-from polars.exceptions import PolarsError
 from utils.exception import RetryableAPIError
 import json
 import time

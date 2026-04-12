@@ -73,7 +73,7 @@ def render_filters(df: pl.DataFrame):
             help=help_text  
         )
     with col3:
-        search_ticker = st.text_input("🔍 Tìm nhanh mã CK:", placeholder="VD: VNM, HPG...").upper().strip()
+        search_ticker = st.text_input("Tìm nhanh mã CK:", placeholder="VD: VNM, HPG...").upper().strip()
     
     max_rank = _get_top_qmj_rank(df_filtered_by_q)
     selected_top_n = st.slider(
@@ -97,6 +97,21 @@ def render_filters(df: pl.DataFrame):
         )
     
     return df_final, selected_q, selected_top_n, selected_criteria
+
+def _introduction():
+    with st.expander("📌 Về dự án này (About this Project) & Phương pháp luận"):
+                st.markdown("""
+                **1. Mục tiêu dự án (Project Objective):**
+                Đây là một *Proof of Concept (PoC)* được xây dựng để chứng minh khả năng thiết kế và vận hành một **Data Pipeline End-to-End**. 
+                Hệ thống tự động thu thập dữ liệu, xử lý qua kiến trúc Lakehouse (Apache Iceberg), kiểm soát chất lượng bằng dbt và trực quan hóa lên Dashboard.
+
+                **2. Phương pháp luận Tài chính (Methodology):**
+                Thay vì lọc cổ phiếu cảm tính, dữ liệu đầu ra được tính toán (Z-Score) dựa trên các bài báo học thuật của quỹ AQR Capital Management:
+                * **Quality Minus Junk (QMJ):** Lọc các doanh nghiệp có Lợi nhuận cao, Tăng trưởng đều và Rủi ro tài chính thấp.
+                * **Value & Momentum Everywhere:** Kết hợp tìm kiếm định giá rẻ và đà tăng trưởng dòng tiền.
+
+                *Lưu ý: Bảng dữ liệu này phục vụ mục đích trình diễn năng lực xử lý dữ liệu (Data Engineering), không phải là lời khuyên đầu tư (Not Financial Advice).*
+                """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
@@ -251,6 +266,7 @@ def main():
         render_main_content(df_filtered, selected_q, updated_time)
     else:
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
+    _introduction()
 
 
 
