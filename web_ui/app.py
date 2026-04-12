@@ -55,9 +55,21 @@ def render_filters(df: pl.DataFrame):
         criteria_dict = {
             "Hạng QMJ": {"col": "qmj_rank", "desc": False},
             "Đà tăng trưởng (Top Momentum)": {"col": "z_momentum_recent", "desc": True},
-            "Định giá hấp dẫn (Top Value)": {"col": "z_value_recent", "desc": True}
+            "Định giá (Top Value)": {"col": "z_value_recent", "desc": True}
         }
-        selected_criteria = st.selectbox("🏆 Chọn Tiêu chí Xếp hạng:", options=list(criteria_dict.keys()))
+        help_text = """
+        **Giải thích các Tiêu chí Xếp hạng:**
+        * **Hạng QMJ**: Xếp hạng các cổ phiếu có nền tảng tài chính bền vững nhất dựa trên điểm Z-score tổng hợp từ các nhân tố Profitability, Growth và Safety.
+        * **Đà tăng trưởng**: Xác định các cổ phiếu có sức mạnh giá và đà tăng trưởng dòng tiền dẫn dắt thị trường thông qua đo lường xu hướng tiếp diễn.
+        * **Định giá hấp dẫn**: Sàng lọc các cổ phiếu có mức định giá thấp hoặc hấp dẫn so với giá trị nội tại.
+        """
+
+        # 3. Thêm tham số help vào selectbox
+        selected_criteria = st.selectbox(
+            "Chọn Tiêu chí Xếp hạng:", 
+            options=list(criteria_dict.keys()),
+            help=help_text  
+        )
     
     max_rank = _get_top_qmj_rank(df_filtered_by_q)
     selected_top_n = st.slider(
@@ -100,7 +112,6 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "ui_label",          # Kỳ báo cáo
         "current_market_cap",# Vốn hóa hiện tại
         "quarter_market_cap",# Vốn hóa chốt quý
-        # Đẩy các chỉ số Z ra cuối cùng
         "z_value_historical",
         "z_momentum_historical",
         "z_value_recent",
