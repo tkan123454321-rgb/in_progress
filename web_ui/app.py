@@ -147,6 +147,15 @@ def _faq():
 
         2. Z-Score (Thứ hạng - So sánh thị trường): Dùng để so sánh cổ phiếu so với những mã còn lại. Vì mỗi chỉ số (P/E, lợi nhuận, đà tăng) có đơn vị khác nhau, Z-Score giúp đưa tất cả về cùng một hệ quy chiếu chuẩn để so sánh công bằng. 
         """)
+def _technical_adjustments():
+    with st.expander(" Hiệu chỉnh Kỹ thuật  "):
+        st.markdown("""
+        Để thuật toán vận hành thực tế và khách quan nhất tại thị trường Việt Nam, sản phẩm đã được thay đổi 1 số điểm so với bài báo gốc của AQR:
+        * Chu kỳ Tăng trưởng (Growth Window): Thay vì dùng 20 quý (5 năm) lịch sử làm mốc cửa sổ tham chiếu trong mục tính thành phần tăng trưởng (growth), mình đã rút ngắn xuống còn 16 quý (4 năm). 
+            * Lý do: Hệ thống ưu tiên tính toàn vẹn của dữ liệu. Tại Việt Nam, yêu cầu dữ liệu sạch liên tiếp trong 20 quý sẽ khiến số lượng mã bị loại bỏ rất lớn do lỗi dữ liệu quá khứ từ nguồn cung cấp. 16 quý là con số đủ ổn để cân bằng giữa việc đo lường nội lực dài hạn và duy trì số lượng mẫu đủ lớn để so sánh.
+        * Sử dụng báo cáo tài chính theo TTM (Trailing Twelve Months) thay vì Annual.
+            * lý do: Thay vì đợi báo cáo năm tài chính (thường có độ trễ lớn), mình sử dụng dữ liệu trượt 4 quý gần nhất. Điều này giúp rút ngắn tối đa độ trễ dữ liệu và đưa ra các tín hiệu sớm hơn.
+        """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
