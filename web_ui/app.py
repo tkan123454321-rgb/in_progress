@@ -112,7 +112,10 @@ def _introduction():
         Do đó, thay vì cố chấp làm một chuyên viên phân tích tài chính chọn mã bằng sức người, mình chọn lùi lại 1 bước để nhìn toàn cảnh. Mình đã chọn trở thành một data engineer để xây một hệ thống pipeline dữ liệu sàng lọc tự động, khách quan, tự động quét qua hàng ngàn mã cổ phiếu và chỉ để lại những cổ phiếu chất lượng tốt nhất cho công việc phân tích chuyên sâu.
 
         ### 2. Thế là sản phẩm này ra đời:
-        Dự án được xây dựng với mục tiêu biến dữ liệu thành sản phẩm (**Data as a Product**). Tức là hệ thống Data Pipeline phía sau sẽ tự động cào, làm sạch và tính toán mọi thứ.
+        Sản phẩm này được tạo ra để trả lời cho ba câu hỏi cốt lõi:
+        * Đâu là những cổ phiếu chất lượng cao đáng để đầu tư (Theo Hạng QMJ)?. Câu hỏi này giải quyết 90% thời gian tìm kiếm cổ phiếu chất lượng.
+        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang được định giá hấp dẫn (theo điểm Value). Câu hỏi này giúp giảm rủi ro mua cổ phiếu chất lượng tốt nhưng lại được định giá quá cao trên thị trường.
+        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang có đà tăng trưởng mạnh mẽ (theo điểm Momentum). Câu hỏi này giúp chúng ta xác định thời điểm đúng để mua vào những mã cổ phiếu chất lượng đó.
 
         Để bộ lọc thực sự chất lượng, tôi áp dụng phương pháp luận từ quỹ AQR Capital Management:
         * **Quality Minus Junk (QMJ):** Nén toàn bộ mớ bòng bong báo cáo tài chính thành một điểm số Z-Score duy nhất. Nó đánh giá sức khỏe doanh nghiệp qua 3 trụ cột (Lợi nhuận, Tăng trưởng, An toàn) để gạt bỏ mấy công ty "rác" và giữ lại hàng chất lượng.
