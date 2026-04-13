@@ -126,7 +126,7 @@ def _introduction():
             * An toàn (Safety): Đo lường khả năng sinh tồn dựa trên rủi ro phá sản, đòn bẩy nợ và mức độ biến động giá cổ phiếu.
         * [Value And Momentum Everywhere](https://w4.stern.nyu.edu/facdir/lpederse/papers/ValMomEverywhere.pdf): Sau khi có những mã có điểm quality cao (QMJ Score), hệ thống tiếp tục xác định cổ phiếu đang được định giá hấp dẫn (Value) và cổ phiếu nào đang có đà tăng trưởng (Momentum) để từ đó đưa ra những quyết định đầu tư tốt hơn.
         
-        > *Lưu ý: Bảng dữ liệu này là một Proof of Concept (PoC) phục vụ mục đích trình diễn năng lực xây dựng Kiến trúc Dữ liệu (Data Engineering). Đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
+        > *Lưu ý: Bảng dữ liệu này là một dự án cá nhân (Portfolio Project) để chứng minh khả năng xử lý và xây dựng kiến trúc dữ liệu (Data Engineering). Các số liệu và bảng xếp hạng ở đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
@@ -313,6 +313,10 @@ def main():
     else:
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
     _introduction()
+    st.markdown("---")
+    st.caption("""
+    **⚠️ TUYÊN BỐ MIỄN TRỪ TRÁCH NHIỆM (DISCLAIMER):** Đây là sản phẩm thực tế thuộc dự án cá nhân nhằm khẳng định năng lực chuyên môn trong lĩnh vực Data Engineering. Mọi dữ liệu, tín hiệu và thông tin trên hệ thống chỉ phục vụ mục đích tham khảo. Tác giả không cung cấp dịch vụ tư vấn tài chính và không chịu trách nhiệm cho bất kỳ quyết định mua bán hay tổn thất tài chính nào.
+    """)
 
 
 
