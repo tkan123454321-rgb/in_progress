@@ -137,9 +137,15 @@ def _faq():
         2.  Loại bỏ ngành đặc thù: Hệ thống tự động loại khỏi danh sách các cổ phiếu nhóm Ngân hàng, Chứng khoán và Bảo hiểm do cấu trúc BCTC và mô hình kinh doanh khác biệt hoàn toàn, không phù hợp để dùng chung thang đo QMJ với các ngành sản xuất, dịch vụ.
         3.  Kiểm soát tính toàn vẹn dữ liệu (Data Integrity): Do hệ thống được xây từ nguồn dữ liệu công khai, sai sót là không thể tránh khỏi. Do đó hệ thống tự động loại bỏ các BCTC của các quý bị lỗi, bị thiếu dữ liệu quan trọng hoặc có sự bất thường rõ ràng. Việc này đảm bảo những doanh nghiệp có dữ liệu đầy đủ và chính xác mới được chấm điểm QMJ, từ đó nâng cao độ tin cậy của bảng xếp hạng.
         4.  Hạn chế về phương pháp Lưu chuyển tiền tệ: Các doanh nghiệp dùng phương pháp Lưu chuyển tiền tệ trực tiếp không thể bóc tách chi tiết mục Khấu hao (Depreciation) trong các nguồn dữ liệu miễn phí. Vì đây là biến số trọng yếu trong QMJ, hệ thống chấp nhận loại bỏ những mã này để đảm bảo sự công bằng và đầy đủ cho điểm số cuối cùng.
-
-        ---
         **Giải pháp mở rộng:** sản phẩm này hoàn toàn sẵn sàng cho việc mở rộng quy mô. Nếu được tích hợp với các nguồn dữ liệu chuyên sâu (Paid Data) đầy đủ và chính xác hơn, hệ thống sẽ tự động tăng số lượng mã được xếp hạng lên toàn bộ thị trường mà vẫn giữ vững các tiêu chuẩn khắt khe về chất lượng dữ liệu.
+        """)
+        st.markdown("### Tại sao bảng dữ liệu có cả điểm Raw Score và Z-Score?")
+        st.write("""
+        Bảng dữ liệu cung cấp hai góc nhìn bổ trợ nhau giúp đánh giá cổ phiếu toàn diện:
+
+        1. Raw Score (Điểm Gốc - So sánh tự thân): Dùng để biết cổ phiếu đang tốt hơn hay tệ đi so với chính nó trong quá khứ. Ví dụ: Điểm Value gần đây thấp hơn lịch sử nghĩa là cổ phiếu đang rẻ hơn chính mức trước đây của nó.
+
+        2. Z-Score (Thứ hạng - So sánh thị trường): Dùng để biết cổ phiếu đang đứng ở đâu so với những mã còn lại. Vì mỗi chỉ số (P/E, lợi nhuận, đà tăng) có đơn vị khác nhau, Z-Score giúp đưa tất cả về cùng một hệ quy chiếu chuẩn để so sánh công bằng. 
         """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
@@ -241,25 +247,25 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "value_raw_score": st.column_config.NumberColumn(
             "Định giá Gốc Lịch sử (Value Raw - Hist)", 
             width="medium",
-            help="Điểm Value gốc trong quá khứ. Dùng để phân tích Time-series: So sánh định giá của cổ phiếu với chính lịch sử của nó.",
+            help="dùng cho phân tích Time-series: diểm value gốc trong quá khứ, so sánh định giá của cổ phiếu với chính lịch sử của nó.",
             format="%.4f"
         ),
         "momentum_raw_score": st.column_config.NumberColumn(
             "Đà tăng Gốc Lịch sử (Mom Raw - Hist)", 
             width="medium",
-            help="Điểm Momentum gốc trong quá khứ. Đo lường sức mạnh giá tự thân trong lịch sử.",
+            help="dùng cho phân tích Time-series: Điểm Momentum gốc trong quá khứ, đo lường sức mạnh giá tự thân trong lịch sử.",
             format="%.4f"
         ),
         "value_recent_score": st.column_config.NumberColumn(
             "Định giá Gốc Gần đây (Value Raw - Recent)", 
             width="medium",
-            help="Điểm Value gốc gần đây. Dùng để xem xét cổ phiếu hiện tại đang rẻ hay đắt so với mức trung bình lịch sử của nó.",
+            help="dùng cho phân tích Time-series: Điểm Value gốc gần đây, dùng để xem xét cổ phiếu hiện tại đang rẻ hay đắt so với mức trung bình lịch sử của nó.",
             format="%.4f"
         ),
         "momentum_recent_score": st.column_config.NumberColumn(
             "Đà tăng Gốc Gần đây (Mom Raw - Recent)", 
             width="medium",
-            help="Điểm Momentum gốc gần đây. Đo lường sức mạnh giá tự thân tại thời điểm hiện tại.",
+            help="dùng cho phân tích Time-series: Điểm Momentum gốc gần đây, đo lường sức mạnh giá tự thân tại thời điểm hiện tại.",
             format="%.4f"
         ),
 
@@ -267,25 +273,25 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "z_value_historical": st.column_config.NumberColumn(
             "Định giá Z-Score Lịch sử (Value Z - Hist)", 
             width="medium",
-            help="Phân tích Cross-sectional: Cổ phiếu này rẻ hay đắt so với các cổ phiếu khác trên thị trường trong quá khứ.",
+            help="dùng cho phân tích Cross-sectional: Cổ phiếu này quá khứ rẻ hay đắt so với các cổ phiếu khác.",
             format="%.2f"
         ),
         "z_momentum_historical": st.column_config.NumberColumn(
             "Đà tăng Z-Score Lịch sử (Mom Z - Hist)", 
             width="medium",
-            help="Phân tích Cross-sectional: Đà tăng giá mạnh hay yếu so với phần còn lại của thị trường trong quá khứ.",
+            help="dùng cho phân tích Cross-sectional: Đà tăng giá mạnh hay yếu so với thị trường trong quá khứ.",
             format="%.2f"
         ),
         "z_value_recent": st.column_config.NumberColumn(
             "Định Giá Z-Score Gần Đây (Value Z - Recent)", 
             width="medium",
-            help="Phân tích Cross-sectional: Cổ phiếu này hiện tại đang rẻ hay đắt so với các cổ phiếu khác.",
+            help="dùng cho phân tích Cross-sectional: Cổ phiếu này hiện tại đang rẻ hay đắt so với các cổ phiếu khác.",
             format="%.2f"
         ),
         "z_momentum_recent": st.column_config.NumberColumn(
             "Đà tăng Z-Score Gần Đây (Mom Z - Recent)", 
             width="medium",
-            help="Phân tích Cross-sectional: Cường độ dòng tiền hiện tại mạnh hay yếu so với thị trường chung.",
+            help="dùng cho phân tích Cross-sectional: đà tăng giá hiện tại mạnh hay yếu so với thị trường chung.",
             format="%.2f"
         ),
     }
