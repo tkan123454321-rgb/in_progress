@@ -128,6 +128,19 @@ def _introduction():
         
         > *Lưu ý: Bảng dữ liệu này là một dự án cá nhân (Portfolio Project) để chứng minh khả năng xử lý và xây dựng kiến trúc dữ liệu (Data Engineering). Các số liệu và bảng xếp hạng ở đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
+def _faq():
+    with st.expander(" 💡 FAQ (Giải đáp thắc mắc về dữ liệu) "):
+        st.markdown("### Tại sao chỉ có số ít mã cổ phiếu được chấm điểm QMJ theo từng quý?")
+        st.write("""
+        Để đảm bảo tính chính xác và thực chiến của bảng xếp hạng, mình đã thực hiện một quy trình sàng lọc qua 4 lớp chính:
+        1.  Lọc quy mô và thanh khoản: Bắt đầu từ 1.548 mã trên sàn, mình chỉ giữ lại những doanh nghiệp có vốn hóa (Market Cap) trên 500 tỷ VNĐ và khối lượng giao dịch trung bình 3 tháng trên 10.000 cổ phiếu/phiên. Điều này giúp loại bỏ các cổ phiếu không có thanh khoản hoặc quá bé về mặt quy mô.
+        2.  Loại bỏ ngành đặc thù: Hệ thống tự động loại khỏi danh sách các cổ phiếu nhóm Ngân hàng, Chứng khoán và Bảo hiểm do cấu trúc BCTC và mô hình kinh doanh khác biệt hoàn toàn, không phù hợp để dùng chung thang đo QMJ với các ngành sản xuất, dịch vụ.
+        3.  Kiểm soát tính toàn vẹn dữ liệu (Data Integrity): Do hệ thống được xây từ nguồn dữ liệu công khai, sai sót là không thể tránh khỏi. Do đó hệ thống tự động loại bỏ các BCTC của các quý bị lỗi, bị thiếu dữ liệu quan trọng hoặc có sự bất thường rõ ràng. Việc này đảm bảo những doanh nghiệp có dữ liệu đầy đủ và chính xác mới được chấm điểm QMJ, từ đó nâng cao độ tin cậy của bảng xếp hạng.
+        4.  Hạn chế về phương pháp Lưu chuyển tiền tệ: Các doanh nghiệp dùng phương pháp Lưu chuyển tiền tệ trực tiếp không thể bóc tách chi tiết mục Khấu hao (Depreciation) trong các nguồn dữ liệu miễn phí. Vì đây là biến số trọng yếu trong QMJ, hệ thống chấp nhận loại bỏ những mã này để đảm bảo sự công bằng và đầy đủ cho điểm số cuối cùng.
+
+        ---
+        **Giải pháp mở rộng:** sản phẩm này hoàn toàn sẵn sàng cho việc mở rộng quy mô. Nếu được tích hợp với các nguồn dữ liệu chuyên sâu (Paid Data) đầy đủ và chính xác hơn, hệ thống sẽ tự động tăng số lượng mã được xếp hạng lên toàn bộ thị trường mà vẫn giữ vững các tiêu chuẩn khắt khe về chất lượng dữ liệu.
+        """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
@@ -313,6 +326,7 @@ def main():
     else:
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
     _introduction()
+    _faq()
     st.markdown("---")
     st.caption("""
     **⚠️ TUYÊN BỐ MIỄN TRỪ TRÁCH NHIỆM (DISCLAIMER):** Đây là sản phẩm thực tế thuộc dự án cá nhân nhằm khẳng định năng lực chuyên môn trong lĩnh vực Data Engineering. Mọi dữ liệu, tín hiệu và thông tin trên hệ thống chỉ phục vụ mục đích tham khảo. Tác giả không cung cấp dịch vụ tư vấn tài chính và không chịu trách nhiệm cho bất kỳ quyết định mua bán hay tổn thất tài chính nào.
