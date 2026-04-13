@@ -99,7 +99,7 @@ def render_filters(df: pl.DataFrame):
     return df_final, selected_q, selected_top_n, selected_criteria
 
 def _introduction():
-    with st.expander(" Tại sao hệ thống này ra đời? (The 'Why' behind the Product) "):
+    with st.expander(" Tại sao sản phẩm này ra đời? (The 'Why' behind the Product) "):
         
         st.markdown("""
         ### 1. Câu chuyện của mình: khi kiến thức tài chính là không đủ.
@@ -113,16 +113,19 @@ def _introduction():
 
         ### 2. Thế là sản phẩm này ra đời:
         Sản phẩm này được tạo ra để trả lời cho ba câu hỏi cốt lõi:
-        * Đâu là những cổ phiếu chất lượng cao đáng để đầu tư (Theo Hạng QMJ)?. Câu hỏi này giải quyết 90% thời gian tìm kiếm cổ phiếu chất lượng.
-        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang được định giá hấp dẫn (theo điểm Value). Câu hỏi này giúp giảm rủi ro mua cổ phiếu chất lượng tốt nhưng lại được định giá quá cao trên thị trường.
-        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang có đà tăng trưởng mạnh mẽ (theo điểm Momentum). Câu hỏi này giúp chúng ta xác định thời điểm đúng để mua vào những mã cổ phiếu chất lượng đó.
+        * Đâu là những cổ phiếu chất lượng cao đáng để đầu tư (Theo Hạng QMJ)? -> Câu hỏi này giải quyết 90% thời gian tìm kiếm cổ phiếu chất lượng.
+        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang được định giá hấp dẫn (theo điểm Value)? -> Câu hỏi này giúp giảm rủi ro mua cổ phiếu chất lượng tốt nhưng lại được định giá quá cao trên thị trường.
+        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang có đà tăng trưởng mạnh mẽ (theo điểm Momentum)? -> Câu hỏi này giúp chúng ta xác định thời điểm đúng để mua vào những mã cổ phiếu chất lượng đó.
 
-        Để bộ lọc thực sự chất lượng, tôi áp dụng phương pháp luận từ quỹ AQR Capital Management:
-        * **Quality Minus Junk (QMJ):** Nén toàn bộ mớ bòng bong báo cáo tài chính thành một điểm số Z-Score duy nhất. Nó đánh giá sức khỏe doanh nghiệp qua 3 trụ cột (Lợi nhuận, Tăng trưởng, An toàn) để gạt bỏ mấy công ty "rác" và giữ lại hàng chất lượng.
-        * **Tối ưu thời gian:** Kết hợp thêm Định giá hấp dẫn (Value) và Đà tăng (Momentum), hệ thống thu hẹp danh sách 1600 mã xuống còn vài chục mã tiềm năng chỉ trong vài cú click chuột.
+        ### 3. Cốt lõi của sản phẩm này: điểm QMJ (Quality Minus Junk) và sự kết hợp giữa điểm Value & Momentum
+        Để sản phẩm này đưa ra các tín hiệu chính xác và khách quan, lõi thuật toán (Data Pipeline) được xây dựng dựa trên các nghiên cứu định lượng từ công ty quản lý đầu tư toàn cầu AQR Capital Management:
 
-        Tóm lại, thời gian là thứ đắt đỏ nhất. Thay vì kiệt sức vì đi tìm data, giờ đây chúng ta có thể dành 100% năng lượng não bộ để đào sâu vào những "viên kim cương" đã được hệ thống chuẩn bị sẵn.
+        * QMJ (Quality Minus Junk): Lượng hóa chất lượng doanh nghiệp bằng toán học để loại bỏ hoàn toàn cảm tính. Thay vì dùng một chỉ số đơn lẻ dễ bị thao túng, hệ thống thu thập hàng chục chỉ số tài chính thô, xếp hạng (Rank) và chuẩn hóa chúng thành điểm Z-Score. Bằng cách lấy trung bình cộng, thuật toán khử nhiễu (reduce noise) và đánh giá sức khỏe doanh nghiệp qua 3 trụ cột:
+            * Sinh lời (Profitability): Đo lường năng lực tạo ra lợi nhuận bền vững thông qua 6 chỉ số đa chiều (ROE, ROA, Dòng tiền, Biên gộp...).
+            * Tăng trưởng (Growth): Đánh giá tốc độ gia tăng của lợi nhuận cốt lõi trong một chu kỳ dài hạn.
+            * An toàn (Safety): Đo lường khả năng sinh tồn dựa trên rủi ro phá sản, đòn bẩy nợ và mức độ biến động giá cổ phiếu.
 
+        * **Tích hợp Value & Momentum:** Sau khi có rổ hàng xịn, hệ thống tiếp tục áp dụng bộ lọc Định giá và Đà tăng. Từ 1.600 mã chứng khoán trên toàn thị trường, thuật toán sẽ nén lại chỉ còn vài chục cơ hội tiềm năng nhất chỉ trong vài giây tính toán.
         > *Lưu ý: Bảng dữ liệu này là một Proof of Concept (PoC) phục vụ mục đích trình diễn năng lực xây dựng Kiến trúc Dữ liệu (Data Engineering). Đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
 
