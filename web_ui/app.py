@@ -342,6 +342,7 @@ def main():
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
     _introduction()
     _faq()
+    _technical_adjustments()
     st.markdown("---")
     st.caption("""
     **⚠️ TUYÊN BỐ MIỄN TRỪ TRÁCH NHIỆM (DISCLAIMER):** Đây là sản phẩm thực tế thuộc dự án cá nhân nhằm khẳng định năng lực chuyên môn trong lĩnh vực Data Engineering. Mọi dữ liệu, tín hiệu và thông tin trên hệ thống chỉ phục vụ mục đích tham khảo. Tác giả không cung cấp dịch vụ tư vấn tài chính và không chịu trách nhiệm cho bất kỳ quyết định mua bán hay tổn thất tài chính nào.
