@@ -103,10 +103,10 @@ def _introduction():
         
         st.markdown("""
         ### 1. Câu chuyện của mình: khi kiến thức tài chính là không đủ.
-        Đầu năm 3 đại học, sau khi nhận email báo đỗ CFA Level 1, mình từng nghĩ: Mình sẽ chọn một mã cổ phiếu, áp dụng đống công thức định giá xịn vừa học được, viết một cái report thật chất lượng 20-30 trang PDF rồi tự tin gửi CV ứng tuyển vào khối phân tích của các công ty chứng khoán hoặc các quỹ đầu tư thì bao pass cv và vào thẳng phỏng vấn.
+        Đầu năm 3 đại học, sau khi nhận email báo đỗ CFA Level 1 với điểm số 1755/1900, mình từng nghĩ: Mình sẽ chọn một mã cổ phiếu, áp dụng đống công thức định giá xịn vừa học được, viết một cái report thật chất lượng 20-30 trang PDF rồi tự tin gửi CV ứng tuyển vào khối phân tích của các công ty chứng khoán hoặc các quỹ đầu tư thì bao pass cv và vào thẳng phỏng vấn.
 
         Nhưng hiện thực nó không vận hành như vậy. Bắt tay vào làm thì mới thấy khó khăn xuất hiện dần dần.
-        Việc chọn ra 1 mã cổ phiếu bất kỳ để phân tích, Lôi báo cáo tài chính ra để xuất excel xong bóc tách, xong lại "kéo Excel" để tính P/E, P/B, ROE... cho một công ty sẽ mất vô cùng nhiều thời gian. Điều tệ nhất là hì hục làm mới nhận ra mã đó vốn dĩ không có tiềm năng dài hạn, nền tảng của nó không đủ tốt thì lúc đó chắc chắn công sức đổ sông đổ biển. Nó giống như việc đãi cát tìm vàng trong danh sách 1,600 mã cổ phiếu trên sàn chứng khoán Việt Nam.
+        Việc chọn ra 1 mã cổ phiếu bất kỳ để phân tích, Lôi báo cáo tài chính ra để xuất excel xong bóc tách, xong lại "kéo Excel" để tính P/E, P/B, ROE... cho một công ty sẽ mất vô cùng nhiều thời gian. Điều tệ nhất là hì hục làm mới nhận ra mã đó vốn dĩ không có tiềm năng dài hạn, nền tảng của nó không đủ tốt thì lúc đó chắc chắn công sức như muối bỏ bể. Nó giống như việc đãi cát tìm vàng trong danh sách 1,600 mã cổ phiếu trên sàn chứng khoán Việt Nam.
 
         Sự bế tắc đó làm mình nhận ra: nếu như đi theo con đường truyền thống bằng cách chọn từng mã phân tích thủ công thì sẽ vô cùng may rủi và tốn thời gian.
         Do đó, thay vì cố chấp làm một chuyên viên phân tích tài chính chọn mã bằng sức người, mình chọn lùi lại 1 bước để nhìn toàn cảnh. Mình đã chọn trở thành một data engineer để xây một hệ thống pipeline dữ liệu sàng lọc tự động, khách quan, tự động quét qua hàng ngàn mã cổ phiếu và chỉ để lại những cổ phiếu chất lượng tốt nhất cho công việc phân tích chuyên sâu.
@@ -143,10 +143,16 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "qmj_safety",        # S         # Kỳ báo cáo
         "current_market_cap",# Vốn hóa hiện tại
         "quarter_market_cap",# Vốn hóa chốt quý
-        "z_value_historical",
-        "z_momentum_historical",
-        "z_value_recent",
-        "z_momentum_recent"
+        "value_raw_score",       # Định giá gốc (Lịch sử)
+        "z_value_historical",    # Định giá chéo Z-score (Lịch sử)
+        "momentum_raw_score",    # Đà tăng gốc (Lịch sử)
+        "z_momentum_historical", # Đà tăng chéo Z-score (Lịch sử)
+        
+        # --- CỤM TIME-SERIES & CROSS-SECTIONAL (GẦN ĐÂY) ---
+        "value_recent_score",    # Định giá gốc (Gần đây)
+        "z_value_recent",        # Định giá chéo Z-score (Gần đây)
+        "momentum_recent_score", # Đà tăng gốc (Gần đây)
+        "z_momentum_recent"      # Đà tăng chéo Z-score (Gần đây)
     ]
 
     # 2. CHỈ CHỌN CÁC CỘT TRÊN (Tự động ẩn các cột shares, volume, kỹ thuật...)
@@ -167,15 +173,12 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         ),
         "company_name": st.column_config.TextColumn(
             "Tên Công Ty (Company Name)",
-            width="large", # Tên công ty siêu dài nên để large
+            width="large", 
             help="Tên đầy đủ của pháp nhân phát hành cổ phiếu."
         ),
-        
-        # Mấy cột này phải bọc vào TextColumn thì mới thêm width được
         "exchange": st.column_config.TextColumn("Sàn (Exchange)", width="small"),
         "industry_group": st.column_config.TextColumn("Nhóm Ngành (Industry Group)", width="medium"),
         "sector_detail": st.column_config.TextColumn("Lĩnh vực (Sector)", width="medium"),
-        "ui_label": st.column_config.TextColumn("Kỳ báo cáo (Period)", width="medium"),
         
         "qmj_score": st.column_config.NumberColumn(
             "Điểm QMJ (QMJ Score)", 
@@ -215,28 +218,55 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
             format="%,.0f"
         ),
         
-        "z_value_historical": st.column_config.NumberColumn(
-            "Định giá Lịch Sử (Value Z-Historical)", 
+        # --- CẤU HÌNH CÁC CỘT TIME-SERIES (GỐC) ---
+        "value_raw_score": st.column_config.NumberColumn(
+            "Định giá Gốc Lịch sử (Value Raw - Hist)", 
             width="medium",
-            help="Điểm Z-Score trung bình của các chỉ số định giá trong các giai đoạn quá khứ.",
+            help="Điểm Value gốc trong quá khứ. Dùng để phân tích Time-series: So sánh định giá của cổ phiếu với chính lịch sử của nó.",
+            format="%.4f"
+        ),
+        "momentum_raw_score": st.column_config.NumberColumn(
+            "Đà tăng Gốc Lịch sử (Mom Raw - Hist)", 
+            width="medium",
+            help="Điểm Momentum gốc trong quá khứ. Đo lường sức mạnh giá tự thân trong lịch sử.",
+            format="%.4f"
+        ),
+        "value_recent_score": st.column_config.NumberColumn(
+            "Định giá Gốc Gần đây (Value Raw - Recent)", 
+            width="medium",
+            help="Điểm Value gốc gần đây. Dùng để xem xét cổ phiếu hiện tại đang rẻ hay đắt so với mức trung bình lịch sử của nó.",
+            format="%.4f"
+        ),
+        "momentum_recent_score": st.column_config.NumberColumn(
+            "Đà tăng Gốc Gần đây (Mom Raw - Recent)", 
+            width="medium",
+            help="Điểm Momentum gốc gần đây. Đo lường sức mạnh giá tự thân tại thời điểm hiện tại.",
+            format="%.4f"
+        ),
+
+        # --- CẤU HÌNH CÁC CỘT CROSS-SECTIONAL (Z-SCORE) ---
+        "z_value_historical": st.column_config.NumberColumn(
+            "Định giá Z-Score Lịch sử (Value Z - Hist)", 
+            width="medium",
+            help="Phân tích Cross-sectional: Cổ phiếu này rẻ hay đắt so với các cổ phiếu khác trên thị trường trong quá khứ.",
             format="%.2f"
         ),
         "z_momentum_historical": st.column_config.NumberColumn(
-            "Đà tăng Lịch Sử (Momentum Z-Historical)", 
+            "Đà tăng Z-Score Lịch sử (Mom Z - Hist)", 
             width="medium",
-            help="Điểm Z-Score trung bình của đà tăng trưởng giá trong các giai đoạn quá khứ.",
+            help="Phân tích Cross-sectional: Đà tăng giá mạnh hay yếu so với phần còn lại của thị trường trong quá khứ.",
             format="%.2f"
         ),
         "z_value_recent": st.column_config.NumberColumn(
-            "Định Giá Gần Đây (Value Z-Recent)", 
+            "Định Giá Z-Score Gần Đây (Value Z - Recent)", 
             width="medium",
-            help="Điểm Z-Score phản ánh mức độ định giá hiện tại so với tập hợp dữ liệu so sánh.",
+            help="Phân tích Cross-sectional: Cổ phiếu này hiện tại đang rẻ hay đắt so với các cổ phiếu khác.",
             format="%.2f"
         ),
         "z_momentum_recent": st.column_config.NumberColumn(
-            "Đà tăng Gần Đây (Momentum Z-Recent)", 
+            "Đà tăng Z-Score Gần Đây (Mom Z - Recent)", 
             width="medium",
-            help="Điểm Z-Score phản ánh cường độ đà tăng trưởng giá hiện tại (Price Momentum).",
+            help="Phân tích Cross-sectional: Cường độ dòng tiền hiện tại mạnh hay yếu so với thị trường chung.",
             format="%.2f"
         ),
     }
