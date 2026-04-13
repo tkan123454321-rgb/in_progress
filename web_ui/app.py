@@ -145,7 +145,7 @@ def _faq():
 
         1. Raw Score (Điểm Gốc - So sánh tự thân): Dùng để biết cổ phiếu đang tốt hơn hay tệ đi so với chính nó trong quá khứ. Ví dụ: Điểm Value gần đây thấp hơn lịch sử nghĩa là cổ phiếu đang rẻ hơn chính mức trước đây của nó.
 
-        2. Z-Score (Thứ hạng - So sánh thị trường): Dùng để biết cổ phiếu đang đứng ở đâu so với những mã còn lại. Vì mỗi chỉ số (P/E, lợi nhuận, đà tăng) có đơn vị khác nhau, Z-Score giúp đưa tất cả về cùng một hệ quy chiếu chuẩn để so sánh công bằng. 
+        2. Z-Score (Thứ hạng - So sánh thị trường): Dùng để so sánh cổ phiếu so với những mã còn lại. Vì mỗi chỉ số (P/E, lợi nhuận, đà tăng) có đơn vị khác nhau, Z-Score giúp đưa tất cả về cùng một hệ quy chiếu chuẩn để so sánh công bằng. 
         """)
 
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
