@@ -10,4 +10,3 @@ kafka:
         type: JMX
       properties:
         security.protocol: PLAINTEXT
-      

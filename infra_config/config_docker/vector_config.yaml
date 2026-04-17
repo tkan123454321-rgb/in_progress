@@ -67,5 +67,3 @@ sinks:
       type: disk           
       max_size: 1073741824 
       when_full: block
-
-

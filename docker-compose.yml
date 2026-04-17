@@ -1,12 +1,33 @@
 x-airflow-common: &airflow-common
-  image: apache/airflow:3.1.7
-  env_file:
-    - .env
+  build:
+    context: .
+    dockerfile: airflow.Dockerfile
+  environment:
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW_UID: 50000
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONN}
+    _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER}
+    _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+    AIRFLOW_CONN_MY_TRINO_CONN: '${TRINO_CONNECTION}'
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__PARALLELISM: 4
+    AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 4
+    AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 30
+    AIRFLOW__CORE__TEST_CONNECTION: 'Enabled'
+    _AIRFLOW_DB_MIGRATE: 'true'
+    _AIRFLOW_WWW_USER_CREATE: 'true'
+    PYTHONPATH: /opt/airflow/app
   volumes:
-    - ./airflow/dags:/opt/airflow/dags
-    - ./airflow/logs:/opt/airflow/logs
-    - ./airflow/plugins:/opt/airflow/plugins
-    - ./airflow/config:/opt/airflow/config
+    - ./orchestration/dags:/opt/airflow/dags
+    - ./orchestration/logs:/opt/airflow/logs
+    - ./orchestration/plugins:/opt/airflow/plugins
+    - ./orchestration/config:/opt/airflow/config
+    # - ./transform:/opt/airflow/transform
+
+    # Map toàn bộ dự án vào một thư mục con tên là 'app' để PYTHONPATH làm việc
+    - .:/opt/airflow/app
   user: "${AIRFLOW_UID:-50000}:0"
   networks:
     - monitoring_net
@@ -61,6 +82,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    container_name: airflow-init
     depends_on:
       <<: *airflow-common-depends-on
     entrypoint: /bin/bash
@@ -131,6 +153,11 @@ services:
         echo
         ls -la /opt/airflow/{logs,dags,plugins,config}
         echo
+        echo "Installing dbt dependencies into the 'transform' directory..."
+        echo
+        cd /opt/airflow/transform && /opt/airflow/dbt_venv/bin/dbt deps
+        echo "Successfully installed dbt dependencies!"
+        echo
         echo "Change ownership of files in /opt/airflow to ${AIRFLOW_UID}:0"
         echo
         chown -R "${AIRFLOW_UID}:0" /opt/airflow/
@@ -165,36 +192,6 @@ services:
       retries: 5
       start_period: 5s
     mem_limit: 512m
-
-  pgbouncer:
-    image: edoburu/pgbouncer
-    container_name: pgbouncer
-    restart: unless-stopped
-    ports:
-      - "6432:6432"
-    environment:
-      - LISTEN_PORT=6432
-      - DB_USER=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=ops_db
-      - DB_HOST=postgres
-      - POOL_MODE=transaction
-      - LISTEN_ADDR=0.0.0.0
-      - MAX_CLIENT_CONN=100
-      - DEFAULT_POOL_SIZE=20
-      - AUTH_TYPE=scram-sha-256
-      - AUTH_FILE=/etc/pgbouncer/userlist.txt
-    networks:
-      - monitoring_net
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./config/config_docker/pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt
 
   kafka:
     image: confluentinc/cp-kafka:7.8.0
@@ -231,7 +228,7 @@ services:
     networks:
       - monitoring_net
     volumes:
-      - ./config/config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
+      - ./infra_config/config_docker/ui_kafba.yaml:/etc/kafkaui/dynamic_config.yaml
     depends_on:
       - kafka
 
@@ -247,7 +244,7 @@ services:
       - .env
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./config/config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./infra_config/config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - plugins-trino:/var/lib/grafana/plugins/trino
   loki:
     image: grafana/loki:latest
@@ -261,7 +258,7 @@ services:
       - .env
     command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
     volumes:
-      - ./config/config_docker/loki_config.yaml:/etc/loki/local-config.yaml
+      - ./infra_config/config_docker/loki_config.yaml:/etc/loki/local-config.yaml
       - loki_data:/loki
     depends_on:
       create-buckets:
@@ -306,7 +303,7 @@ services:
     networks:
       - monitoring_net
     volumes:
-      - ./config/config_docker/promtail-config.yaml:/etc/promtail/config.yaml
+      - ./infra_config/config_docker/promtail_config.yaml:/etc/promtail/config.yaml
       - /var/run/docker.sock:/var/run/docker.sock
       - promtail_data:/tmp
     command: -config.file=/etc/promtail/config.yaml -config.expand-env=true
@@ -395,7 +392,7 @@ services:
       - monitoring_net
     command: [ "--config", "/etc/vector/vector.yaml", "--watch-config" ]
     volumes:
-      - ./config/config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
+      - ./infra_config/config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
       - ./vector_log:/tmp/vector_log
       - vector_data:/var/lib/vector
   # jupyter:

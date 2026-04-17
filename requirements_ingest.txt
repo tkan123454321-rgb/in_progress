@@ -6,6 +6,8 @@ vnstock==3.4.2
 
 psycopg[binary]==3.3.3
 connectorx==0.4.5
+apache-airflow-providers-trino==6.5.2
+astronomer-cosmos==1.14.0
 
 requests==2.32.5
 python-dotenv==1.2.1

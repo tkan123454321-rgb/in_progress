@@ -31,5 +31,3 @@ datasources:
       connMaxLifetime: 14400
       postgresVersion: 1500 
       timescaledb: false
-
-
