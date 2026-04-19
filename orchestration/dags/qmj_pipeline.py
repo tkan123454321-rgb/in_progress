@@ -4,7 +4,6 @@ from cosmos import DbtTaskGroup, RenderConfig, LoadMode
 from cosmos.airflow.dag import DbtDag
 from airflow.sdk import dag, task
 from datetime import datetime, timedelta
-from schema.producer_schema import OriginalTickerList
 from load.lakehouse_loader import LakehouseLoader
 
 DBT_PROJECT_PATH = "/opt/airflow/transform" 
@@ -50,14 +49,7 @@ def ingest_raw_stock_list_dag():
     Transform: Cleans and standardizes the raw data in-memory using polars.
     Load: Ingests the transformed data into the Silver layer of the Lakehouse (Trino/Iceberg).
     """
-    
-    @task(task_id="extract_transform_load_stock_list", retries=3,retry_delay=timedelta(minutes=1))
-    def extract():
-        loader = LakehouseLoader()
-        loader._put_original_ticker_list(OriginalTickerList)
-    
-    extract_task = extract()
-    
+
     dbt_transform = DbtTaskGroup(
         group_id="dbt_silver_raw_ticker_list_transformation",
         project_config=project_config,
@@ -67,4 +59,4 @@ def ingest_raw_stock_list_dag():
         operator_args={"fail_fast": True},
     )
     extract_task >> dbt_transform # type: ignore
-ingest_raw_stock_list_dag()
+my_dag =ingest_raw_stock_list_dag()

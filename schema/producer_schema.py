@@ -16,7 +16,6 @@ from utils.metadata_manager import MetadataManager
 from utils.postgres_client import PostgresClient
 from utils.lakehouse_client import LakeHouseClient
 from utils.other_utils import get_target_anchor, get_fallback_year
-from vnstock import Listing
 import math
 
 
@@ -86,29 +85,6 @@ class BaseMetadata(BaseModel,ABC):
         if self.bronze_layer_name not in TABLE_REGISTRY:
             raise ValueError(f"Chưa định nghĩa Partition cho bảng: {self.bronze_layer_name}")
         return TABLE_REGISTRY[self.bronze_layer_name]["partition_spec"]
-
-
-
-
-
-
-
-class OriginalTickerList(BaseMetadata):
-    data_type: str = "original_ticker_list"
-    batch_size: int = 1000
-    url_template: str = ""
-    bronze_layer_name: str = "original_ticker_list"
-
-    def _build_arrow_payload_lazy(self) -> pa.Table:
-        listing = Listing(source='VCI')
-        df = listing.symbols_by_industries()
-        df = pl.from_pandas(df)
-        df = df.with_columns(pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time"))
-        return df.to_arrow()
-    
-
-
-
 
 class Fundamental(BaseMetadata):
     batch_size : int = 100

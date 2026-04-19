@@ -1,6 +1,5 @@
 {{ config(
     materialized='table',
-    enabled=true,
     tags=['intermediate', 'qmj', 'growth', 'z_score']
 ) }}
 

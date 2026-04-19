@@ -1,36 +1,28 @@
-{{ config(
-    materialized='table',
-    unique_key='ticker'
-) }}
-
+{{ config(materialized='table') }}
 {% set audit_cols = get_audit_columns('silver') %}
 
 WITH cleaned_data AS (
-    SELECT
-        *,
+    SELECT *,
         ROW_NUMBER() OVER (
-            PARTITION BY ticker 
-            ORDER BY bronze_ingested_time DESC 
+            PARTITION BY ticker
+            ORDER BY company_name ASC,
+                industry_group ASC,
+                sector_detail ASC
         ) as rn
-    FROM {{ ref('staging_dim_company') }}
-    WHERE 
-        ticker IS NOT NULL
+    FROM {{ ref('bronze_dim_company') }}
+    WHERE ticker IS NOT NULL
         AND regexp_like(ticker, '^[A-Z0-9]{3}$')
-        AND com_type_code IS NOT NULL
+        AND company_type IS NOT NULL
 )
-
-SELECT 
-    ticker,
+SELECT ticker,
     COALESCE(company_name, 'Unknown Company') AS company_name,
     COALESCE(industry_group, 'Unclassified') AS industry_group,
     COALESCE(sector_detail, 'Unclassified') AS sector_detail,
-    com_type_code as company_type,
-    
-    -- Vòng lặp đẻ cột Audit từ Dictionary
+    company_type
     {% for col in audit_cols %}
-        {{ col.expr }} AS {{ col.alias }}{% if not loop.last %},{% endif %}
+    {% if not col.is_from_staging %},
+    {{ col.expr }} AS {{ col.alias }}
+    {% endif %}
     {% endfor %}
-
 FROM cleaned_data
 WHERE rn = 1
-

@@ -11,6 +11,9 @@ nessie-cli:
 gc-sweep:
 	@bash ./scripts/nessie_maintenance.sh
 
+airflow-cli:
+	docker compose run --rm airflow-cli bash
+
 yaml:
 	@# Cách dùng: make yaml m=<tên_model>
 	@# 1. Create temp directory if it doesn't exist
@@ -23,17 +26,6 @@ yaml:
 	
 	@# 3. Chạy lệnh và lưu file
 	@dbt run-operation generate_model_yaml --args '{"model_names": ["$(m)"]}' > $(TEMP_DIR)/$(TIMESTAMP)_$(m).yml
-	
-# source:
-# 	@# Cách dùng: make source s=<tên_schema>
-# 	@mkdir -p $(TEMP_DIR)
-	
-# 	$(eval TIMESTAMP := $(shell date '+%Y%m%d_%H%M%S'))
-	
-# 	@echo "⏳ Đang quét Database schema '$(s)' từ Nessie/Trino..."
-	
-# 	@# 4. Chạy lệnh dbt và lưu vào thư mục tmp_codegen
-# 	@dbt run-operation generate_source --args '{"schema_name": "$(s)", "generate_columns": true}' > $(TEMP_DIR)/$(TIMESTAMP)_source_$(s).yml
 
 
 test:

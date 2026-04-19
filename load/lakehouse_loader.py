@@ -8,7 +8,6 @@ from pyiceberg.exceptions import NoSuchTableError
 import pyarrow as pa
 from pyarrow import Table
 from utils.lakehouse_client import LakeHouseClient
-from schema.producer_schema import OriginalTickerList
 logger = setup_logger(component = "load")
 load_dotenv()
 
@@ -61,12 +60,3 @@ class LakehouseLoader(LakeHouseClient):
             
             logger.info(f"🧊 Đã tạo mới và ghi mẻ đầu tiên thành công vào {table_name}")
             return True
-
-
-    def _put_original_ticker_list(self, model_cls: type[OriginalTickerList]):
-        config = model_cls()  # type: ignore
-        arrow_table = config._build_arrow_payload_lazy()
-        self._put_lakehouse(
-            config=config,
-            arrow_table = arrow_table,
-            mode="overwrite")

@@ -2,11 +2,10 @@ confluent-kafka==2.13.0
 python-dateutil==2.9.0.post0
 pytz==2025.2
 
-vnstock==3.4.2
-
 psycopg[binary]==3.3.3
 connectorx==0.4.5
 apache-airflow-providers-trino==6.5.2
+apache-airflow-task-sdk==1.2.0
 astronomer-cosmos==1.14.0
 
 requests==2.32.5

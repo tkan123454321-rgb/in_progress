@@ -81,7 +81,7 @@ SELECT
     -- Cột Audit
     {% for col in audit_cols %}
         {% if not col.is_from_staging %}
-            {{ col.alias }},
+            {{ col.expr }} AS {{ col.alias }},
         {% endif %}
     {% endfor %}
     

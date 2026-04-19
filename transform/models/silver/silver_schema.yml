@@ -3,7 +3,7 @@ models:
     description: "dim_company's silver layer, applying data quality tests, de-duplications and transformations to prepare the data for analytics and reporting. It ensures that the data is clean, consistent, and ready for use in the business intelligence layer."
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
-          column_list: ["bronze_ingested_time", "staging_invocation_id", "staged_at","silver_invocation_id", "silver_updated_at"]
+          column_list: ["silver_invocation_id", "silver_updated_at"]
     columns:
 
       - name: ticker
@@ -49,15 +49,6 @@ models:
                 values: ['CT', 'BH', 'NH', 'CK']
           - not_null
 
-      - name: bronze_ingested_time
-        data_type: timestamp(6) with time zone
-        description: "timestamp when the data was ingested into the bronze layer"
-
-      - name: staged_at
-        data_type: timestamp(6) with time zone
-        description: "timestamp when the data was staged in the silver layer"
-
-
       - name: silver_updated_at
         data_type: timestamp(6) with time zone
         description: "timestamp when the data was last updated in the silver layer"
@@ -76,11 +67,6 @@ models:
           - dbt_expectations.expect_column_distinct_count_to_equal:
               arguments:    
                 value: 1
-
-      - name: staging_invocation_id
-        data_type: varchar
-        description: "unique identifier for the staging layer invocation, used for debugging processes"
-
 
   - name: silver_fundamental_1
     description: "Cleaned and validated fundamental data (part 1) focusing on share structure, valuation, and ownership metrics. This layer applies data quality (DQ) rules, de-duplication, and business logic to ensure the data is accurate, consistent, and ready for the Gold layer."

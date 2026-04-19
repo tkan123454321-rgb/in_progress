@@ -1,0 +1,1549 @@
+ticker,company_name,industry_group,sector_detail,company_type
+BCC,Công ty Cổ phần Xi măng Bỉm Sơn,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+KKC,Công ty Cổ phần Tập đoàn Thành Thái,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+BCM,Tập đoàn Đầu tư và Phát triển Công nghiệp Becamex - CTCP,Bất động sản,Bất động sản,CT
+LPT,Công ty Cổ phần Thương mại và Sản xuất Lập Phương Thành,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+NDW,Công ty Cổ phần Cấp nước Nam Định,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CMI,Công ty Cổ phần CMISTONE Việt Nam,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CKG,Công ty Cổ phần Tập đoàn CIC,Bất động sản,Bất động sản,CT
+MTP,Công ty Cổ phần Dược Medipharco,Y tế,Dược phẩm,CT
+CCA,Công ty Cổ phần Xuất nhập khẩu Thủy sản Cần Thơ,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+PXT,Công ty Cổ phần Xây lắp Đường ống Bể chứa Dầu khí,Xây dựng và Vật liệu,Xây dựng,CT
+AVC,Công ty Cổ phần Thủy điện A Vương,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+BAL,Công ty Cổ phần Bao bì Bia - Rượu - Nước giải khát,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+DGC,Công ty Cổ phần Tập đoàn Hóa chất Đức Giang,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+DHC,Công ty Cổ phần Đông Hải Bến Tre,Tài nguyên Cơ bản,Sản xuất giấy,CT
+DNW,Công ty Cổ phần Cấp nước Đồng Nai,"Điện, nước & xăng dầu khí đốt",Nước,CT
+DTL,Công ty Cổ phần Đại Thiên Lộc,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+DVP,Công ty Cổ phần Đầu tư và Phát triển Cảng Đình Vũ,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+DST,Công ty Cổ phần Đầu tư Sao Thăng Long,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+CTA,Công ty Cổ phần Vinavico,Xây dựng và Vật liệu,Xây dựng,CT
+ACL,Công ty Cổ phần Xuất nhập khẩu Thủy sản Cửu Long An Giang,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+SSH,Công ty Cổ phần Phát triển Sunshine Homes,Bất động sản,Bất động sản,CT
+TTC,Công ty Cổ phần Gạch men Thanh Thanh,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+GEG,Công ty Cổ phần Điện Gia Lai,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+FHS,Công ty Cổ phần Phát hành sách Thành phố Hồ Chí Minh - FAHASA,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+TNW,Công ty Cổ phần Nước sạch Thái Nguyên,"Điện, nước & xăng dầu khí đốt",Nước,CT
+TV2,Công ty Cổ phần Tư vấn Xây dựng Điện 2,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+V21,Công ty Cổ phần Vinaconex 21,Bất động sản,Bất động sản,CT
+FRC,Công ty Cổ phần Lâm đặc sản xuất khẩu Quảng Nam,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+VC5,Công ty Cổ phần Xây dựng Số 5,Xây dựng và Vật liệu,Xây dựng,CT
+HLO,Công Ty Cổ Phần Công Nghệ Ha Lô,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+CNA,Công ty Cổ phần Tổng công ty Chè Nghệ An,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DNL,Công ty Cổ phần Logistics Cảng Đà Nẵng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+ACB,Ngân hàng Thương mại Cổ phần Á Châu,Ngân hàng,Ngân hàng,NH
+HNI,Công ty Cổ phần May Hữu Nghị,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+HBC,Công ty Cổ phần Tập đoàn Xây dựng Hòa Bình,Xây dựng và Vật liệu,Xây dựng,CT
+XDH,Công ty Cổ phần Đầu tư Xây dựng Dân dụng Hà Nội,Bất động sản,Bất động sản,CT
+VIE,Công ty Cổ phần Công nghệ Viễn thông VI TE CO,Công nghệ Thông tin,Thiết bị viễn thông,CT
+CLX,Công ty Cổ phần Xuất nhập khẩu và Đầu tư Chợ Lớn (CHOLIMEX),Thực phẩm và đồ uống,Thực phẩm,CT
+KHG,Công ty Cổ phần Tập đoàn Khải Hoàn Land,Bất động sản,Bất động sản,CT
+HPH,Công ty Cổ phần Hóa Chất Hưng Phát Hà Bắc,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+CAT,Công ty Cổ phần Thủy sản Cà Mau,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+IJC,Công ty Cổ phần Phát triển Hạ tầng Kỹ thuật,Bất động sản,Bất động sản,CT
+PAC,Công ty Cổ phần Pin Ắc quy Miền Nam,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+HPW,Công ty Cổ phần Cấp nước Hải Phòng,"Điện, nước & xăng dầu khí đốt",Nước,CT
+HAC,Công ty Cổ phần Chứng khoán Hải Phòng,Dịch vụ tài chính,Môi giới chứng khoán,CK
+LAI,Công ty Cổ phần Đầu tư Xây dựng Long An IDICO,Xây dựng và Vật liệu,Xây dựng,CT
+MCM,Công ty Cổ phần Giống bò sữa Mộc Châu,Thực phẩm và đồ uống,Thực phẩm,CT
+VTK,Công ty Cổ phần Tư vấn và Dịch vụ Viettel,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+VTV,Công ty Cổ phần Năng lượng và Môi trường VICEM,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PET,Tổng Công ty Cổ phần Dịch vụ Tổng hợp Dầu khí,Bán lẻ,Phân phối hàng chuyên dụng,CT
+ND2,Công ty Cổ phần Đầu tư và Phát triển điện Miền Bắc 2,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+PJT,Công ty Cổ phần Vận tải Xăng dầu đường thủy Petrolimex,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+PPE,Công ty Cổ phần Tư vấn Đầu tư PP Enterprise,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+SKV,Công ty Cổ phần Nước Giải khát Yến sào Khánh Hòa,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+VNH,Công ty Cổ phần Đầu tư Việt Việt Nhật,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VXP,Công ty Cổ phần Thuốc Thú y Trung ương VETVACO,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+X26,Công ty Cổ phần 26,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+PVX,Tổng Công ty Cổ phần Xây lắp Dầu khí Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+IFS,Công ty Cổ phần Thực phẩm Quốc tế,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+APT,Công ty Cổ phần Kinh doanh thủy hải sản Sài Gòn,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+BSL,Công ty Cổ phần Bia Sài Gòn - Sông Lam,Thực phẩm và đồ uống,Sản xuất bia,CT
+PMG,Công ty Cổ phần Đầu tư và Sản xuất Petro Miền Trung,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+SBB,Công ty Cổ phần Tập đoàn Bia Sài Gòn Bình Tây,Thực phẩm và đồ uống,Sản xuất bia,CT
+NSH,Công ty Cổ phần Tập đoàn Nhôm Sông Hồng Shalumi,Tài nguyên Cơ bản,Nhôm,CT
+SMB,Công ty Cổ phần Bia Sài Gòn - Miền Trung,Thực phẩm và đồ uống,Sản xuất bia,CT
+SJM,Công ty Cổ phần Sunspace Holdings,Xây dựng và Vật liệu,Xây dựng,CT
+SJS,Công ty Cổ phần SJ Group,Bất động sản,Bất động sản,CT
+SKG,Công ty Cổ phần Tàu Cao tốc Superdong - Kiên Giang,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SVN,Công ty Cổ phần Tập đoàn Vexilla Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+SSG,Công ty Cổ phần Vận tải Biển Hải Âu,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+SZB,Công ty Cổ phần Sonadezi Long Bình,Bất động sản,Bất động sản,CT
+TCT,Công ty Cổ phần Cáp treo Núi Bà Tây Ninh,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+DCR,Công ty Cổ phần Gạch men COSEVCO,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+LIC,Tổng Công ty LICOGI - Công ty Cổ phần,Xây dựng và Vật liệu,Xây dựng,CT
+MEF,Công ty Cổ phần MEINFA,Y tế,Dụng cụ y tế,CT
+MML,Công ty Cổ phần Masan MEATLife,Thực phẩm và đồ uống,Thực phẩm,CT
+PPC,Công ty Cổ phần Nhiệt điện Phả Lại,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DSP,Công ty Cổ phần Dịch vụ Du lịch Phú Thọ,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SBM,Công ty Cổ phần Đầu tư phát triển Bắc Minh,Xây dựng và Vật liệu,Xây dựng,CT
+CET,Công ty Cổ phần HTC Holding,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+TIX,Công ty Cổ phần Sản xuất Kinh doanh Xuất nhập khẩu Dịch vụ và Đầu tư Tân Bình,Bất động sản,Bất động sản,CT
+TMC,Công ty Cổ phần Thương mại Xuất nhập khẩu Thủ Đức,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+TNS,Công ty Cổ phần Thép tấm lá Thống Nhất,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+THP,Công ty Cổ phần Thủy sản và Thương mại Thuận Phước,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+TSC,Công ty Cổ phần Vật tư Kỹ thuật Nông nghiệp Cần Thơ,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+YTC,Công ty Cổ phần Xuất nhập khẩu Y tế Thành phố Hồ Chí Minh,Y tế,Dụng cụ y tế,CT
+BRC,Công ty Cổ phần Cao su Bến Thành,Hóa chất,"Nhựa, cao su & sợi",CT
+GPC,Công ty Cổ phần Tập đoàn Green+,Y tế,Dược phẩm,CT
+LDG,Công ty Cổ phần Đầu tư LDG,Bất động sản,Bất động sản,CT
+TVM,Công ty Cổ phần Tư vấn đầu tư Mỏ và công nghiệp - Vinacomin,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+APC,Công ty Cổ phần Chiếu xạ An Phú,Y tế,Công nghệ sinh học,CT
+GMX,Công ty Cổ phần Gạch ngói Gốm xây dựng Mỹ Xuân,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+MCG,Công ty Cổ phần Năng lượng và Bất động sản MCG,Xây dựng và Vật liệu,Xây dựng,CT
+NHA,Tổng Công ty Đầu tư Phát triển Nhà và Đô thị Nam Hà Nội,Xây dựng và Vật liệu,Xây dựng,CT
+CTW,Công ty Cổ phần Cấp thoát nước Cần Thơ,"Điện, nước & xăng dầu khí đốt",Nước,CT
+BOT,Công ty Cổ phần BOT Cầu Thái Hà,Xây dựng và Vật liệu,Xây dựng,CT
+DAH,Công ty Cổ phần Tập đoàn Khách sạn Đông Á,Du lịch và Giải trí,Khách sạn,CT
+DDV,Công ty Cổ phần DAP - Vinachem,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+RGG,Công ty Cổ phần Regal Group,Bất động sản,Bất động sản,CT
+BSI,Công ty Cổ phần Chứng khoán BIDV,Dịch vụ tài chính,Môi giới chứng khoán,CK
+BRR,Công ty Cổ phần Cao su Bà Rịa,Hóa chất,"Nhựa, cao su & sợi",CT
+TSA,Công ty Cổ Phần Đầu Tư Và Xây Lắp Trường Sơn,Xây dựng và Vật liệu,Xây dựng,CT
+DDB,Công ty Cổ Phần Thương Mại Và Xây Dựng Đông Dương,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DNH,Công ty Cổ phần Thủy điện Đa Nhim - Hàm Thuận - Đa Mi,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TV4,Công ty Cổ phần Tư vấn Xây dựng Điện 4,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+DHM,Công ty Cổ phần Thương mại & Khai thác Khoáng sản Dương Hiếu,Tài nguyên Cơ bản,Khai khoáng,CT
+USD,Công ty Cổ phần Công trình Đô thị Sóc Trăng,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+FCS,Công ty Cổ phần Lương thực Thành phố Hồ Chí Minh,Thực phẩm và đồ uống,Thực phẩm,CT
+AGP,Công ty Cổ phần Dược phẩm AGIMEXPHARM,Y tế,Dược phẩm,CT
+VIH,Công ty Cổ phần Viglacera Hà Nội,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BLT,Công ty Cổ phần Lương thực Bình Định,Thực phẩm và đồ uống,Thực phẩm,CT
+FOX,Công ty Cổ phần Viễn thông FPT,Viễn thông,Viễn thông cố định,CT
+GCF,Công ty Cổ phần Thực phẩm G.C,Thực phẩm và đồ uống,Thực phẩm,CT
+GLC,Công ty Cổ phần Vàng Lào Cai,Tài nguyên Cơ bản,Khai thác vàng,CT
+GMA,Công ty Cổ phần G-Automobile,Ô tô và phụ tùng,Sản xuất ô tô,CT
+NDT,Tổng Công ty Cổ phần Dệt may Nam Định,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+FHN,Công ty Cổ phần Xuất nhập khẩu Lương thực - Thực phẩm Hà Nội,Bán lẻ,Phân phối thực phẩm,CT
+VCF,Công ty Cổ phần VinaCafé Biên Hòa,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+HAH,Công ty Cổ phần Vận tải và Xếp dỡ Hải An,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+DVM,Công ty Cổ phần Dược liệu Việt Nam,Y tế,Dược phẩm,CT
+DMC,Công ty Cổ phần Xuất nhập khẩu Y tế DOMESCO,Y tế,Dược phẩm,CT
+VIG,Công ty Cổ phần Chứng khoán Đầu tư Tài chính Việt Nam,Dịch vụ tài chính,Môi giới chứng khoán,CK
+CMX,Công ty Cổ phần CAMIMEX Group,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+ODE,Công ty cổ phần Tập đoàn Truyền thông và Giải trí ODE,Truyền thông,Giải trí & Truyền thông,CT
+TD6,Công ty Cổ Phần Than Đèo Nai - Cọc Sáu - TKV,Tài nguyên Cơ bản,Khai thác Than,CT
+PCH,Công ty Cổ phần Nhựa Picomat,Hóa chất,"Nhựa, cao su & sợi",CT
+CJC,Công ty Cổ phần Cơ điện Miền Trung,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+DBT,Công ty Cổ phần Dược phẩm Bến Tre,Y tế,Dược phẩm,CT
+BVS,Công ty Cổ phần Chứng khoán Bảo Việt,Dịch vụ tài chính,Môi giới chứng khoán,CK
+HLY,Công ty Cổ phần Gốm xây dựng Yên Hưng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HMS,Công ty Cổ phần Xây dựng Bảo tàng Hồ Chí Minh,Xây dựng và Vật liệu,Xây dựng,CT
+BIC,Tổng Công ty Cổ phần Bảo hiểm Ngân hàng Đầu tư và Phát triển Việt Nam,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+BVB,Ngân hàng Thương mại Cổ phần Bản Việt,Ngân hàng,Ngân hàng,NH
+BHC,Công ty Cổ phần Bê tông Biên Hòa,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+IDC,Tổng Công ty IDICO - CTCP,Bất động sản,Bất động sản,CT
+DCV,Công ty Cổ phần Quản Lý Quỹ đầu tư Dragon Capital Việt Nam,Dịch vụ tài chính,Quản lý tài sản,CT
+KDC,Công ty Cổ phần Tập đoàn KIDO,Thực phẩm và đồ uống,Thực phẩm,CT
+NAB,Ngân hàng Thương mại Cổ phần Nam Á,Ngân hàng,Ngân hàng,NH
+KLB,Ngân hàng Thương mại Cổ phần Kiên Long,Ngân hàng,Ngân hàng,NH
+HTE,Công ty Cổ phần Đầu tư Kinh doanh Điện lực Thành phố Hồ Chí Minh,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+LIX,Công ty Cổ phần Bột Giặt LIX,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+LO5,Công ty Cổ phần Lilama 5,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+KPF,Công ty Cổ phần Đầu tư Tài sản KOJI,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+KHW,Công ty Cổ phần Cấp thoát nước Khánh Hòa,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MDA,Công ty Cổ phần Môi trường Đô thị Đông Anh,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+VGG,Tổng Công Ty Cổ phần May Việt Tiến,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+WCS,Công ty Cổ phần Bến xe Miền Tây,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+NGC,Công ty Cổ phần Chế biến Thủy sản Xuất khẩu Ngô Quyền,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+NHH,Công ty Cổ phần Nhựa Hà Nội,Hóa chất,"Nhựa, cao su & sợi",CT
+OPC,Công ty Cổ phần Dược Phẩm OPC,Y tế,Dược phẩm,CT
+VPL,Công ty Cổ phần Vinpearl,Du lịch và Giải trí,Dịch vụ giải trí,CT
+PTP,Công ty Cổ phần PTP,Viễn thông,Viễn thông cố định,CT
+PSW,Công ty Cổ phần Phân bón và hóa chất dầu khí Tây Nam Bộ,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+PTB,Công ty Cổ phần Phú Tài,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+NKG,Công ty Cổ phần Thép Nam Kim,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+QTC,Công ty Cổ phần Công trình Giao thông Vận tải Quảng Nam,Xây dựng và Vật liệu,Xây dựng,CT
+PNG,Công ty Cổ phần Thương Mại Phú Nhuận,Du lịch và Giải trí,Nhà hàng và quán bar,CT
+VRG,Công ty Cổ phần Phát triển Đô thị và Khu Công nghiệp Cao Su Việt Nam,Bất động sản,Bất động sản,CT
+RDP,Công ty Cổ phần Rạng Đông Holding,Hóa chất,"Nhựa, cao su & sợi",CT
+S74,Công ty Cổ phần Sông Đà 7.04,Xây dựng và Vật liệu,Xây dựng,CT
+SBT,Công ty Cổ phần Thành Thành Công - Biên Hòa,Thực phẩm và đồ uống,Thực phẩm,CT
+SPV,Công ty Cổ phần Thủy Đặc Sản,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+SIV,Công ty Cổ phần SIVICO,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SKN,Công ty Cổ phần Nước giải khát Sanna Khánh Hòa,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+ST8,Công ty Cổ phần Tập đoàn ST8,Công nghệ Thông tin,Thiết bị văn phòng,CT
+RTB,Công ty Cổ phần Cao su Tân Biên,Hóa chất,"Nhựa, cao su & sợi",CT
+KBC,Tổng Công ty Phát triển Đô thị Kinh Bắc - CTCP,Bất động sản,Bất động sản,CT
+NVT,Công ty Cổ phần Bất động sản Du lịch Ninh Vân Bay,Bất động sản,Bất động sản,CT
+QTP,Công ty Cổ phần Nhiệt điện Quảng Ninh,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SCC,Công ty Cổ phần Thương mại Đầu tư SHB,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TIP,Công ty Cổ phần Phát triển Khu công nghiệp Tín Nghĩa,Bất động sản,Bất động sản,CT
+BAX,Công ty Cổ phần Thống Nhất,Xây dựng và Vật liệu,Xây dựng,CT
+GDA,Công ty Cổ phần Tôn Đông Á,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+CIA,Công ty Cổ Phần Dịch Vụ Sân Bay Quốc Tế Cam Ranh,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VCB,Ngân hàng Thương mại Cổ phần Ngoại thương Việt Nam,Ngân hàng,Ngân hàng,NH
+PTT,Công ty Cổ phần Vận tải Dầu khí Đông Dương,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+TVA,Công ty cổ phần Sứ Viglacera Thanh Trì,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+API,Công ty Cổ phần Đầu tư Châu Á - Thái Bình Dương,Bất động sản,Bất động sản,CT
+AVF,Công ty Cổ phần Việt An,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+BVG,Công ty Cổ phần Group Bắc Việt,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+CAD,Công ty Cổ phần Chế biến và Xuất khẩu Thủy sản Cadovimex,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+CDO,Công ty Cổ phần Tư vấn Thiết kế và Phát triển Đô thị,Xây dựng và Vật liệu,Xây dựng,CT
+SGP,Công ty Cổ phần Cảng Sài Gòn,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+HU6,Công ty Cổ phần Đầu tư Phát triển Nhà và Đô thị HUD6,Bất động sản,Bất động sản,CT
+NSS,Công ty Cổ phần Nông súc sản Đồng Nai,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DL1,Công ty Cổ phần Tập đoàn Alpha Seven,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+DOC,Công ty Cổ phần Vật tư nông nghiệp Đồng Nai,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+TVG,Công ty Cổ phần Tư vấn Đầu tư và Xây dựng Giao thông Vận tải,Xây dựng và Vật liệu,Xây dựng,CT
+PHN,Công ty Cổ phần Pin Hà Nội,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+DTP,Công ty Cổ phần Dược phẩm CPC1 Hà Nội,Y tế,Dược phẩm,CT
+UPH,Công ty Cổ phần Dược phẩm TW25,Y tế,Dược phẩm,CT
+DSD,Công ty cổ phần DHC Suối Đôi,Du lịch và Giải trí,Dịch vụ giải trí,CT
+DP3,Công ty Cổ Phần Dược Phẩm Trung Ương 3,Y tế,Dược phẩm,CT
+KSB,Công ty Cổ phần Khoáng sản và Xây dựng Bình Dương,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VBH,Công ty Cổ phần Điện tử Bình Hòa,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+FTS,Công ty Cổ phần Chứng khoán FPT,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VCI,Công ty Cổ phần Chứng khoán Vietcap,Dịch vụ tài chính,Môi giới chứng khoán,CK
+DSC,Công ty Cổ phần Chứng khoán DSC,Dịch vụ tài chính,Môi giới chứng khoán,CK
+CST,Công ty Cổ phần Than Cao Sơn - TKV,Tài nguyên Cơ bản,Khai thác Than,CT
+VDS,Công ty Cổ phần Chứng khoán Rồng Việt,Dịch vụ tài chính,Môi giới chứng khoán,CK
+GLT,Công ty Cổ phần Kỹ thuật điện Toàn Cầu,Hàng cá nhân & Gia dụng,Điện tử tiêu dùng,CT
+VGP,Công ty Cổ phần Cảng Rau Quả,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VHC,Công ty Cổ phần Vĩnh Hoàn,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VHG,Công ty Cổ phần Đầu tư và Phát triển Việt Trung Nam,Hàng & Dịch vụ Công nghiệp,Công nghiệp phức hợp,CT
+BLI,Tổng Công ty Cổ phần Bảo hiểm Bảo Long,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+LIG,Công ty Cổ phần Licogi 13,Xây dựng và Vật liệu,Xây dựng,CT
+VTG,Công ty Cổ phần Du lịch tỉnh Bà Rịa - Vũng Tàu,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+TMG,Công ty Cổ phần Kim loại màu Thái Nguyên - Vimico,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+L61,Công ty Cổ phần Lilama 69-1,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+VVN,Tổng Công ty Cổ phần Xây dựng Công nghiệp Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+CHP,Công ty Cổ phần Thủy điện Miền Trung,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VGL,Công ty Cổ phần Mạ kẽm công nghiệp Vingal-Vnsteel,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+DRG,Công ty Cổ phần Cao su Đắk Lắk,Hóa chất,"Nhựa, cao su & sợi",CT
+CTS,Công ty Cổ phần Chứng khoán Vietinbank,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VLP,Công ty Cổ phần Công trình Công cộng Vĩnh Long,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+HCD,Công ty Cổ phần Đầu tư Sản xuất và Thương mại HCD,Hóa chất,"Nhựa, cao su & sợi",CT
+CDR,Công ty Cổ phần Xây dựng Cao su Đồng Nai,Xây dựng và Vật liệu,Xây dựng,CT
+HFX,Công ty Cổ phần Sản xuất - Xuất nhập khẩu Thanh Hà,Bán lẻ,Bán lẻ phức hợp,CT
+HLD,Công ty Cổ phần Đầu tư và Phát triển Bất động sản HUDLAND,Bất động sản,Bất động sản,CT
+VKC,Công ty Cổ phần VKC Holdings,Ô tô và phụ tùng,Lốp xe,CT
+HAG,Công ty Cổ phần Hoàng Anh Gia Lai,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DCG,Công ty Cổ phần Tổng Công ty May Đáp Cầu,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+TSJ,Công ty Cổ phần Du lịch Dịch vụ Hà Nội,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+AGF,Công ty Cổ phần Xuất nhập khẩu Thủy sản An Giang,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HRB,Công ty Cổ phần Harec Đầu tư và Thương Mại,Bất động sản,Bất động sản,CT
+VMS,Công ty Cổ phần Phát triển Hàng Hải,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VMG,Công ty Cổ phần Thương mại và Dịch vụ Dầu khí Vũng Tàu,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+HQC,Công ty Cổ phần Tư vấn - Thương mại - Dịch vụ Địa ốc Hoàng Quân,Bất động sản,Bất động sản,CT
+ICI,Công ty Cổ phần Đầu tư và Xây dựng Công nghiệp,Xây dựng và Vật liệu,Xây dựng,CT
+BMV,Công ty Cổ phần Bột mỳ Vinafood 1,Thực phẩm và đồ uống,Thực phẩm,CT
+MTA,Tổng Công ty Khoáng sản và Thương mại Hà Tĩnh - Công ty Cổ phần,Tài nguyên Cơ bản,Khai khoáng,CT
+VNG,Công ty Cổ phần Du Lịch Thành Thành Công,Du lịch và Giải trí,Khách sạn,CT
+INN,Công ty Cổ phần Bao bì và In Nông nghiệp,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+ISG,Công ty Cổ phần Vận tải biển và Hợp tác lao động Quốc Tế,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+HAP,Công ty Cổ phần Tập Đoàn Hapaco,Tài nguyên Cơ bản,Sản xuất giấy,CT
+KMT,Công ty Cổ phần Kim khí Miền Trung,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+KSV,Tổng Công ty Khoáng sản TKV - Công ty Cổ phần,Tài nguyên Cơ bản,Khai khoáng,CT
+KTT,Công ty Cổ phần Tập đoàn Đầu tư KTT,Xây dựng và Vật liệu,Xây dựng,CT
+IN4,Công ty Cổ phần In số 4,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+HNF,Công ty Cổ phần Thực phẩm Hữu Nghị,Thực phẩm và đồ uống,Thực phẩm,CT
+VPB,Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng,Ngân hàng,Ngân hàng,NH
+MBB,Ngân hàng Thương mại Cổ phần Quân đội,Ngân hàng,Ngân hàng,NH
+MCF,Công ty Cổ phần Xây lắp Cơ khí và Lương thực Thực phẩm,Thực phẩm và đồ uống,Thực phẩm,CT
+HC1,Công ty Cổ phần Xây dựng số 1 Hà Nội,Xây dựng và Vật liệu,Xây dựng,CT
+MNB,Tổng Công ty May Nhà Bè - Công ty Cổ phần,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+VPI,Công ty Cổ phần Phát triển Bất động sản Văn Phú,Bất động sản,Bất động sản,CT
+PGD,Công ty Cổ phần Phân phối khí thấp áp dầu khí Việt Nam,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+NTF,Công ty Cổ phần Dược - Vật tư y tế Nghệ An,Y tế,Dược phẩm,CT
+VDN,Công ty Cổ phần Vinatex Đà Nẵng,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+PTL,Công ty Cổ phần Victory Group,Bất động sản,Bất động sản,CT
+MDG,Công ty Cổ phần Miền Đông,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CLH,Công ty Cổ phần Xi măng La Hiên VVMI,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+POW,Tổng Công ty Điện lực Dầu khí Việt Nam - CTCP,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DPC,Công ty Cổ phần Nhựa Đà Nẵng,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+VTE,Công ty Cổ phần VINACAP Kim Long,Công nghệ Thông tin,Thiết bị viễn thông,CT
+CHS,Công ty Cổ phần Chiếu sáng Công cộng Thành phố Hồ Chí Minh,"Điện, nước & xăng dầu khí đốt",Tiện ích khác,CT
+SC5,Công ty Cổ phần Xây dựng số 5,Xây dựng và Vật liệu,Xây dựng,CT
+SCJ,Công ty Cổ phần Xi măng Sài Sơn,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+XLV,Công ty Cổ phần Xây lắp và Dịch vụ Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+SHA,Công ty Cổ phần Sơn Hà Sài Gòn,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+WSS,Công ty Cổ phần Chứng khoán Phố Wall,Dịch vụ tài chính,Môi giới chứng khoán,CK
+NSG,Công ty Cổ phần Nhựa Sài Gòn,Hóa chất,"Nhựa, cao su & sợi",CT
+TKA,Công ty Cổ phần Bao bì Tân Khánh An,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+TCB,Ngân hàng Thương mại Cổ phần Kỹ thương Việt Nam,Ngân hàng,Ngân hàng,NH
+TCL,Công ty Cổ phần Đại lý Giao nhận Vận tải Xếp dỡ Tân Cảng,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+TDM,Công ty Cổ phần Nước Thủ Dầu Một,"Điện, nước & xăng dầu khí đốt",Nước,CT
+NTH,Công ty Cổ phần Thủy điện Nước Trong,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TCH,Công ty Cổ phần Đầu tư Dịch vụ Tài chính Hoàng Huy,Bất động sản,Bất động sản,CT
+ONW,Công ty Cổ phần Dịch vụ Một Thế giới,Du lịch và Giải trí,Dịch vụ giải trí,CT
+PNP,Công ty Cổ phần Tân Cảng – Phú Hữu,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+PTH,Công ty Cổ phần Vận tải và Dịch vụ Petrolimex Hà Tây,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+THG,Công ty Cổ phần Đầu tư và Xây dựng Tiền Giang,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TQN,Công ty Cổ phần Thông Quảng Ninh,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+TLG,Công ty Cổ phần Tập đoàn Thiên Long,Hàng cá nhân & Gia dụng,Đồ gia dụng một lần,CT
+TNA,Công ty Cổ phần Thương mại Xuất nhập khẩu Thiên Nam,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+TOP,Công ty Cổ phần Phân phối Top One,Bán lẻ,Bán lẻ phức hợp,CT
+TR1,Công ty Cổ phần Vận Tải 1 Traco,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VSH,Công ty Cổ phần Thủy điện Vĩnh Sơn - Sông Hinh,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VHF,Công ty Cổ phần Xây dựng và Chế biến lương thực Vĩnh Hà,Thực phẩm và đồ uống,Thực phẩm,CT
+QNP,Công ty Cổ phần Cảng Quy Nhơn,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VCE,Công ty Cổ phần Xây lắp Môi trường,Xây dựng và Vật liệu,Xây dựng,CT
+RIC,Công ty Cổ phần Quốc Tế Hoàng Gia,Du lịch và Giải trí,Dịch vụ giải trí,CT
+BSH,Công ty Cổ phần Bia Sài Gòn - Hà Nội,Thực phẩm và đồ uống,Sản xuất bia,CT
+VSF,Tổng Công ty Lương thực Miền Nam - Công ty Cổ phần,Thực phẩm và đồ uống,Thực phẩm,CT
+A32,Công ty Cổ phần 32,Hàng cá nhân & Gia dụng,Giầy dép,CT
+ASG,Công ty Cổ phần Tập đoàn ASG,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+ATS,Công ty Cổ phần Tập đoàn Đầu tư ATS,Du lịch và Giải trí,Nhà hàng và quán bar,CT
+BSP,Công ty Cổ phần Bia Sài Gòn - Phú Thọ,Thực phẩm và đồ uống,Sản xuất bia,CT
+BTV,Công ty Cổ phần Dịch vụ Du lịch Bến Thành,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+ATG,Công ty Cổ phần ATG Planet,Tài nguyên Cơ bản,Khai khoáng,CT
+DAN,Công ty Cổ phần Dược Danapha,Y tế,Dược phẩm,CT
+TCK,Tổng Công ty Cơ khí Xây dựng - CTCP,Xây dựng và Vật liệu,Xây dựng,CT
+HKT,Công ty Cổ phần Đầu tư QP Xanh,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+ABI,Công ty Cổ phần Bảo hiểm Ngân hàng Nông Nghiệp,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+ILA,Công ty Cổ phần ILA,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DDM,Công ty Cổ phần Hàng hải Đông Đô,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TLP,Tổng Công ty Thương mại Xuất nhập khẩu Thanh Lễ - CTCP,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+CCL,Công ty Cổ phần Đầu tư và Phát triển Đô thị Dầu khí Cửu Long,Bất động sản,Bất động sản,CT
+DIC,Công ty Cổ phần Đầu tư và Thương mại DIC,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BNA,Công ty Cổ phần Tập đoàn Đầu tư Bảo Ngọc,Thực phẩm và đồ uống,Thực phẩm,CT
+DMN,Công ty Cổ phần Domenal,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DSN,Công ty Cổ phần Công viên nước Đầm Sen,Du lịch và Giải trí,Dịch vụ giải trí,CT
+BTP,Công ty Cổ phần Nhiệt điện Bà Rịa,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+BGE,Công ty Cổ phần BCG Energy,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+APG,Công ty Cổ phần Chứng khoán APG,Dịch vụ tài chính,Môi giới chứng khoán,CK
+TOS,Công ty Cổ phần Dịch vụ biển Tân Cảng,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+TW3,Công ty Cổ phần Dược Trung Ương 3,Y tế,Dược phẩm,CT
+HUB,Công ty Cổ phần Xây lắp Thừa Thiên Huế,Xây dựng và Vật liệu,Xây dựng,CT
+ACV,Tổng Công ty Cảng Hàng không Việt Nam - CTCP,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+HEP,Công ty Cổ phần Môi trường và Công trình đô thị Huế,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+CHC,Công ty Cổ phần Cẩm Hà,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VC7,Công ty Cổ phần Tập đoàn BGI,Xây dựng và Vật liệu,Xây dựng,CT
+VC9,Công ty Cổ phần Xây dựng số 9 - VC9,Xây dựng và Vật liệu,Xây dựng,CT
+NAU,Công ty Cổ phần Môi trường và Công trình Đô thị Nghệ An,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+PPT,Công ty cổ phần Petro Times,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+TTE,Công ty Cổ phần Đầu tư Năng lượng Trường Thịnh,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+BIO,Công ty Cổ phần Vắc xin và Sinh phẩm Nha Trang,Y tế,Dược phẩm,CT
+NCS,Công ty Cổ phần Suất ăn Hàng không Nội Bài,Thực phẩm và đồ uống,Thực phẩm,CT
+CT3,Công ty Cổ phần Đầu tư và Xây dựng công trình 3,Xây dựng và Vật liệu,Xây dựng,CT
+DAC,Công ty Cổ phần 382 Đông Anh,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+GIC,Công ty Cổ phần VSC Green Logistics,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+BTG,Công ty Cổ phần Bao bì Tiền Giang,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+EMG,Công ty Cổ phần Thiết bị Phụ tùng Cơ điện,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+CDP,Công ty Cổ phần Dược phẩm Trung ương Codupha,Y tế,Dược phẩm,CT
+HAS,Công ty Cổ phần Hacisco,Xây dựng và Vật liệu,Xây dựng,CT
+DC2,Công ty Cổ phần Đầu tư Phát triển - Xây dựng (DIC) số 2,Xây dựng và Vật liệu,Xây dựng,CT
+HES,Công ty Cổ phần Dịch vụ Giải trí Hà Nội,Du lịch và Giải trí,Dịch vụ giải trí,CT
+HDC,Công ty Cổ phần Phát triển Nhà Bà Rịa Vũng Tàu,Bất động sản,Bất động sản,CT
+HDG,Công ty Cổ phần Tập đoàn Hà Đô,Bất động sản,Bất động sản,CT
+VIW,Tổng công ty Đầu tư Nước và Môi trường Việt Nam - Công ty Cổ phần,Xây dựng và Vật liệu,Xây dựng,CT
+FTM,Công ty Cổ phần Đầu tư và Phát triển Đức Quân,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+HNM,Công ty Cổ phần Sữa Hà Nội,Thực phẩm và đồ uống,Thực phẩm,CT
+KSD,Công ty Cổ phần Đầu tư DNA,Hàng cá nhân & Gia dụng,Đồ gia dụng lâu bền,CT
+HTT,Công ty Cổ phần Thương mại Hà Tây,Bán lẻ,Bán lẻ phức hợp,CT
+HDP,Công ty Cổ phần Dược Hà Tĩnh,Y tế,Dược phẩm,CT
+DDG,Công ty Cổ phần Đầu tư Công nghiệp Xuất nhập khẩu Đông Dương,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+ITC,Công ty Cổ phần Đầu tư - Kinh doanh nhà,Bất động sản,Bất động sản,CT
+HGM,Công ty Cổ phần Cơ khí và Khoáng sản Hà Giang,Tài nguyên Cơ bản,Khai khoáng,CT
+GMC,Công ty Cổ phần Garmex Sài Gòn,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+MAC,Công ty Cổ phần Tập đoàn Macstar,Hàng & Dịch vụ Công nghiệp,Xe tải & Đóng tàu,CT
+MAS,Công ty cổ phần Dịch vụ Hàng Không Sân Bay Đà Nẵng,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+VQC,Công ty Cổ phần Giám định Vinaconmin,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+MEC,Công ty Cổ phần Cơ khí - Lắp máy Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+MIC,Công ty Cổ phần Kỹ nghệ Khoáng sản Quảng Nam,Tài nguyên Cơ bản,Khai khoáng,CT
+MIE,Tổng Công ty Máy và Thiết bị Công nghiệp - CTCP,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+UCT,Công ty Cổ phần Đô thị Cần Thơ,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+PRC,Công ty Cổ phần Logistics Portserco,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PMP,Công ty Cổ phần Bao bì Đạm Phú Mỹ,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+PMT,Công ty Cổ phần Viễn thông Telvina Việt Nam,Công nghệ Thông tin,Thiết bị viễn thông,CT
+KIP,Công ty Cổ phần K.I.P Việt Nam,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+SBA,Công ty Cổ phần Sông Ba,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+FCC,Công ty Cổ phần Liên hợp Thực phẩm,Bất động sản,Bất động sản,CT
+SD5,Công ty Cổ phần Sông Đà 5,Xây dựng và Vật liệu,Xây dựng,CT
+SD6,Công ty Cổ phần Sông Đà 6,Xây dựng và Vật liệu,Xây dựng,CT
+VAV,Công ty Cổ phần VIWACO,"Điện, nước & xăng dầu khí đốt",Nước,CT
+SEA,Tổng Công ty Thủy sản Việt Nam - Công ty Cổ phần,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+SFC,Công ty Cổ phần Nhiên liệu Sài Gòn,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+SZC,Công ty Cổ phần Sonadezi Châu Đức,Bất động sản,Bất động sản,CT
+SIG,Công ty Cổ phần Đầu tư và Thương mại Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+SGR,Công ty Cổ phần Tổng Công ty Cổ phần Địa ốc Sài Gòn,Bất động sản,Bất động sản,CT
+SLS,Công ty Cổ phần Mía đường Sơn La,Thực phẩm và đồ uống,Thực phẩm,CT
+SPB,Công ty Cổ phần Sợi Phú Bài,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+SRC,Công ty Cổ phần Cao su Sao Vàng,Ô tô và phụ tùng,Lốp xe,CT
+TSG,Công ty Cổ phần Thông tin Tín hiệu Đường sắt Sài Gòn,Hàng & Dịch vụ Công nghiệp,Đường sắt,CT
+SVH,Công ty Cổ phần Thủy điện Sông Vàng,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TCW,Công ty Cổ phần Kho Vận Tân Cảng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+TDS,Công ty Cổ phần Thép Thủ Đức - VNSTEEL,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+DIG,Tổng Công ty Cổ phần Đầu tư Phát triển Xây dựng,Bất động sản,Bất động sản,CT
+CSI,Công ty Cổ phần Chứng khoán Kiến thiết Việt Nam,Dịch vụ tài chính,Môi giới chứng khoán,CK
+DNA,Công ty Cổ phần Điện nước An Giang,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PTC,Công ty Cổ phần Đầu tư ICAPITAL,Xây dựng và Vật liệu,Xây dựng,CT
+SRF,Công ty Cổ phần Searefico,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+HPX,Công ty Cổ phần Đầu tư Hải Phát,Bất động sản,Bất động sản,CT
+VVS,Công ty Cổ phần Đầu tư Phát triển Máy Việt Nam,Ô tô và phụ tùng,Sản xuất ô tô,CT
+BVN,Công ty Cổ phần Bông Việt Nam,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+LBE,Công ty Cổ phần Thương mại và Dịch vụ LVA,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+VEA,Tổng Công ty Máy động lực và Máy nông nghiệp Việt Nam - CTCP,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+TBR,Công ty Cổ phần Địa ốc Tân Bình,Bất động sản,Bất động sản,CT
+VXT,Công ty Cổ phần Kho vận và dịch vụ thương mại,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+DFC,Công ty Cổ phần Xích líp Đông Anh,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+AGR,Công ty Cổ phần Chứng khoán AGRIBANK,Dịch vụ tài chính,Môi giới chứng khoán,CK
+APP,Công ty Cổ phần Phát triển Phụ gia và Sản phẩm dầu mỏ,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+BHG,Công ty Cổ phần Chè Biển Hồ,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+AAA,Công ty Cổ phần Nhựa An Phát Xanh,Hóa chất,"Nhựa, cao su & sợi",CT
+NBP,Công ty Cổ phần Nhiệt Điện Ninh Bình,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+GTS,Công ty Cổ phần Công trình Giao thông Sài Gòn,Xây dựng và Vật liệu,Xây dựng,CT
+AMC,Công ty Cổ phần Khoáng sản Á Châu,Tài nguyên Cơ bản,Khai khoáng,CT
+KCB,Công ty Cổ phần Khoáng Sản và Luyện Kim Cao Bằng,Tài nguyên Cơ bản,Khai khoáng,CT
+DCL,Công ty Cổ phần Dược phẩm Cửu Long,Y tế,Dược phẩm,CT
+THW,Công ty Cổ phần Cấp nước Tân Hòa,"Điện, nước & xăng dầu khí đốt",Nước,CT
+BSD,"Công ty Cổ phần Bia, Rượu Sài Gòn - Đồng Xuân",Thực phẩm và đồ uống,Sản xuất bia,CT
+BBS,Công ty Cổ phần VICEM Bao bì Bút Sơn,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+DHB,Công ty Cổ phần Phân đạm và Hóa chất Hà Bắc,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+ICN,Công ty Cổ phần Đầu tư Xây dựng Dầu khí IDICO,Xây dựng và Vật liệu,Xây dựng,CT
+CRE,Công ty Cổ phần Bất động sản Thế Kỷ,Bất động sản,Bất động sản,CT
+BFC,Công ty Cổ phần Phân bón Bình Điền,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+TNH,Công ty Cổ phần Tập đoàn Bệnh viện TNH,Y tế,Chăm sóc y tế,CT
+BDW,Công ty Cổ phần Cấp thoát nước Bình Định,"Điện, nước & xăng dầu khí đốt",Nước,CT
+BEL,Công ty Cổ phần Điện tử Biên Hòa,Hàng cá nhân & Gia dụng,Điện tử tiêu dùng,CT
+GND,Công ty Cổ phần Gạch ngói Đồng Nai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CLC,Công ty Cổ phần Cát Lợi,Hàng cá nhân & Gia dụng,Thuốc lá,CT
+CH5,Công ty Cổ phần Xây dựng số 5 Hà Nội,Xây dựng và Vật liệu,Xây dựng,CT
+FIT,Công ty Cổ phần Tập đoàn F.I.T,Y tế,Dược phẩm,CT
+NO1,Công ty Cổ phần Tâp đoàn 911,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+AGM,Công ty Cổ phần Xuất nhập khẩu An Giang,Thực phẩm và đồ uống,Thực phẩm,CT
+DSG,Công ty Cổ phần Kính Đáp Cầu,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TYA,Công ty Cổ phần Dây và Cáp điện Taya Việt Nam,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+VCC,Công ty Cổ phần Vinaconex 25,Xây dựng và Vật liệu,Xây dựng,CT
+MGR,Công ty cổ phần Tập đoàn MGROUP,Bất động sản,Bất động sản,CT
+DRH,Công ty Cổ phần DRH Holdings,Bất động sản,Bất động sản,CT
+CMG,Công ty Cổ phần Tập đoàn Công nghệ CMC,Công nghệ Thông tin,Dịch vụ Máy tính,CT
+TRV,Công ty Cổ Phần Vận tải Đường sắt,Hàng & Dịch vụ Công nghiệp,Đường sắt,CT
+VIC,Tập đoàn Vingroup - Công ty CP,Bất động sản,Bất động sản,CT
+HLT,Công ty Cổ phần Dệt may Hoàng Thị Loan,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+L43,Công ty Cổ phần Lilama 45.3,Xây dựng và Vật liệu,Xây dựng,CT
+HWS,Công ty Cổ phần Cấp nước Huế,"Điện, nước & xăng dầu khí đốt",Nước,CT
+DDH,Công ty Cổ phần Đảm bảo giao thông đường thủy Hải Phòng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VIF,Tổng Công ty Lâm nghiệp Việt Nam - Công ty Cổ phần,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+SBG,Công ty Cổ Phần Tập Đoàn Cơ Khí Công Nghệ Cao Siba,Hàng & Dịch vụ Công nghiệp,Công nghiệp phức hợp,CT
+LPB,Ngân hàng Thương mại Cổ phần Lộc Phát Việt Nam,Ngân hàng,Ngân hàng,NH
+HAD,Công ty Cổ phần Bia Hà Nội - Hải Dương,Thực phẩm và đồ uống,Sản xuất bia,CT
+ALV,Công ty Cổ phần Tập đoàn MCST,Xây dựng và Vật liệu,Xây dựng,CT
+HCT,Công ty Cổ phần Thương mại - Dịch vụ - Vận tải Xi măng Hải Phòng,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+HOM,Công ty Cổ phần Xi măng VICEM Hoàng Mai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HNA,Công ty Cổ phần Thủy điện Hủa Na,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+NTC,Công ty Cổ phần Khu Công nghiệp Nam Tân Uyên,Bất động sản,Bất động sản,CT
+HOT,Công ty Cổ phần Du lịch - Dịch vụ Hội An,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+MES,Công ty Cổ phần Cơ điện Công trình,Xây dựng và Vật liệu,Xây dựng,CT
+HTL,Công ty Cổ phần Kỹ thuật và Ô tô Trường Long,Ô tô và phụ tùng,Sản xuất ô tô,CT
+ITD,Công ty Cổ phần Công nghệ ITD,Công nghệ Thông tin,Phần mềm,CT
+DHA,Công ty Cổ phần Hóa An,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PGN,Công ty Cổ phần Phụ Gia Nhựa,Hóa chất,"Nhựa, cao su & sợi",CT
+KOS,Công ty Cổ phần KOSY,Bất động sản,Bất động sản,CT
+PVC,Tổng Công ty Hóa chất và Dịch vụ Dầu khí - Công ty Cổ phần,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+LM7,Công ty Cổ phần Lilama 7,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+MCC,Công ty Cổ phần Gạch ngói cao cấp,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PMB,Công ty Cổ phần Phân bón và Hóa chất Dầu khí Miền Bắc,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+NST,Công ty Cổ phần Ngân Sơn,Hàng cá nhân & Gia dụng,Thuốc lá,CT
+VGI,Tổng Công ty Cổ phần Đầu tư Quốc tế Viettel,Viễn thông,Viễn thông di động,CT
+WSB,Công ty Cổ phần Bia Sài Gòn - Miền Tây,Thực phẩm và đồ uống,Sản xuất bia,CT
+TSB,Công ty Cổ phần Ắc quy Tia Sáng,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+GKM,Công ty Cổ phần GKM Holdings,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TRT,Công ty Cổ phần RedstarCera,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TV1,Công ty Cổ phần Tư vấn Xây dựng Điện 1,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+UDJ,Công ty Cổ phần Phát triển Đô thị,Xây dựng và Vật liệu,Xây dựng,CT
+LBM,Công ty Cổ phần Khoáng sản và Vật liệu xây dựng Lâm Đồng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PDV,Công ty Cổ phần Vận tải và Tiếp vận Phương Đông Việt,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+PJC,Công ty Cổ phần Thương mại và Vận tải Petrolimex Hà Nội,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+OIL,Tổng Công ty Dầu Việt Nam - Công ty Cổ phần,Dầu khí,Sản xuất và Khai thác dầu khí,CT
+PTO,Công ty Cổ phần Dịch vụ - Xây dựng Công trình Bưu điện,Xây dựng và Vật liệu,Xây dựng,CT
+PMC,Công ty Cổ phần Dược phẩm Dược liệu Pharmedic,Y tế,Dược phẩm,CT
+SBS,Công ty Cổ phần Chứng khoán SBS,Dịch vụ tài chính,Môi giới chứng khoán,CK
+SMC,Công ty Cổ phần Đầu tư Thương mại SMC,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+SED,Công ty Cổ phần Đầu tư và Phát triển Giáo dục Phương Nam,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+SBR,Công ty Cổ phần Cao su Sông Bé,Hóa chất,"Nhựa, cao su & sợi",CT
+SJF,Công ty Cổ phần Đầu tư Sao Thái Dương,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+SMT,Công ty Cổ phần SAMETEL,Công nghệ Thông tin,Thiết bị viễn thông,CT
+SSN,Công ty Cổ phần Xuất nhập khẩu Thủy sản Sài Gòn,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+TTD,Công ty Cổ phần Bệnh viện Tim Tâm Đức,Y tế,Chăm sóc y tế,CT
+NAP,Công ty Cổ phần Cảng Nghệ Tĩnh,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+NED,Công ty Cổ phần Đầu tư và Phát triển Điện Tây Bắc,Xây dựng và Vật liệu,Xây dựng,CT
+NTW,Công ty Cổ phần Cấp nước Nhơn Trạch,"Điện, nước & xăng dầu khí đốt",Nước,CT
+OCH,Công ty Cổ phần One Capital Hospitality,Thực phẩm và đồ uống,Thực phẩm,CT
+ONE,Công ty Cổ phần Công nghệ ONE,Công nghệ Thông tin,Phần cứng,CT
+POB,Công ty Cổ phần Xăng dầu Dầu khí Hưng Yên,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+PXI,Công ty Cổ phần Xây dựng Công nghiệp và Dân dụng Dầu khí,Xây dựng và Vật liệu,Xây dựng,CT
+PWS,Công ty Cổ phần Cấp thoát nước Phú Yên,"Điện, nước & xăng dầu khí đốt",Nước,CT
+SBH,Công ty Cổ phần Thủy điện Sông Ba Hạ,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SCL,Công ty Cổ phần Sông Đà Cao Cường,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TED,Tổng Công ty Tư vấn Thiết kế Giao thông Vận tải - CTCP,Xây dựng và Vật liệu,Xây dựng,CT
+TGP,Công ty Cổ phần Trường Phú,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+THU,Công ty Cổ phần Môi trường và Công trình đô thị Thanh Hóa,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+VNT,Công ty Cổ phần Giao nhận Vận tải Ngoại Thương,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+ACC,Công ty Cổ phần Đầu tư và Xây dựng Bình Dương ACC,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+C21,Công ty Cổ phần Thế kỷ 21,Bất động sản,Bất động sản,CT
+IBD,Công ty Cổ phần In Tổng hợp Bình Dương,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+AMP,Công ty Cổ phần Armephaco,Y tế,Dược phẩm,CT
+BHH,Công ty Cổ Phần Bia Hà Nội - Hưng Yên 89,Thực phẩm và đồ uống,Sản xuất bia,CT
+PLP,Công ty Cổ phần Sản xuất và Công nghệ Nhựa Pha Lê,Hóa chất,"Nhựa, cao su & sợi",CT
+TAR,Công ty Cổ phần Nông nghiệp Công nghệ cao Trung An,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+TIS,Công ty Cổ phần Gang thép Thái Nguyên,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+BQP,Công ty Cổ phần Nhựa chất lượng cao Bình Thuận,Hóa chất,"Nhựa, cao su & sợi",CT
+DVT,Công ty Cổ phần Đào tạo và Dịch vụ Giao thông vận tải Bình Định,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+EFI,Công ty Cổ phần Đầu tư Tài chính Giáo dục,Bất động sản,Bất động sản,CT
+HLS,Công ty Cổ phần Sứ kỹ thuật Hoàng Liên Sơn,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+NAV,Công ty Cổ phần Nam Việt,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+ATA,Công ty Cổ phần NTACO,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+CBS,Công ty Cổ phần Mía đường Cao Bằng,Thực phẩm và đồ uống,Thực phẩm,CT
+CTI,Công ty Cổ phần Đầu tư Phát triển Cường Thuận IDICO,Xây dựng và Vật liệu,Xây dựng,CT
+CTR,Tổng Công ty Cổ phần Công trình Viettel,Xây dựng và Vật liệu,Xây dựng,CT
+BMP,Công ty Cổ phần Nhựa Bình Minh,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BPC,Công ty Cổ phần Vicem Bao bì Bỉm Sơn,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+BCV,Công ty Cổ phần Du lịch và Thương mại Bằng Giang Cao Bằng - Vimico,Du lịch và Giải trí,Khách sạn,CT
+THM,Công ty Cổ phần Tứ Hải Hà Nam,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+CMS,Công ty Cổ phần Tập đoàn CMH Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+ANV,Công ty Cổ phần Nam Việt,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+MGG,Tổng Công ty Đức Giang - Công ty Cổ phần,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+ADS,Công ty Cổ phần DAMSAN,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+EVF,Công ty Tài chính Tổng hợp Cổ phần Điện Lực,Dịch vụ tài chính,Tài chính cá nhân,NH
+ACM,Công ty Cổ phần Tập đoàn Khoáng sản Á Cường,Tài nguyên Cơ bản,Khai khoáng,CT
+GMH,Công ty Cổ phần Minh Hưng Quảng Trị,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CCC,Công ty Cổ Phần Xây Dựng CDC,Xây dựng và Vật liệu,Xây dựng,CT
+VBC,"Công ty Cổ phần Nhựa, Bao bì Vinh",Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+CLW,Công ty Cổ phần Cấp nước Chợ Lớn,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CDN,Công ty Cổ phần Cảng Đà Nẵng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+MBG,Công ty Cổ phần Tập đoàn MBG,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+MH3,Công ty Cổ phần Khu công nghiệp Cao su Bình Long,Bất động sản,Bất động sản,CT
+NBW,Công ty Cổ phần Cấp nước Nhà Bè,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VIM,Công ty Cổ phần Khoáng sản Viglacera,Tài nguyên Cơ bản,Khai khoáng,CT
+DDN,Công ty Cổ phần Dược - Thiết bị y tế Đà Nẵng,Y tế,Dược phẩm,CT
+HNP,Công ty Cổ phần Hanel Xốp Nhựa,Hóa chất,"Nhựa, cao su & sợi",CT
+VLB,Công ty Cổ phần Xây dựng và Sản xuất Vật liệu Xây dựng Biên Hòa,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VCT,Công ty Cổ phần Tư vấn Xây dựng Vinaconex,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+HPG,Công ty Cổ phần Tập đoàn Hòa Phát,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+HCC,Công ty Cổ phần Bê tông Hòa Cầm - Intimex,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VE8,Công ty Cổ phần Xây dựng Điện Vneco 8,Xây dựng và Vật liệu,Xây dựng,CT
+CDG,Công ty Cổ phần Cầu Đuống,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+ADG,Công ty Cổ phần Clever Group,Truyền thông,Dịch vụ truyền thông,CT
+HBD,Công ty Cổ phần Bao bì PP Bình Dương,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+DHN,Công ty Cổ phần Dược phẩm Hà Nội,Y tế,Dược phẩm,CT
+ABC,Công ty Cổ phần Truyền thông VMG,Viễn thông,Viễn thông di động,CT
+PCC,Công ty Cổ phần Tập đoàn Xây lắp 1 - Petrolimex,Xây dựng và Vật liệu,Xây dựng,CT
+CCI,Công ty Cổ phần Đầu tư Phát triển Công nghiệp Thương mại Củ Chi,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+KDH,Công ty Cổ phần Đầu tư và Kinh doanh nhà Khang Điền,Bất động sản,Bất động sản,CT
+HU4,Công ty Cổ phần Đầu tư và Xây dựng HUD4,Xây dựng và Vật liệu,Xây dựng,CT
+HDW,Công ty Cổ phần Kinh doanh Nước sạch Hải Dương,"Điện, nước & xăng dầu khí đốt",Nước,CT
+IST,Công ty Cổ phần ICD Tân Cảng Sóng Thần,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+RCC,Công ty Cổ phần Tổng Công ty Công trình Đường sắt Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+KST,Công ty Cổ phần KASATI,Công nghệ Thông tin,Thiết bị viễn thông,CT
+LAW,Công ty Cổ phần Cấp thoát nước Long An,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VDP,Công ty Cổ phần Dược phẩm Trung ương VIDIPHA,Y tế,Dược phẩm,CT
+HBS,Công ty Cổ phần Chứng khoán Hòa Bình,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VRC,Công ty Cổ phần Bất động sản và Đầu tư VRC,Bất động sản,Bất động sản,CT
+VSI,Công ty Cổ phần Đầu tư và Xây dựng Cấp thoát nước,Xây dựng và Vật liệu,Xây dựng,CT
+VST,Công ty Cổ phần Vận tải và Thuê Tàu biển Việt Nam,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+VTI,Công ty Cổ phần Sản xuất - Xuất nhập khẩu Dệt may,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+NBC,Công ty Cổ phần Than Núi Béo - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+NBE,Công ty Cổ phần Sách và Thiết bị Giáo dục Miền Bắc,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+NDC,Công ty Cổ phần Nam Dược,Y tế,Dược phẩm,CT
+PCT,Công ty Cổ phần Vận tải Biển Global Pacific,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+TOT,Công ty Cổ phần Transimex Logistics,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+XMD,Công ty Cổ phần Xuân Mai - Đạo Tú,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PJS,Công ty Cổ phần Cấp nước Phú Hòa Tân,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PSI,Công ty Cổ phần Chứng khoán Dầu khí,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VGC,Tổng Công ty Viglacera - Công ty Cổ phần,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+RAT,Công ty Cổ phần Vận tải và Thương mại Đường sắt,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+SCG,Công ty Cổ phần Tập đoàn Xây dựng SCG,Xây dựng và Vật liệu,Xây dựng,CT
+NVP,Công ty Cổ phần Nước sạch Vĩnh Phúc,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VSE,Công ty Cổ phần Dịch vụ Đường cao tốc Việt Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+V12,Công ty Cổ phần Xây dựng số 12,Xây dựng và Vật liệu,Xây dựng,CT
+SLD,Công ty Cổ phần Địa Ốc Sacom,Bất động sản,Bất động sản,CT
+SZG,Công ty Cổ phần Sonadezi Giang Điền,Bất động sản,Bất động sản,CT
+SSI,Công ty Cổ phần Chứng khoán SSI,Dịch vụ tài chính,Môi giới chứng khoán,CK
+SNC,Công ty Cổ phần Xuất nhập khẩu Thủy sản Năm Căn,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+STL,Công ty Cổ phần Sông Đà - Thăng Long,Bất động sản,Bất động sản,CT
+TCR,Công ty Cổ phần Công nghiệp Gốm sứ TAICERA,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HU1,Công ty Cổ phần Đầu tư và Xây dựng HUD1,Xây dựng và Vật liệu,Xây dựng,CT
+LM8,Công ty Cổ phần Lilama 18,Xây dựng và Vật liệu,Xây dựng,CT
+MKP,Công ty Cổ phần Hóa - Dược phẩm Mekophar,Y tế,Dược phẩm,CT
+MPC,Công ty Cổ phần Tập đoàn Thủy sản Minh Phú,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+NET,Công ty Cổ phần Bột giặt Net,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+NTT,Công ty Cổ phần Dệt - May Nha Trang,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+PV2,Công ty Cổ phần Đầu tư PV2,Bất động sản,Bất động sản,CT
+PVD,Tổng Công ty Cổ phần Khoan và Dịch vụ khoan Dầu khí,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+PWA,Công ty Cổ phần Bất động sản dầu khí,Bất động sản,Bất động sản,CT
+SFN,Công ty Cổ phần Dệt lưới Sài Gòn,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+SHG,Tổng Công ty Cổ phần Sông Hồng,Xây dựng và Vật liệu,Xây dựng,CT
+TCO,Công ty Cổ phần TCO Holdings,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+TTH,Công ty Cổ phần Thương mại và Dịch vụ Tiến Thành,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+TIG,Công ty Cổ phần Tập đoàn Đầu tư Thăng Long,Bất động sản,Bất động sản,CT
+TKC,Công ty Cổ phần Xây dựng và Kinh doanh Địa ốc Tân Kỷ,Xây dựng và Vật liệu,Xây dựng,CT
+TRC,Công ty Cổ phần Cao su Tây Ninh,Hóa chất,"Nhựa, cao su & sợi",CT
+TTN,Công ty Cổ phần Công nghệ & Truyền thông Việt Nam,Viễn thông,Viễn thông cố định,CT
+AVG,Công ty Cổ phần Phân Bón Quốc Tế Âu Việt,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+ABS,Công ty Cổ phần Dịch vụ Nông nghiệp Bình Thuận,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+ARM,Công ty Cổ phần Xuất nhập khẩu Hàng không,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+CPH,Công ty Cổ phần Phục vụ Mai táng Hải Phòng,Bán lẻ,Dịch vụ tiêu dùng chuyên ngành,CT
+HMD,Công ty Cổ phần Hóa chất Minh Đức,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+RBC,Công ty Cổ phần Công Nghiệp và Xuất nhập khẩu Cao Su,Hóa chất,"Nhựa, cao su & sợi",CT
+BCR,Công ty Cổ phần BCG Land,Xây dựng và Vật liệu,Xây dựng,CT
+ASP,Công ty Cổ phần Tập đoàn Dầu khí An Pha,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+BMD,Công ty Cổ phần Môi trường và Dịch vụ Đô thị Bình Thuận,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+AAM,Công ty Cổ Phần Thủy Sản MeKong,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+TTS,Công ty Cổ phần Cán thép Thái Trung,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+DNE,Công ty Cổ phần Môi trường Đô thị Đà Nẵng,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+VBG,Công ty Cổ phần Địa chất Việt Bắc - TKV,Tài nguyên Cơ bản,Khai khoáng,CT
+AMV,Công ty Cổ phần Sản xuất Kinh doanh Dược và Trang thiết bị Y tế Việt Mỹ,Y tế,Thiết bị y tế,CT
+DMS,Công ty Cổ phần Hóa phẩm dầu khí DMC - Miền Nam,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+DRC,Công ty Cổ phần Cao su Đà Nẵng,Ô tô và phụ tùng,Lốp xe,CT
+DNM,Tổng Công ty Cổ phần Y tế Danameco,Y tế,Dụng cụ y tế,CT
+THT,Công ty Cổ phần Than Hà Tu - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+UDL,Công ty Cổ phần Đô thị và Môi trường Đắk Lắk,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+DSE,Công ty Cổ phần Chứng khoán DNSE,Dịch vụ tài chính,Môi giới chứng khoán,CK
+MVC,Công ty Cổ phần Vật liệu và Xây dựng Bình Dương,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+EBS,Công ty Cổ phần Sách Giáo dục tại Thành phố Hà Nội,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+ICT,Công ty Cổ phần Viễn thông - Tin học Bưu điện,Công nghệ Thông tin,Phần mềm,CT
+GTT,Công ty Cổ phần Thuận Thảo,Du lịch và Giải trí,Dịch vụ giải trí,CT
+FRT,Công ty Cổ phần Bán lẻ Kỹ thuật số FPT,Bán lẻ,Phân phối hàng chuyên dụng,CT
+BGW,Công ty Cổ phần Nước sạch Bắc Giang,"Điện, nước & xăng dầu khí đốt",Nước,CT
+BHA,Công ty Cổ phần Thủy điện Bắc Hà,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DNN,Công ty Cổ phần Cấp nước Đà Nẵng,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CCV,Công ty Cổ phần Tư vấn Xây dựng Công nghiệp và Đô thị Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+CLM,Công ty Cổ phần Xuất nhập khẩu Than - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+VCR,Công ty Cổ phần Đầu tư và Phát triển Du lịch Vinaconex,Bất động sản,Bất động sản,CT
+GGG,Công ty Cổ phần Ô tô Giải Phóng,Ô tô và phụ tùng,Sản xuất ô tô,CT
+TTG,Công ty Cổ phần May Thanh Trì,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+DTT,Công ty Cổ phần Kỹ nghệ Đô Thành,Hóa chất,"Nhựa, cao su & sợi",CT
+D2D,Công ty Cổ phần Phát triển Đô thị Công nghiệp số 2,Bất động sản,Bất động sản,CT
+HJS,Công ty Cổ phần Thủy điện Nậm Mu,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VTD,Công ty Cổ phần Vietourist Holdings,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+BVL,Công ty Cổ phần BV Land,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+CTG,Ngân hàng Thương mại Cổ phần Công thương Việt Nam,Ngân hàng,Ngân hàng,NH
+VGR,Công ty Cổ phần Cảng xanh VIP,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+HAT,Công ty Cổ phần Thương mại Bia Hà Nội,Thực phẩm và đồ uống,Sản xuất bia,CT
+CPC,Công ty Cổ phần Thuốc sát trùng Cần Thơ,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+GEX,Công ty Cổ phần Tập đoàn Gelex,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+BWS,Công ty Cổ phần Cấp Nước Bà Rịa - Vũng Tàu,"Điện, nước & xăng dầu khí đốt",Nước,CT
+DTA,Công ty Cổ phần Đệ Tam,Bất động sản,Bất động sản,CT
+VLA,Công ty Cổ phần Đầu tư và Phát triển Công nghệ Văn Lang,Công nghệ Thông tin,Phần mềm,CT
+HMC,Công ty Cổ phần Kim khí Thành phố Hồ Chí Minh - VNSTEEL,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+HVT,Công ty Cổ phần Hóa chất Việt Trì,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+EME,Công ty Cổ phần Điện Cơ,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+CVT,Công ty Cổ phần CMC,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HSG,Công ty Cổ phần Tập đoàn Hoa Sen,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+REE,Công ty Cổ phần Cơ điện Lạnh,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+L14,Công ty Cổ phần Licogi 14,Xây dựng và Vật liệu,Xây dựng,CT
+L12,Công ty Cổ phần Licogi 12,Xây dựng và Vật liệu,Xây dựng,CT
+IRC,Công ty Cổ phần Cao su Công nghiệp,Hóa chất,"Nhựa, cao su & sợi",CT
+JOS,Công ty Cổ phần Chế biến Thủy sản Xuất khẩu Minh Hải,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VTP,Tổng Công ty Cổ phần Bưu chính Viettel,Hàng & Dịch vụ Công nghiệp,Chuyển phát nhanh,CT
+BAB,Ngân hàng Thương mại Cổ phần Bắc Á,Ngân hàng,Ngân hàng,NH
+VLW,Công ty Cổ phần Cấp nước Vĩnh Long,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VPD,Công ty Cổ phần Phát triển Điện lực Việt Nam,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VRE,Công ty Cổ phần Vincom Retail,Bất động sản,Bất động sản,CT
+PEG,Tổng Công ty Thương mại Kỹ thuật và Đầu tư - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+NXT,Công ty Cổ phần Sản xuất và Cung ứng vật liệu xây dựng Kon Tum,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VSA,Công ty Cổ phần Đại lý Hàng hải Việt Nam,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PIT,Công ty Cổ phần Xuất nhập khẩu Petrolimex,Bán lẻ,Bán lẻ phức hợp,CT
+PLC,Tổng Công ty Hóa dầu Petrolimex - Công ty Cổ phần,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+PMS,Công ty Cổ phần Cơ khí Xăng dầu,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+PRO,Công ty Cổ phần Procimex Việt Nam,Thực phẩm và đồ uống,Thực phẩm,CT
+VTX,Công ty Cổ phần Vận tải Đa phương thức VIETRANSTIMEX,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PQN,Công ty Cổ phần Dịch vụ Dầu khí Quảng Ngãi PTSC,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+BSQ,Công ty Cổ phần Bia Sài Gòn - Quảng Ngãi,Thực phẩm và đồ uống,Sản xuất bia,CT
+SGN,Công ty Cổ phần Phục vụ mặt đất Sài Gòn,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+SD8,Công ty Cổ phần Sông Đà 8,Xây dựng và Vật liệu,Xây dựng,CT
+SD4,Công ty Cổ phần Sông Đà 4,Xây dựng và Vật liệu,Xây dựng,CT
+SD7,Công ty Cổ phần Sông Đà 7,Xây dựng và Vật liệu,Xây dựng,CT
+SGB,Ngân hàng Thương mại Cổ phần Sài Gòn Công thương,Ngân hàng,Ngân hàng,NH
+SHE,Công ty Cổ phần Phát triển Năng Lượng Sơn Hà,Hàng cá nhân & Gia dụng,Đồ gia dụng lâu bền,CT
+SHP,Công ty Cổ phần Thủy điện Miền Nam,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SSC,Công ty Cổ phần Giống cây trồng Miền Nam,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+STB,Ngân hàng Thương mại Cổ phần Sài Gòn Thương Tín,Ngân hàng,Ngân hàng,NH
+TBC,Công ty Cổ phần Thủy điện Thác Bà,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TCI,Công ty Cổ phần Chứng khoán Thành Công,Dịch vụ tài chính,Môi giới chứng khoán,CK
+LGL,Công ty Cổ phần Đầu tư và Phát triển Đô thị Long Giang,Bất động sản,Bất động sản,CT
+LUT,Công ty Cổ phần Đầu tư Xây dựng Lương Tài,Xây dựng và Vật liệu,Xây dựng,CT
+PNT,Công ty Cổ phần Kỹ thuật Xây dựng Phú Nhuận,Xây dựng và Vật liệu,Xây dựng,CT
+POV,Công ty Cổ phần Xăng dầu Dầu khí Vũng Áng,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+PTE,Công ty Cổ phần Xi măng Phú Thọ,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SHN,Công ty Cổ phần Đầu tư Tổng hợp Hà Nội,Tài nguyên Cơ bản,Khai thác Than,CT
+DTH,Công ty Cổ phần Dược - Vật tư Y tế Thanh Hóa,Y tế,Thiết bị y tế,CT
+VPR,Công ty Cổ phần VINAPRINT,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+TLT,Công ty Cổ phần Viglacera Thăng Long,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TMS,Công ty Cổ phần Transimex,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+TCJ,Công ty Cổ phần Tô Châu,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HTC,Công ty Cổ phần Thương mại Hóc Môn,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+HD8,Công ty Cổ phần Đầu tư Phát triển Nhà và Đô thị HUD8,Bất động sản,Bất động sản,CT
+KHP,Công ty Cổ phần Điện lực Khánh Hòa,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VEC,Tổng Công ty Cổ phần Điện tử và Tin học Việt Nam,Công nghệ Thông tin,Phần cứng,CT
+QSP,Công ty Cổ phần Tân cảng Quy Nhơn,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VPW,Công ty Cổ phần Cấp thoát nước số 1 Vĩnh Phúc,"Điện, nước & xăng dầu khí đốt",Nước,CT
+APF,Công ty Cổ phần Nông sản Thực phẩm Quảng Ngãi,Thực phẩm và đồ uống,Thực phẩm,CT
+ABR,Công ty Cổ phần Đầu tư Nhãn Hiệu Việt,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+BHK,Công ty Cổ phần Bia Hà Nội - Kim Bài,Thực phẩm và đồ uống,Sản xuất bia,CT
+VDG,Công ty Cổ phần Vạn Đạt Group,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+NLS,Công ty Cổ phần Cấp thoát nước Lạng Sơn,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CTP,Công ty Cổ phần Tập đoàn CTP Group,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+AAV,Công ty Cổ phần AAV Group,Bất động sản,Bất động sản,CT
+CFM,Công ty Cổ phần Đầu tư CFM,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+AME,Công ty cổ phần Alphanam E&C,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+DC4,Công ty Cổ phần Dicera Holdings,Xây dựng và Vật liệu,Xây dựng,CT
+DLD,Công ty Cổ phần Du lịch Đắk Lắk,Du lịch và Giải trí,Khách sạn,CT
+DAD,Công ty Cổ phần Đầu tư và Phát triển Giáo dục Đà Nẵng,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+DTC,Công ty Cổ phần Viglacera Đông Triều,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CNG,Công ty Cổ phần CNG Việt Nam,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+DVW,Công ty Cổ phần Dịch vụ và Xây dựng cấp nước Đồng Nai,Xây dựng và Vật liệu,Xây dựng,CT
+DZM,Công ty Cổ phần Cơ điện Dzĩ An,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+ACE,Công ty Cổ phần Bê tông ly tâm An Giang,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BSA,Công ty Cổ phần Thủy điện Buôn Đôn,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+NBT,Công ty Cổ phần Cấp thoát nước Bến Tre,"Điện, nước & xăng dầu khí đốt",Nước,CT
+UTT,Công ty Cổ phần Môi trường Đô thị Thanh Trì,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+APL,Công ty Cổ phần Cơ khí và Thiết bị áp lực - VVMI,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+DPR,Công ty Cổ phần Cao su Đồng Phú,Hóa chất,"Nhựa, cao su & sợi",CT
+DBD,Công ty Cổ phần Dược - Trang thiết bị y tế Bình Định (BIDIPHAR),Y tế,Dược phẩm,CT
+VMK,Công ty Cổ phần Vimarko,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DRL,Công ty Cổ phần Thủy điện - Điện lực 3,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+GTA,Công ty Cổ phần Chế biến Gỗ Thuận An,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+EVE,Công ty Cổ phần Everpia,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+VE3,Công ty Cổ phần Xây dựng điện VNECO 3,Xây dựng và Vật liệu,Xây dựng,CT
+GMD,Công ty Cổ phần Gemadept,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+DCT,Công ty Cổ phần Tấm lợp Vật liệu Xây dựng Đồng Nai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DWS,Công ty Cổ phần Cấp nước và Môi trường Đô thị Đồng Tháp,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VIR,Công ty Cổ phần Du lịch Quốc tế Vũng Tàu,Du lịch và Giải trí,Khách sạn,CT
+HDB,Ngân hàng Thương mại Cổ phần Phát Triển Thành phố Hồ Chí Minh,Ngân hàng,Ngân hàng,NH
+DHD,Công ty Cổ phần Dược Vật Tư Y Tế Hải Dương,Y tế,Dược phẩm,CT
+HEC,Công ty Cổ phần Tư vấn xây dựng Thủy Lợi II,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+PIA,Công ty Cổ phần Tin học Viễn thông Petrolimex,Viễn thông,Viễn thông cố định,CT
+HEJ,Tổng Công ty Tư vấn Xây dựng Thủy Lợi Việt Nam - CTCP,Xây dựng và Vật liệu,Xây dựng,CT
+HHG,Công ty Cổ phần Hoàng Hà,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+L62,Công ty Cổ phần Lilama 69 - 2,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+DCH,Công ty Cổ phần Địa chính Hà Nội,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+BT6,Công ty Cổ phần BETON 6,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HSA,Công ty Cổ phần HESTIA,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+M10,Tổng công ty May 10 - Công ty Cổ phần,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+E12,Công ty Cổ phần Xây Dựng Điện VNECO 12,Xây dựng và Vật liệu,Xây dựng,CT
+DXP,Công ty Cổ phần Cảng Đoạn Xá,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+CTX,Tổng Công ty Cổ phần Đầu tư Xây dựng và Thương mại Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+LMC,Công ty Cổ phần Long Beach LMC,Tài nguyên Cơ bản,Khai khoáng,CT
+ICC,Công ty Cổ phần Xây dựng Công nghiệp,Xây dựng và Vật liệu,Xây dựng,CT
+LCG,Công ty Cổ phần Lizen,Xây dựng và Vật liệu,Xây dựng,CT
+CSV,Công ty Cổ phần Hóa chất Cơ bản miền Nam,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+LG9,Công ty Cổ phần Cơ giới và Xây lắp số 9,Xây dựng và Vật liệu,Xây dựng,CT
+LLM,Tổng Công ty lắp máy Việt Nam - Công ty Cổ phần,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+LTC,Công ty Cổ phần Điện nhẹ Viễn Thông,Công nghệ Thông tin,Phần cứng,CT
+MEL,Công ty Cổ phần Thép Mê Lin,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+MWG,Công ty Cổ phần Đầu tư Thế Giới Di Động,Bán lẻ,Phân phối hàng chuyên dụng,CT
+NSC,Công ty Cổ phần Tập đoàn Giống cây trồng Việt Nam,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VNF,Công ty Cổ phần Vinafreight,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+YBM,Công ty Cổ phần Khoáng sản Công nghiệp Yên Bái,Tài nguyên Cơ bản,Khai khoáng,CT
+TVS,Công ty Cổ phần Chứng khoán Thiên Việt,Dịch vụ tài chính,Môi giới chứng khoán,CK
+PTM,"Công ty Cổ phần Sản xuất, Thương mại Và Dịch vụ Ô tô PTM",Ô tô và phụ tùng,Sản xuất ô tô,CT
+S55,Công ty Cổ phần Sông Đà 505,Xây dựng và Vật liệu,Xây dựng,CT
+VNM,Công ty Cổ phần Sữa Việt Nam,Thực phẩm và đồ uống,Thực phẩm,CT
+DS3,Công ty Cổ phần DS3,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+QCG,Công ty Cổ phần Quốc Cường Gia Lai,Bất động sản,Bất động sản,CT
+S12,Công ty Cổ phần Sông Đà 12,Xây dựng và Vật liệu,Xây dựng,CT
+SBL,Công ty Cổ phần Bia Sài Gòn - Bạc Liêu,Thực phẩm và đồ uống,Sản xuất bia,CT
+SD9,Công ty Cổ phần Sông Đà 9,Xây dựng và Vật liệu,Xây dựng,CT
+SDY,Công ty Cổ phần Xi măng Sông Đà Yaly,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SFG,Công ty Cổ phần Phân bón Miền Nam,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+SHC,Công ty Cổ phần Hàng hải Sài Gòn,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+ANI,Công ty Cổ phần ANI,Xây dựng và Vật liệu,Xây dựng,CT
+STT,Công ty Cổ phần Vận chuyển Sài Gòn Tourist,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SJE,Công ty Cổ phần Sông Đà 11,Xây dựng và Vật liệu,Xây dựng,CT
+SMN,Công ty Cổ phần Sách và thiết bị giáo dục Miền Nam,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+SP2,Công ty Cổ phần Thủy điện Sử Pán 2,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+S4A,Công ty Cổ phần Thủy điện Sê San 4A,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TA6,Công ty Cổ phần Đầu tư và Xây lắp Thành An 665,Xây dựng và Vật liệu,Xây dựng,CT
+TCM,Công ty Cổ phần Dệt may - Đầu tư - Thương mại Thành Công,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+TDP,Công ty Cổ phần Thuận Đức,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+CNC,Công ty Cổ phần Công nghệ cao Traphaco,Y tế,Dược phẩm,CT
+MPT,Công ty Cổ phần Tập đoàn MPT,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+MQB,Công ty Cổ phần Môi trường và Phát triển đô thị Quảng Bình,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+MSB,Ngân hàng Thương mại Cổ phần Hàng Hải Việt Nam,Ngân hàng,Ngân hàng,NH
+ORS,Công ty Cổ phần Chứng khoán Tiên Phong,Dịch vụ tài chính,Môi giới chứng khoán,CK
+EIN,Công ty Cổ phần Đầu tư - Thương Mại - Dịch vụ Điện lực,Du lịch và Giải trí,Khách sạn,CT
+SAF,Công ty Cổ phần Lương thực Thực phẩm SAFOCO,Thực phẩm và đồ uống,Thực phẩm,CT
+G36,Tổng Công ty 36 - Công ty Cổ phần,Xây dựng và Vật liệu,Xây dựng,CT
+MBS,Công ty Cổ phần Chứng khoán MB,Dịch vụ tài chính,Môi giới chứng khoán,CK
+TNB,Công ty Cổ phần Thép Nhà Bè - VNSTEEL,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+TNM,Công ty Cổ phần Xuất nhập khẩu và Xây dựng Công trình,Xây dựng và Vật liệu,Xây dựng,CT
+HC3,Công ty Cổ phần Xây dựng số 3 Hải Phòng,Xây dựng và Vật liệu,Xây dựng,CT
+HTI,Công ty Cổ phần Đầu tư Phát triển Hạ tầng IDICO,Xây dựng và Vật liệu,Xây dựng,CT
+TV6,Công ty Cổ phần Tập đoàn EMA LAND,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+TVC,Công ty Cổ phần Tập đoàn Quản lý tài sản T-Corp,Dịch vụ tài chính,Tài chính đặc biệt,CT
+KTL,Công ty Cổ phần Kim khí Thăng Long,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+TVD,Công ty Cổ phần Than Vàng Danh - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+VMA,Công ty Cổ phần Công nghiệp Ô tô - Vinacomin,Ô tô và phụ tùng,Sản xuất ô tô,CT
+NDX,Công ty Cổ phần Xây lắp Phát triển Nhà Đà Nẵng,Xây dựng và Vật liệu,Xây dựng,CT
+TMB,Công ty Cổ phần Kinh doanh Than Miền Bắc - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+NTP,Công ty Cổ phần Nhựa Thiếu niên Tiền Phong,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VTQ,Công ty Cổ phần Việt Trung Quảng Bình,Hóa chất,"Nhựa, cao su & sợi",CT
+BDG,Công ty Cổ phần May mặc Bình Dương,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+CK8,Công ty Cổ phần Cơ khí 120,Bất động sản,Bất động sản,CT
+PEQ,Công ty Cổ phần Thiết bị xăng dầu Petrolimex,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+CFV,Công ty Cổ phần Cà phê Thắng Lợi,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+CAN,Công ty Cổ phần Đồ hộp Hạ Long,Thực phẩm và đồ uống,Thực phẩm,CT
+CVN,Công ty Cổ phần Vinam,Y tế,Thiết bị y tế,CT
+DID,Công ty Cổ phần DIC - Đồng Tiến,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DXS,Công ty Cổ phần Dịch vụ Bất động sản Đất Xanh,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+TTF,Công ty Cổ phần Tập đoàn Kỹ nghệ Gỗ Trường Thành,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+DP1,Công ty Cổ phần Dược phẩm Trung ương CPC1,Y tế,Dược phẩm,CT
+CMM,Công ty Cổ phần Camimex,Thực phẩm và đồ uống,Thực phẩm,CT
+TV3,Công ty Cổ phần Tư vấn Xây dựng Điện 3,Xây dựng và Vật liệu,Xây dựng,CT
+DVC,Công ty Cổ phần Thương mại dịch vụ Tổng Hợp Cảng Hải Phòng,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+MSR,Công ty Cổ phần Masan High-Tech Materials,Tài nguyên Cơ bản,Khai khoáng,CT
+BWE,Công ty Cổ phần - Tổng công ty Nước - Môi trường Bình Dương,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MTG,Công ty Cổ phần MT Gas,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+HLA,Công ty Cổ phần Hữu Liên Á Châu,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+AAS,Công ty Cổ phần Chứng khoán SmartInvest,Dịch vụ tài chính,Môi giới chứng khoán,CK
+ITA,Công ty Cổ phần Đầu tư và Công nghiệp Tân Tạo,Bất động sản,Bất động sản,CT
+VHE,Công ty Cổ phần Dược liệu và Thực phẩm Việt Nam,Y tế,Dược phẩm,CT
+VGT,Tập đoàn Dệt May Việt Nam,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+DPP,Công ty Cổ phần Dược Đồng Nai,Y tế,Dược phẩm,CT
+LHC,Công ty Cổ phần Đầu tư và Xây dựng Thủy lợi Lâm Đồng,Xây dựng và Vật liệu,Xây dựng,CT
+HAX,Công ty Cổ phần Dịch vụ Ô tô Hàng Xanh,Ô tô và phụ tùng,Sản xuất ô tô,CT
+HDM,Công ty Cổ phần Dệt May Huế,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+HDA,Công ty Cổ phần Hãng sơn Đông Á,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HMG,Công ty Cổ phần Kim Khí Hà Nội - VNSTEEL,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+FOC,Công ty Cổ phần Dịch vụ Trực tuyến FPT,Truyền thông,Dịch vụ truyền thông,CT
+HPT,Công ty Cổ phần Dịch vụ Công nghệ Tin học HPT,Công nghệ Thông tin,Phần mềm,CT
+HPD,Công ty Cổ phần Thủy điện Đăk Đoa,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VIB,Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam,Ngân hàng,Ngân hàng,NH
+PCG,Công ty Cổ phần Đầu tư Phát triển Gas Đô thị,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+HVX,Công ty Cổ phần Xi măng Vicem Hải Vân,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+IDI,Công ty Cổ phần Đầu tư và Phát triển Đa Quốc Gia I.D.I,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+GEL,Công ty Cổ phần Hạ tầng GELEX,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+KTC,Công ty Cổ phần Thương mại Kiên Giang,Thực phẩm và đồ uống,Thực phẩm,CT
+DVN,Tổng Công ty Dược Việt Nam - CTCP,Y tế,Dược phẩm,CT
+LQN,Công ty Cổ phần Licogi Quảng Ngãi,Xây dựng và Vật liệu,Xây dựng,CT
+DM7,Công ty Cổ phần Dệt may 7,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+INC,Công ty Cổ phần Tư vấn Đầu tư IDICO,Xây dựng và Vật liệu,Xây dựng,CT
+MCO,Công ty Cổ phần Đầu tư và Xây dựng BDC Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+ILB,Công ty Cổ phần ICD Tân Cảng - Long Bình,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+MTL,Công ty Cổ phần Dịch vụ Môi trường Đô thị Từ Liêm,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+NAG,Công ty Cổ phần Tập đoàn Nagakawa,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+VET,Công ty Cổ phần Thuốc Thú y Trung ương NAVETCO,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+VW3,Công ty Cổ phần VIWASEEN3,Xây dựng và Vật liệu,Xây dựng,CT
+VCK,Công ty Cổ phần Chứng Khoán VPS,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VNR,Tổng Công ty Cổ phần Tái bảo hiểm Quốc gia Việt Nam,Bảo hiểm,Tái bảo hiểm,BH
+PIC,Công ty Cổ phần Đầu tư Điện lực 3,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VTA,Công ty Cổ phần VITALY,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PLO,Công ty Cổ phần Kho vận Petec,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+PVI,Công ty Cổ phần PVI,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+PTI,Tổng Công ty Cổ phần Bảo hiểm Bưu điện,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+LSS,Công ty Cổ phần Mía đường Lam Sơn,Thực phẩm và đồ uống,Thực phẩm,CT
+DLT,Công ty Cổ phần Du lịch và Thương mại - Vinacomin,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+PVE,Tổng Công ty Tư vấn Thiết kế Dầu khí - Công ty Cổ phần,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+MVN,Tổng Công ty Hàng hải Việt Nam - CTCP,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+X77,Công ty Cổ phần Thành An 77,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SAS,Công ty Cổ phần Dịch vụ Hàng không Sân bay Tân Sơn Nhất,Bán lẻ,Phân phối hàng chuyên dụng,CT
+SDA,Công ty Cổ phần SIMCO Sông Đà,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+SPH,Công ty Cổ phần Xuất Nhập khẩu Thủy sản Hà Nội,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+STC,Công ty Cổ phần Sách và Thiết bị trường học Thành phố Hồ Chí Minh,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+SZL,Công ty Cổ phần Sonadezi Long Thành,Bất động sản,Bất động sản,CT
+TB8,Công ty Cổ phần Sản xuất và Kinh doanh Vật tư Thiết bị - VVMI,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+VCP,Công ty Cổ phần Xây dựng và Năng lượng VCP,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TDH,Công ty Cổ phần Phát triển Nhà Thủ Đức,Bất động sản,Bất động sản,CT
+TDG,Công ty Cổ phần Đầu tư TDG Global,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+C22,Công ty Cổ phần 22,Thực phẩm và đồ uống,Thực phẩm,CT
+NDP,Công ty Cổ phần Dược phẩm 2/9,Y tế,Dược phẩm,CT
+NWT,Công ty Cổ phần Vận tải Newway,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+PAS,Công ty Cổ phần Quốc tế Phương Anh,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+PEN,Công ty Cổ phần Xây lắp III Petrolimex,Xây dựng và Vật liệu,Xây dựng,CT
+PCF,Công ty Cổ phần Cà phê PETEC,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+PMW,Công ty Cổ phần Cấp Nước Phú Mỹ,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PSB,Công ty Cổ phần Đầu tư Dầu khí Sao Mai Bến Đình,Xây dựng và Vật liệu,Xây dựng,CT
+THD,Công ty Cổ phần Thaiholdings,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+TL4,Tổng Công ty Xây dựng Thủy lợi 4 - Công ty Cổ phần,Xây dựng và Vật liệu,Xây dựng,CT
+TPB,Ngân hàng Thương mại Cổ phần Tiên Phong,Ngân hàng,Ngân hàng,NH
+TCD,Công ty cổ phần Tập đoàn Xây dựng Tracodi,Xây dựng và Vật liệu,Xây dựng,CT
+EMS,Tổng Công ty Chuyển phát nhanh Bưu điện - Công ty Cổ phần,Hàng & Dịch vụ Công nghiệp,Chuyển phát nhanh,CT
+IDV,Công ty Cổ phần Phát triển Hạ tầng Vĩnh Phúc,Bất động sản,Bất động sản,CT
+AAH,Công ty Cổ phần Hợp Nhất,Tài nguyên Cơ bản,Khai thác Than,CT
+DAG,Công ty Cổ phần Tập đoàn Nhựa Đông Á,Hóa chất,"Nhựa, cao su & sợi",CT
+LCC,Công ty Cổ phần Xi măng Hồng Phong,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CMP,Công ty Cổ phần Cảng Chân Mây,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+NCG,Công ty Cổ phần Tập đoàn Nova Consumer,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DPM,Tổng Công ty Phân bón và Hóa chất Dầu khí - Công ty Cổ phần,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+BCB,Công ty Cổ phần 397,Tài nguyên Cơ bản,Khai thác Than,CT
+CSM,Công ty Cổ phần Công nghiệp Cao su Miền Nam,Ô tô và phụ tùng,Lốp xe,CT
+DFF,Công ty Cổ phần Tập đoàn Đua Fat,Xây dựng và Vật liệu,Xây dựng,CT
+BCP,Công ty Cổ phần Dược Enlie,Y tế,Dược phẩm,CT
+CBI,Công ty Cổ phần Gang thép Cao Bằng,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+STK,Công ty Cổ phần Sợi Thế Kỷ,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+ECI,Công ty Cổ phần Tập đoàn ECI,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+CKV,Công ty Cổ phần CokyVina,Công nghệ Thông tin,Thiết bị viễn thông,CT
+UNI,Công ty Cổ phần Đầu tư và Phát triển Sao Mai Việt,Công nghệ Thông tin,Dịch vụ Máy tính,CT
+ART,Công ty Cổ phần Chứng khoán ARTEX,Dịch vụ tài chính,Môi giới chứng khoán,CK
+FBC,Công ty Cổ phần Cơ khí Phổ Yên,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+FPT,Công ty Cổ phần FPT,Công nghệ Thông tin,Phần mềm,CT
+VAF,Công ty Cổ phần Phân lân nung chảy Văn Điển,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+CKA,Công ty Cổ phần Cơ khí An Giang,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+VC6,Công ty cổ phần Xây dựng và Đầu tư Visicons,Xây dựng và Vật liệu,Xây dựng,CT
+APS,Công ty Cổ phần Chứng khoán Châu Á - Thái Bình Dương,Dịch vụ tài chính,Môi giới chứng khoán,CK
+TXM,Công ty Cổ phần VICEM Thạch cao Xi Măng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VCA,Công ty Cổ phần Thép VICASA - VNSTEEL,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+C32,Công ty Cổ phần Đầu tư và Xây dựng 3-2,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DSH,Công ty Cổ Phần Đầu tư Hạ tầng Đông Sơn,Xây dựng và Vật liệu,Xây dựng,CT
+VE1,Công ty Cổ phần Xây dựng điện VNECO 1,Xây dựng và Vật liệu,Xây dựng,CT
+TQW,Công ty Cổ phần Cấp thoát nước Tuyên Quang,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VE4,Công ty Cổ phần Xây dựng điện VNECO4,Xây dựng và Vật liệu,Xây dựng,CT
+MDF,Công ty Cổ phần Gỗ MDF VRG - Quảng Trị,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+BKC,Công ty Cổ phần Khoáng sản Bắc Kạn,Tài nguyên Cơ bản,Khai khoáng,CT
+CIG,Công ty Cổ phần COMA 18,Xây dựng và Vật liệu,Xây dựng,CT
+FID,Công ty Cổ phần Đầu tư và Phát triển Doanh nghiệp Việt Nam,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DLR,Công ty Cổ phần Địa ốc Đà Lạt,Xây dựng và Vật liệu,Xây dựng,CT
+VIX,Công ty Cổ phần Chứng khoán VIX,Dịch vụ tài chính,Môi giới chứng khoán,CK
+HSL,Công ty Cổ phần Đầu tư Phát triển Thực phẩm Hồng Hà,Thực phẩm và đồ uống,Thực phẩm,CT
+DPG,Công ty Cổ phần Tập đoàn Đạt Phương,Xây dựng và Vật liệu,Xây dựng,CT
+VMC,Công ty Cổ phần VIMECO,Xây dựng và Vật liệu,Xây dựng,CT
+VFS,Công ty Cổ phần Chứng khoán Nhất Việt,Dịch vụ tài chính,Môi giới chứng khoán,CK
+HSP,Công ty Cổ phần Sơn Tổng hợp Hà Nội,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+ICG,Công ty Cổ phần Xây dựng Sông Hồng,Xây dựng và Vật liệu,Xây dựng,CT
+ICF,Công ty Cổ phần Đầu tư - Thương mại - Thuỷ sản,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HAN,Tổng Công ty Xây dựng Hà Nội - CTCP,Xây dựng và Vật liệu,Xây dựng,CT
+LSG,Công ty Cổ phần Bất động sản Sài Gòn Vi na,Bất động sản,Bất động sản,CT
+L35,Công ty Cổ phần Cơ khí Lắp máy Lilama,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+MHL,Công ty Cổ phần Minh Hữu Liên,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+CRV,Công ty Cổ phần Tập đoàn Bất động sản CRV,Bất động sản,Bất động sản,CT
+TRA,Công ty Cổ phần Traphaco,Y tế,Dược phẩm,CT
+PHP,Công ty Cổ phần Cảng Hải Phòng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+PSN,Công ty Cổ phần Dịch vụ Kỹ thuật PTSC Thanh Hóa,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+KSF,Công ty Cổ phần Tập đoàn Sunshine,Bất động sản,Bất động sản,CT
+PVY,Công ty Cổ phần Chế tạo Giàn khoan Dầu khí,Xây dựng và Vật liệu,Xây dựng,CT
+AIC,Công ty Cổ phần Tập đoàn Bảo hiểm DBV,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+TIE,Công ty Cổ phần TIE,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+TDT,Công ty Cổ phần Đầu tư và Phát triển TDT,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+SCO,Công ty Cổ phần Công nghiệp Thủy sản,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+TTZ,Công ty Cổ phần Đầu tư Xây dựng và Công nghệ Tiến Trung,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SAC,Công ty Cổ phần Xếp dỡ và Dịch vụ cảng Sài Gòn,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+SID,Công ty Cổ phần Đầu tư Phát triển Sài Gòn Co.op,Bất động sản,Bất động sản,CT
+SDP,Công ty Cổ phần SDP,Xây dựng và Vật liệu,Xây dựng,CT
+SDN,Công ty Cổ phần Sơn Đồng Nai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SPI,Công ty Cổ phần Spiral Galaxy,Tài nguyên Cơ bản,Khai khoáng,CT
+SJD,Công ty Cổ phần Thủy điện Cần Đơn,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SPM,Công ty Cổ phần S.P.M,Y tế,Dược phẩm,CT
+SRA,Công ty Cổ phần SARA Việt Nam,Y tế,Thiết bị y tế,CT
+SVG,Công ty Cổ phần Hơi kỹ nghệ Que hàn,Hàng & Dịch vụ Công nghiệp,Công nghiệp phức hợp,CT
+TMP,Công ty Cổ phần Thủy điện Thác Mơ,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+TDC,Công ty Cổ phần Kinh doanh và Phát triển Bình Dương,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+CPI,Công ty Cổ phần Đầu tư Cảng Cái Lân,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+MDC,Công ty Cổ phần Than Mông Dương - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+NAC,Công ty Cổ phần Tư vấn Xây dựng Tổng hợp,Xây dựng và Vật liệu,Xây dựng,CT
+PCE,Công ty Cổ phần Phân bón và hóa chất dầu khí Miền Trung,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+PVG,Công ty Cổ phần Kinh doanh LPG Việt Nam,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+PXM,Công ty Cổ phần Xây lắp Dầu khí Miền Trung,Xây dựng và Vật liệu,Xây dựng,CT
+SDD,Công ty Cổ phần Đầu tư và Xây lắp Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+GAS,Tổng Công ty Khí Việt Nam - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+THB,Công ty Cổ phần Bia Hà Nội - Thanh Hóa,Thực phẩm và đồ uống,Sản xuất bia,CT
+BTB,Công ty Cổ phần Bia Hà Nội - Thái Bình,Thực phẩm và đồ uống,Sản xuất bia,CT
+WTC,Công ty Cổ phần Vận tải thủy - Vinacomin,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TMW,Công ty Cổ phần Tổng hợp Gỗ Tân Mai,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+TNT,Công ty Cổ phần Tập đoàn TNT,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HTG,Tổng Công ty Cổ phần Dệt may Hòa Thọ,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+L18,Công ty Cổ phần Đầu tư và Xây dựng số 18,Xây dựng và Vật liệu,Xây dựng,CT
+HSV,Công ty Cổ phần Tập đoàn HSV Việt Nam,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+KHX,Công ty Cổ phần Phát hành sách Khánh Hoà,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+CC1,Tổng Công ty Xây dựng số 1 - CTCP,Xây dựng và Vật liệu,Xây dựng,CT
+CMC,Công ty Cổ phần Đầu tư CMC,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+SDT,Công ty Cổ phần Sông Đà 10,Xây dựng và Vật liệu,Xây dựng,CT
+PBP,Công ty Cổ phần Bao bì Dầu khí Việt Nam,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+YBC,Công ty Cổ phần Xi măng và Khoáng sản Yên Bái,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+RYG,Công ty Cổ phần Sản xuất và Đầu tư Hoàng Gia,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VPX,Công ty Cổ phần Chứng khoán VPBank,Dịch vụ tài chính,Môi giới chứng khoán,CK
+BAF,Công ty Cổ phần Nông nghiệp BAF Việt Nam,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+BBH,Công ty Cổ phần Bao bì Hoàng Thạch,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+BED,Công ty Cổ phần Sách và Thiết bị trường học Đà Nẵng,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+BID,Ngân hàng Thương mại Cổ phần Đầu tư và Phát triển Việt Nam,Ngân hàng,Ngân hàng,NH
+TS3,Công ty Cổ phần Trường Sơn 532,Xây dựng và Vật liệu,Xây dựng,CT
+CAP,Công ty Cổ phần Lâm Nông sản Thực phẩm Yên Bái,Tài nguyên Cơ bản,Sản xuất giấy,CT
+DUS,Công ty Cổ phần Dịch vụ Đô thị Đà Lạt,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+ACS,Công ty Cổ phần Xây lắp Thương mại 2,Xây dựng và Vật liệu,Xây dựng,CT
+UPC,Công ty Cổ phần Phát triển Công viên Cây xanh và Đô thị Vũng Tàu,"Điện, nước & xăng dầu khí đốt",Tiện ích khác,CT
+FCN,Công ty Cổ phần FECON,Xây dựng và Vật liệu,Xây dựng,CT
+UXC,Công ty Cổ phần Chế biến Thủy sản Út Xi,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+BMK,Công ty Cổ Phần Kỹ thuật Nhiệt Mèo Đen,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+FDC,Công ty Cổ phần Ngoại thương và Phát triển Đầu tư Thành phố Hồ Chí Minh,Bất động sản,Bất động sản,CT
+VDB,Công ty Cổ phần Vận tải và Chế biến Than Đông Bắc,Tài nguyên Cơ bản,Khai thác Than,CT
+VC2,Công ty Cổ phần Đầu tư và Xây dựng VINA2,Xây dựng và Vật liệu,Xây dựng,CT
+TH1,Công ty Cổ phần Xuất nhập khẩu Tổng hợp I Việt Nam,Bán lẻ,Phân phối thực phẩm,CT
+C4G,Công ty Cổ phần Tập Đoàn Cienco4,Xây dựng và Vật liệu,Xây dựng,CT
+VE9,Công ty Cổ phần Đầu tư và Xây dựng VNECO 9,Xây dựng và Vật liệu,Xây dựng,CT
+VGS,Công ty Cổ phần Ống thép Việt - Đức VG PIPE,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+PVO,Công ty Cổ phần Dầu nhờn PV Oil,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+HID,Công ty Cổ phần Halcom Vietnam,Xây dựng và Vật liệu,Xây dựng,CT
+BCA,Công ty cổ phần B.C.H,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+CTF,Công ty Cổ phần City Auto,Ô tô và phụ tùng,Sản xuất ô tô,CT
+DTK,Tổng Công ty Điện lực TKV - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+HAR,Công ty Cổ phần Đầu tư Thương mại Bất động sản An Dương Thảo Điền,Bất động sản,Bất động sản,CT
+VMT,Công ty Cổ phần Giao nhận Vận tải Miền Trung,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+VPS,Công ty Cổ phần Thuốc sát trùng Việt Nam,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+GH3,Công ty Cổ phần Công trình giao thông Hà Nội,Xây dựng và Vật liệu,Xây dựng,CT
+GLW,Công ty Cổ phần Cấp thoát nước Gia Lai,"Điện, nước & xăng dầu khí đốt",Nước,CT
+VWS,Công ty Cổ phần Nước và Môi trường Việt Nam,"Điện, nước & xăng dầu khí đốt",Nước,CT
+HHC,Công ty Cổ phần Bánh kẹo Hải Hà,Thực phẩm và đồ uống,Thực phẩm,CT
+HTN,Công ty Cổ phần Hưng Thịnh Incons,Bất động sản,Bất động sản,CT
+DPH,Công ty Cổ phần Dược phẩm Hải Phòng,Y tế,Dược phẩm,CT
+GSP,Công ty Cổ phần Vận tải Sản phẩm Khí Quốc tế,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+HFC,Công ty Cổ phần Xăng dầu HFC,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+NRC,Công ty Cổ phần Tập đoàn NRC,Bất động sản,Bất động sản,CT
+ITQ,Công ty Cổ phần Tập đoàn Thiên Quang,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+JVC,Công ty Cổ phần Đầu tư Y tế - Dược phẩm Việt Nam,Y tế,Thiết bị y tế,CT
+VLG,Công ty Cổ phần VIMC Logistics,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+LCD,Công ty Cổ phần Lắp máy - Thí nghiệm cơ điện,Xây dựng và Vật liệu,Xây dựng,CT
+NNT,Công ty Cổ phần Cấp nước Ninh Thuận,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MIG,Tổng Công ty Cổ phần Bảo hiểm Quân đội,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+HCM,Công ty Cổ phần Chứng khoán Thành phố Hồ Chí Minh,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VTJ,Công ty Cổ phần Thương mại và Đầu tư VI NA TA BA,Hàng cá nhân & Gia dụng,Thuốc lá,CT
+PDN,Công ty Cổ phần Cảng Đồng Nai,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VBB,Ngân hàng Thương mại Cổ phần Việt Nam Thương Tín,Ngân hàng,Ngân hàng,NH
+NAW,Công ty Cổ phần Cấp nước Nghệ An,"Điện, nước & xăng dầu khí đốt",Nước,CT
+NFC,Công ty Cổ phần Phân lân Ninh Bình,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+NHT,Công ty Cổ phần Sản xuất và Thương mại Nam Hoa,Hàng cá nhân & Gia dụng,Đồ chơi,CT
+NHV,Công ty Cổ phần Sức khỏe Hồi sinh Việt Nam,Tài nguyên Cơ bản,Kim Loại màu,CT
+XMC,Công ty cổ phần Đầu tư và Xây dựng Xuân Mai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HPA,Công ty Cổ phần Phát triển Nông nghiệp Hoà Phát,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+PDB,Công ty Cổ phần Tập đoàn Đầu tư DIN Capital,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PHH,Công ty Cổ phần Hồng Hà Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+VHM,Công ty Cổ phần Vinhomes,Bất động sản,Bất động sản,CT
+PSC,Công ty Cổ phần Vận tải và Dịch vụ Petrolimex Sài Gòn,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PSD,Công ty Cổ phần Dịch vụ Phân phối Tổng hợp Dầu khí,Bán lẻ,Phân phối hàng chuyên dụng,CT
+PVH,Công ty Cổ phần Xây lắp Dầu khí Thanh Hóa,Xây dựng và Vật liệu,Xây dựng,CT
+PSG,Công ty Cổ phần Đầu tư và Xây lắp Dầu khí Sài Gòn,Xây dựng và Vật liệu,Xây dựng,CT
+QCC,Công ty Cổ phần Đầu tư Xây dựng và Phát triển Hạ tầng Viễn Thông,Xây dựng và Vật liệu,Xây dựng,CT
+PBT,Công ty Cổ Phần Bao bì và Thương mại Dầu khí Bình Sơn,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+PGI,Tổng Công ty Cổ phần Bảo hiểm Petrolimex,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+SCS,Công ty Cổ phần Dịch vụ Hàng hóa Sài Gòn,Du lịch và Giải trí,Hàng không,CT
+SD3,Công ty Cổ phần Sông Đà 3,Xây dựng và Vật liệu,Xây dựng,CT
+VHD,Công ty Cổ phần Đầu tư phát triển nhà và đô thị VINAHUD,Bất động sản,Bất động sản,CT
+SEB,Công ty Cổ phần Đầu tư và Phát triển Điện Miền Trung,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SDK,Công ty Cổ phần Cơ khí Luyện Kim,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+SHB,Ngân hàng Thương mại Cổ phần Sài Gòn – Hà Nội,Ngân hàng,Ngân hàng,NH
+SB1,Công ty Cổ phần Bia Sài Gòn - Nghệ Tĩnh,Thực phẩm và đồ uống,Sản xuất bia,CT
+AST,Công ty Cổ phần Dịch vụ Hàng không Taseco,Bán lẻ,Phân phối hàng chuyên dụng,CT
+VJC,Công ty Cổ phần Hàng không Vietjet,Du lịch và Giải trí,Hàng không,CT
+GTD,Công ty Cổ phần Giầy Thượng Đình,Hàng cá nhân & Gia dụng,Giầy dép,CT
+BTD,Công ty Cổ phần Bê tông ly tâm Thủ Đức,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+KMR,Công ty Cổ phần Mirae,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+PVT,Tổng Công ty Cổ phần Vận tải Dầu khí,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+PVP,Công ty Cổ phần Vận tải Dầu khí Thái Bình Dương,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PXL,Công ty Cổ phần Đầu tư Khu Công Nghiệp Dầu khí Long Sơn,Bất động sản,Bất động sản,CT
+NQN,Công ty Cổ phần Nước sạch Quảng Ninh,"Điện, nước & xăng dầu khí đốt",Nước,CT
+SEP,Công ty Cổ phần Tổng Công ty Thương mại Quảng Trị,Hóa chất,"Nhựa, cao su & sợi",CT
+TAN,Công ty Cổ phần Cà phê Thuận An,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+TMX,Công ty Cổ phần VICEM Thương mại Xi măng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TN1,Công ty Cổ phần Rox Key Holdings,Bất động sản,Bất động sản,CT
+TNC,Công ty Cổ phần Cao su Thống Nhất,Hóa chất,"Nhựa, cao su & sợi",CT
+TNG,Công ty Cổ phần Đầu tư và Thương mại TNG,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+TNI,Công ty Cổ phần Tập đoàn Thành Nam,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+APH,Công ty Cổ phần Tập đoàn An Phát Holdings,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+UEM,Công ty Cổ phần Cơ điện Uông Bí - Vinacomin,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+CPA,Công ty Cổ phần Cà phê Phước An,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+DLG,Công ty Cổ phần Tập đoàn Đức Long Gia Lai,Xây dựng và Vật liệu,Xây dựng,CT
+PGC,Tổng Công ty Gas Petrolimex - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+BQB,Công ty Cổ phần Bia Hà Nội - Quảng Bình,Thực phẩm và đồ uống,Sản xuất bia,CT
+F88,Công ty Cổ phần Đầu tư F88,Dịch vụ tài chính,Tài chính cá nhân,CT
+BHP,Công ty Cổ phần Bia Hà Nội - Hải Phòng,Thực phẩm và đồ uống,Sản xuất bia,CT
+CCR,Công ty Cổ phần Cảng Cam Ranh,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+ALC,Công ty Cổ phần Âu Lạc,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+MND,Công ty Cổ phần Môi trường Nam Định,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+BDT,Công ty Cổ phần Xây lắp và Vật liệu xây dựng Đồng Tháp,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CII,Công ty Cổ phần Đầu tư Hạ tầng Kỹ thuật Thành phố Hồ Chí Minh,Xây dựng và Vật liệu,Xây dựng,CT
+CTT,Công ty Cổ phần Chế tạo máy - Vinacomin,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+BMS,Công ty Cổ phần Chứng khoán Bảo Minh,Dịch vụ tài chính,Môi giới chứng khoán,CK
+HFB,Công ty Cổ phần Công trình Cầu phà Thành phố Hồ Chí Minh,Xây dựng và Vật liệu,Xây dựng,CT
+BRS,Công ty Cổ phần Dịch vụ Đô thị Bà Rịa,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+ACG,Công ty Cổ phần Gỗ An Cường,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+KSQ,Công ty Cổ phần CNC Capital Việt Nam,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+ANT,Công ty Cổ phần Rau quả Thực phẩm An Giang,Thực phẩm và đồ uống,Thực phẩm,CT
+BTN,Công ty Cổ phần Đầu tư Bitco Bình Định,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DXG,Công ty Cổ phần Tập đoàn Đất Xanh,Bất động sản,Bất động sản,CT
+COM,Công ty Cổ phần Vật tư - Xăng dầu,Bán lẻ,Phân phối hàng chuyên dụng,CT
+BVH,Tập đoàn Bảo Việt,Bảo hiểm,Bảo hiểm nhân thọ,BH
+LGC,Công ty Cổ phần Đầu tư Cầu đường CII,Xây dựng và Vật liệu,Xây dựng,CT
+CKD,Công ty Cổ phần Cơ khí Đông Anh Licogi,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+PRT,Tổng Công ty Sản xuất - Xuất nhập khẩu Bình Dương - Công ty cổ phần,Bất động sản,Bất động sản,CT
+BXH,Công ty Cổ phần VICEM Bao bì Hải Phòng,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+MLS,Công ty Cổ phần Chăn nuôi - Mitraco,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+EID,Công ty Cổ phần Đầu tư và Phát triển Giáo dục Hà Nội,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+UDC,Công ty Cổ phần Đầu tư Xây dựng UDCons,Xây dựng và Vật liệu,Xây dựng,CT
+UIC,Công ty Cổ phần Đầu tư Phát triển Nhà và Đô thị IDICO,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DND,Công ty Cổ phần Đầu tư Xây dựng và Vật liệu Đồng Nai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TGG,Công ty Cổ phần The Golden Group,Xây dựng và Vật liệu,Xây dựng,CT
+FT1,Công ty Cổ phần Phụ tùng máy số 1,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+GIL,Công ty Cổ phần Sản xuất Kinh doanh Xuất nhập khẩu Bình Thạnh,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+FIR,Công ty Cổ phần Địa ốc First Real,Bất động sản,Bất động sản,CT
+ECO,Công ty Cổ Phần Nhựa Sinh Thái Việt Nam,Hóa chất,"Nhựa, cao su & sợi",CT
+UMC,Công ty Cổ phần Công trình đô thị Nam Định,Xây dựng và Vật liệu,Xây dựng,CT
+CCS,Công ty Cổ phần Chíp Sáng,Bất động sản,Bất động sản,CT
+MSN,Công ty Cổ phần Tập đoàn Masan,Thực phẩm và đồ uống,Thực phẩm,CT
+CAG,Công ty Cổ phần Cảng An Giang,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+PGV,Tổng Công ty Phát điện 3 - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VCX,Công ty Cổ phần Xi măng Yên Bình,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+FGL,Công ty Cổ phần Cà phê Gia Lai,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+VDT,Công ty Cổ phần Lưới thép Bình Tây,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+IDP,Công ty Cổ phần Sữa Quốc tế LOF,Thực phẩm và đồ uống,Thực phẩm,CT
+VEF,Công ty Cổ phần Trung tâm Hội chợ Triển lãm Việt Nam,Bất động sản,Bất động sản,CT
+AGX,Công ty Cổ phần Thực phẩm Nông sản Xuất khẩu Sài Gòn,Bán lẻ,Phân phối thực phẩm,CT
+C92,Công ty Cổ phần Xây dựng và Đầu tư 492,Xây dựng và Vật liệu,Xây dựng,CT
+D11,Công ty Cổ phần Địa ốc 11,Bất động sản,Bất động sản,CT
+VID,Công ty Cổ phần Đầu tư Phát triển Thương mại Viễn Đông,Tài nguyên Cơ bản,Sản xuất giấy,CT
+HKB,Công ty Cổ phần Nông nghiệp và Thực phẩm Hà Nội - Kinh Bắc,Thực phẩm và đồ uống,Thực phẩm,CT
+NBB,Công ty Cổ phần Đầu tư Năm Bảy Bảy,Bất động sản,Bất động sản,CT
+GDT,Công ty Cổ phần Chế biến Gỗ Đức Thành,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+LAF,Công ty Cổ phần Chế biến Hàng Xuất khẩu Long An,Thực phẩm và đồ uống,Thực phẩm,CT
+BTU,Công ty Cổ phần Công trình Đô thị Bến Tre,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+HLB,Công ty Cổ phần Bia và Nước giải khát Hạ Long,Thực phẩm và đồ uống,Sản xuất bia,CT
+HHN,Công ty Cổ phần Vận tải và Dịch vụ Hàng hóa Hà Nội,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+CTC,Công ty Cổ phần Tập đoàn Hoàng Kim Tây Nguyên,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+VKP,Công ty Cổ phần Nhựa Tân Hóa,Hóa chất,"Nhựa, cao su & sợi",CT
+HLC,Công ty Cổ phần Than Hà Lầm - Vinacomin,Tài nguyên Cơ bản,Khai thác Than,CT
+IME,Công ty Cổ phần Cơ khí và Xây lắp Công nghiệp,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+HTV,Công ty Cổ phần Logistics Vicem,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+HHS,Công ty Cổ phần Đầu tư Dịch vụ Hoàng Huy,Ô tô và phụ tùng,Sản xuất ô tô,CT
+CLL,Công ty Cổ phần Cảng Cát Lái,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+CCP,Công ty Cổ phần Cảng Cửa Cấm Hải Phòng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+CGV,Công ty Cổ phần Vinaceglass,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VNL,Công ty Cổ phần Logistics Vinalink,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+KHD,"Công ty Cổ phần Khai thác, Chế biến Khoáng sản Hải Dương",Tài nguyên Cơ bản,Khai khoáng,CT
+HU3,Công ty Cổ phần Đầu tư và Xây dựng HUD3,Xây dựng và Vật liệu,Xây dựng,CT
+VPA,Công ty Cổ phần Vận tải Hóa dầu VP,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+MRF,Công ty Cổ phần MERUFA,Y tế,Thiết bị y tế,CT
+LDP,Công ty Cổ phần Dược Lâm Đồng - Ladophar,Y tế,Dược phẩm,CT
+MST,Công ty Cổ phần Đầu tư MST,Xây dựng và Vật liệu,Xây dựng,CT
+VTS,Công ty Cổ phần Gạch Ngói Từ Sơn,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HNG,Công ty Cổ phần Nông nghiệp Quốc tế Hoàng Anh Gia Lai,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+GVR,Tập đoàn Công nghiệp Cao su Việt Nam - Công ty Cổ phần,Hóa chất,"Nhựa, cao su & sợi",CT
+VNP,Công ty Cổ phần Nhựa Việt Nam,Hóa chất,"Nhựa, cao su & sợi",CT
+BT1,Công ty Cổ phần Bảo vệ thực vật 1 Trung ương,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+PIV,Công ty Cổ phần PIV,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+QST,Công ty Cổ phần Sách và Thiết bị trường học Quảng Ninh,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+PLA,Công ty Cổ phần Đầu tư và Dịch vụ hạ tầng Xăng dầu,Xây dựng và Vật liệu,Xây dựng,CT
+PTX,Công ty Cổ phần Vận tải và Dịch vụ Petrolimex Nghệ Tĩnh,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+VXB,Công ty Cổ phần Vật liệu xây dựng Bến Tre,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TBW,Công ty cổ phần Nước sạch Thái Bình,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PAN,Công ty Cổ phần Tập đoàn PAN,Thực phẩm và đồ uống,Thực phẩm,CT
+SBD,Công ty Cổ phần Công nghệ Sao Bắc Đẩu,Công nghệ Thông tin,Phần mềm,CT
+VTO,Công ty Cổ phần Vận tải Xăng dầu VITACO,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+SIP,Công ty Cổ phần Đầu tư Sài Gòn VRG,Bất động sản,Bất động sản,CT
+SGC,Công ty Cổ phần Xuất nhập khẩu Sa Giang,Thực phẩm và đồ uống,Thực phẩm,CT
+SPC,Công ty Cổ phần Bảo vệ Thực vật Sài Gòn,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+SMA,Công ty Cổ phần Thiết bị Phụ tùng Sài Gòn,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SJG,Tổng Công ty Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+ISH,Công ty Cổ phần Thủy điện Srok Phu Miêng IDICO,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+STD,Công ty Cổ phần Bia - Nước giải khát Sài Gòn - Tây Đô,Thực phẩm và đồ uống,Sản xuất bia,CT
+HPO,Công ty Cổ phần Công nghiệp Hapulico,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+NJC,Công ty Cổ phần May Nam Định,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+PSH,Công ty Cổ phần Thương mại Đầu tư Dầu khí Nam Sông Hậu,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+OCB,Ngân hàng Thương mại Cổ phần Phương Đông,Ngân hàng,Ngân hàng,NH
+EVS,Công ty Cổ phần Chứng khoán EVS,Dịch vụ tài chính,Môi giới chứng khoán,CK
+PAP,Công ty Cổ phần Dầu khí đầu tư khai thác Cảng Phước An,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+PHR,Công ty Cổ phần Cao su Phước Hòa,Hóa chất,"Nhựa, cao su & sợi",CT
+PVB,Công ty Cổ phần Bọc ống Dầu khí Việt Nam,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+PXA,Công ty Cổ phần Đầu tư và Thương mại Dầu khí Nghệ An,Bất động sản,Bất động sản,CT
+QNC,Công ty Cổ phần Xi măng và Xây dựng Quảng Ninh,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+SCR,Công ty Cổ phần Địa Ốc Sài Gòn Thương Tín,Bất động sản,Bất động sản,CT
+TBD,Tổng công ty Thiết bị điện Đông Anh - Công ty Cổ phần,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+TNV,Công ty Cổ phần Thống Nhất Hà Nội,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+TJC,Công ty Cổ phần Dịch vụ Vận tải và Thương mại,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+BCF,Công ty Cổ phần Thực phẩm Bích Chi,Thực phẩm và đồ uống,Thực phẩm,CT
+TPP,Công ty Cổ phần Tân Phú Việt Nam,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+TVB,Công ty Cổ phần Chứng khoán T-Cap,Dịch vụ tài chính,Môi giới chứng khoán,CK
+DXV,Công ty Cổ phần VICEM Vật liệu Xây dựng Đà Nẵng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+LEC,Công ty Cổ phần Bất động sản Điện lực Miền Trung,Bất động sản,Bất động sản,CT
+HUT,Công ty Cổ phần Tasco,Ô tô và phụ tùng,Sản xuất ô tô,CT
+ASM,Công ty Cổ phần Tập đoàn Sao Mai,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+BKG,Công ty Cổ phần Đầu tư BKG Việt Nam,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+CID,Công ty Cổ phần Xây dựng và Phát triển Cơ sở Hạ tầng,Xây dựng và Vật liệu,Xây dựng,CT
+TDB,Công ty Cổ phần Thủy điện Định Bình,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+RAL,Công ty Cổ phần Bóng đèn Phích nước Rạng Đông,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+TVN,Tổng Công ty Thép Việt Nam - Công ty Cổ phần,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+AG1,Công ty Cổ phần 28.1,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+BHN,Tổng Công ty Cổ phần Bia - Rượu - Nước giải khát Hà Nội,Thực phẩm và đồ uống,Sản xuất bia,CT
+BLN,Công ty Cổ phần Vận tải và Dịch vụ Liên Ninh,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+TT6,Công ty Cổ Phần Tập Đoàn Tiến Thịnh,Thực phẩm và đồ uống,Thực phẩm,CT
+CNN,"Công ty Cổ phần Tư vấn Công nghệ, Thiết bị và Kiểm định Xây dựng - CONINCO",Xây dựng và Vật liệu,Xây dựng,CT
+DWC,Công ty Cổ phần Cấp nước Đắk Lắk,"Điện, nước & xăng dầu khí đốt",Nước,CT
+QHW,Công ty Cổ phần Nước khoáng Quảng Ninh,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+TIN,Công ty Tài chính tổng hợp cổ phần Tín Việt,Dịch vụ tài chính,Quản lý tài sản,NH
+VSM,Công ty Cổ phần Container Miền Trung,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+DHG,Công ty Cổ phần Dược Hậu Giang,Y tế,Dược phẩm,CT
+ELC,Công ty Cổ phần Công nghệ - Viễn thông ELCOM,Công nghệ Thông tin,Thiết bị viễn thông,CT
+BWA,Công ty Cổ phần Cấp thoát nước và Xây dựng Bảo Lộc,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MED,Công ty Cổ phần Dược Trung ương Mediplantex,Y tế,Dược phẩm,CT
+ROS,Công ty Cổ phần Xây dựng FLC FAROS,Xây dựng và Vật liệu,Xây dựng,CT
+MFS,Công ty Cổ phần Dịch vụ kỹ thuật Mobifone,Viễn thông,Viễn thông di động,CT
+ADP,Công ty Cổ phần Sơn Á Đông,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+USC,Công ty Cổ phần Khảo sát và Xây dựng - USCO,Xây dựng và Vật liệu,Xây dựng,CT
+VAB,Ngân hàng Thương mại Cổ phần Việt Á,Ngân hàng,Ngân hàng,NH
+TRS,Công ty Cổ phần Vận tải và Dịch vụ Hàng Hải,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+HIO,Công ty Cổ Phần Helio Energy,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DNT,Công ty Cổ phần Du lịch Đồng Nai,Du lịch và Giải trí,Dịch vụ giải trí,CT
+CMT,Công ty Cổ phần Công nghệ mạng và Truyền thông,Công nghệ Thông tin,Phần mềm,CT
+VHL,Công ty Cổ phần Viglacera Hạ Long,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BBT,Công ty Cổ phần Bông Bạch Tuyết,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+BMI,Tổng Công ty Cổ phần Bảo Minh,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+FTI,Công ty Cổ phần Công nghiệp - Thương mại Hữu Nghị,Ô tô và phụ tùng,Phụ tùng ô tô,CT
+DCF,Công ty Cổ phần Xây dựng và Thiết kế số 1,Xây dựng và Vật liệu,Xây dựng,CT
+HAM,Công ty Cổ phần Vật tư Hậu Giang,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HPB,Công ty Cổ phần Bao bì PP,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+BLF,Công ty Cổ phần Thủy sản Bạc Liêu,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HPP,Công ty Cổ phần Sơn Hải Phòng,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HHP,Công ty Cổ phần HHP Global,Tài nguyên Cơ bản,Sản xuất giấy,CT
+IHK,Công ty Cổ phần In Hàng Không,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+H11,Công ty Cổ phần Xây dựng HUD101,Xây dựng và Vật liệu,Xây dựng,CT
+VNI,Công ty Cổ phần Đầu tư Bất động sản Việt Nam,Bất động sản,Bất động sản,CT
+PPP,Công ty Cổ phần Dược phẩm Phong Phú,Y tế,Dược phẩm,CT
+LMI,Công ty Cổ phần Đầu tư Xây dựng Lắp máy IDICO,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+MZG,Công ty Cổ Phần Miza,Tài nguyên Cơ bản,Sản xuất giấy,CT
+QNU,Công ty Cổ phần Môi trường Đô thị Quảng Nam,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+MTB,Công ty Cổ phần Môi trường và Công trình đô thị tỉnh Thái Bình,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+CQT,Công ty Cổ phần Xi măng Quán Triều VVMI,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+NHC,Công ty Cổ phần Gạch ngói Nhị Hiệp,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TTT,Công ty Cổ phần Du Lịch - Thương Mại Tây Ninh,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+PHS,Công ty Cổ phần Chứng khoán Phú Hưng,Dịch vụ tài chính,Môi giới chứng khoán,CK
+NAF,Công ty Cổ phần Nafoods Group,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+PXS,Công ty Cổ phần Kết cấu Kim loại và Lắp máy Dầu khí,Xây dựng và Vật liệu,Xây dựng,CT
+POM,Công ty Cổ phần Thép Pomina,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+PX1,Công ty Cổ phần Xi măng Sông Lam 2,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PVM,Công ty Cổ phần Máy - Thiết bị Dầu khí,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+CQN,Công ty Cổ phần Cảng Quảng Ninh,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+QNT,Công ty Cổ phần Tư vấn và Đầu tư Phát triển Quảng Nam,Xây dựng và Vật liệu,Xây dựng,CT
+RCD,Công ty Cổ phần Xây dựng - Địa ốc Cao su,Xây dựng và Vật liệu,Xây dựng,CT
+VSG,Công ty Cổ phần Container Phía Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+S99,Công ty Cổ phần SCI,Xây dựng và Vật liệu,Xây dựng,CT
+SAV,Công ty Cổ phần Hợp tác Kinh tế và Xuất nhập khẩu Savimex,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+SCD,Công ty Cổ phần Nước giải khát Chương Dương,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+SGH,Công ty Cổ phần Khách sạn Sài Gòn,Du lịch và Giải trí,Khách sạn,CT
+SBV,Công ty Cổ phần Siam Brothers Việt Nam,Bán lẻ,Phân phối hàng chuyên dụng,CT
+SPD,Công ty Cổ phần Xuất nhập khẩu Thủy sản Miền Trung,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+SSM,Công ty Cổ phần Chế tạo kết cấu thép VNECO.SSM,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+SVC,Công ty Cổ phần Dịch vụ tổng hợp Sài Gòn,Ô tô và phụ tùng,Sản xuất ô tô,CT
+TA9,Công ty Cổ phần Xây lắp Thành An 96,Xây dựng và Vật liệu,Xây dựng,CT
+TFC,Công ty Cổ phần Trang,Thực phẩm và đồ uống,Thực phẩm,CT
+NVL,Công ty Cổ phần Tập đoàn Đầu tư Địa ốc No Va,Bất động sản,Bất động sản,CT
+NTL,Công ty Cổ phần Phát triển Đô thị Từ Liêm,Bất động sản,Bất động sản,CT
+PHC,Công ty Cổ phần Xây dựng Phục Hưng Holdings,Xây dựng và Vật liệu,Xây dựng,CT
+PVL,Công ty Cổ phần Địa ốc Dầu khí,Bất động sản,Bất động sản,CT
+PVR,Công ty Cổ phần Đầu tư PVR Hà Nội,Bất động sản,Bất động sản,CT
+SDG,Công ty Cổ phần Sadico Cần Thơ,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+SGT,Công ty Cổ phần Công nghệ Viễn thông Sài Gòn,Công nghệ Thông tin,Internet,CT
+VCG,Tổng Công ty Cổ phần Xuất nhập khẩu và Xây dựng Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+TAW,Công ty Cổ phần Cấp nước Trung An,"Điện, nước & xăng dầu khí đốt",Nước,CT
+THN,Công ty Cổ phần Cấp nước Thanh Hóa,"Điện, nước & xăng dầu khí đốt",Nước,CT
+TKU,Công ty Cổ phần Công nghiệp Tung Kuang,Tài nguyên Cơ bản,Nhôm,CT
+STH,Công ty Cổ phần STH Holdings,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+VNA,Công ty Cổ phần Vận tải biển Vinaship,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TSD,Công ty Cổ phần Du lịch Trường Sơn Coecco,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+CMD,Công ty Cổ phần Vật liệu xây dựng và Trang trí nội thất TP Hồ Chí Minh,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+NNC,Công ty Cổ phần Đá Núi Nhỏ,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+VPC,Công ty Cổ phần Đầu tư và Phát triển Năng lượng Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+ALT,Công ty Cổ phần Văn hóa Tân Bình,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+CRC,Công ty Cổ phần Create Capital Việt Nam,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HII,Công ty Cổ phần An Tiến Industries,Hóa chất,"Nhựa, cao su & sợi",CT
+BNW,Công ty Cổ phần Nước sạch Bắc Ninh,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MCH,Công ty Cổ phần Hàng Tiêu Dùng MaSan,Thực phẩm và đồ uống,Thực phẩm,CT
+DGT,Công ty Cổ phần Công trình Giao thông Đồng Nai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DNC,Công ty Cổ phần Điện nước Lắp máy Hải Phòng,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+CTD,Công ty Cổ phần Xây dựng Coteccons,Xây dựng và Vật liệu,Xây dựng,CT
+PIS,Tổng Công ty Pisico Bình Định - Công ty Cổ phần,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+ABB,Ngân hàng Thương mại Cổ phần An Bình,Ngân hàng,Ngân hàng,NH
+CCT,Công ty Cổ phần Cảng Cần Thơ,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+CEO,Công ty Cổ phần Tập đoàn C.E.O,Bất động sản,Bất động sản,CT
+BHI,Tổng Công ty Cổ phần Bảo hiểm Sài Gòn - Hà Nội,Bảo hiểm,Bảo hiểm phi nhân thọ,BH
+BSR,Công ty Cổ phần Lọc Hóa dầu Bình Sơn,Dầu khí,Sản xuất và Khai thác dầu khí,CT
+BTH,Công ty Cổ phần Chế tạo Biến thế và Vật liệu Điện Hà Nội,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+DCS,Công ty Cổ phần Tập đoàn EDX,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+ABT,Công ty Cổ phần Xuất nhập khẩu Thủy sản Bến Tre,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DNP,Công ty Cổ phần DNP Holding,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BTW,Công ty Cổ phần Cấp nước Bến Thành,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CMN,Công ty Cổ phần Lương thực Thực phẩm Colusa - Miliket,Thực phẩm và đồ uống,Thực phẩm,CT
+CIP,Công ty Cổ phần Xây lắp và Sản xuất Công nghiệp,Xây dựng và Vật liệu,Xây dựng,CT
+CMK,Công ty Cổ phần Cơ khí Mạo Khê - Vinacomin,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+BIG,Công ty Cổ phần Đầu tư BIG Group Holdings,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DHP,Công ty Cổ phần Điện cơ Hải Phòng,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+HNR,Công ty Cổ phần Rượu và Nước Giải Khát Hà Nội,Thực phẩm và đồ uống,Vang & Rượu mạnh,CT
+FSO,Công ty Cổ phần Cơ khí đóng tàu thủy sản Việt Nam,Hàng & Dịch vụ Công nghiệp,Xe tải & Đóng tàu,CT
+DBC,Công ty Cổ phần Tập đoàn Dabaco Việt Nam,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HT1,Công ty Cổ phần Xi măng VICEM Hà Tiên,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+DC1,Công ty Cổ phần Đầu tư Phát triển Xây dựng số 1,Xây dựng và Vật liệu,Xây dựng,CT
+EIC,Công ty Cổ phần EVN Quốc Tế,Xây dựng và Vật liệu,Xây dựng,CT
+VE2,Công ty Cổ phần Xây dựng Điện VNECO 2,Xây dựng và Vật liệu,Xây dựng,CT
+AGG,Công ty Cổ phần Đầu tư và Phát triển Bất động sản An Gia,Bất động sản,Bất động sản,CT
+VFC,Công ty Cổ phần VINAFCO,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+VUA,Công ty Cổ phần Chứng khoán Stanley Brothers,Dịch vụ tài chính,Môi giới chứng khoán,CK
+VTR,Công ty Cổ phần Du lịch Vietravel,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SGI,Công ty Cổ phần Đầu tư SGI Holdings,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+BBM,Công ty Cổ phần Bia Hà Nội - Nam Định,Thực phẩm và đồ uống,Sản xuất bia,CT
+HTM,Tổng Công ty Thương mại Hà Nội – Công ty cổ phần,Bán lẻ,Bán lẻ phức hợp,CT
+HAV,Công ty Cổ phần Rượu Hapro,Thực phẩm và đồ uống,Vang & Rượu mạnh,CT
+DHT,Công ty Cổ phần Dược phẩm Hà Tây,Y tế,Dược phẩm,CT
+VES,Công ty Cổ phần Đầu tư và Xây dựng Điện MÊ CA VNECO,Bất động sản,Bất động sản,CT
+DXL,Công ty Cổ phần Du lịch và Xuất nhập khẩu Lạng Sơn,Du lịch và Giải trí,Khách sạn,CT
+PNJ,Công ty Cổ phần Vàng bạc Đá quý Phú Nhuận,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+HSM,Tổng Công ty Cổ phần Dệt May Hà Nội,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+HVA,Công ty Cổ phần Đầu tư HVA,Dịch vụ tài chính,Tài chính đặc biệt,CT
+VMD,Công ty Cổ phần Y Dược phẩm Vimedimex,Y tế,Dược phẩm,CT
+HVH,Công ty Cổ phần Đầu tư và Công nghệ HVC,Xây dựng và Vật liệu,Xây dựng,CT
+GDW,Công ty Cổ phần Cấp nước Gia Định,"Điện, nước & xăng dầu khí đốt",Nước,CT
+HVN,Tổng Công ty Hàng không Việt Nam - CTCP,Du lịch và Giải trí,Hàng không,CT
+GEE,Công ty Cổ phần Điện lực Gelex,Hàng & Dịch vụ Công nghiệp,Thiết bị điện,CT
+VLC,Tổng Công ty Chăn nuôi Việt Nam - Công ty Cổ phần,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+HUG,Tổng công ty May Hưng Yên - Công ty Cổ phần,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+ITS,"Công ty Cổ phần Đầu tư, Thương mại và Dịch vụ - Vinacomin",Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+KHS,Công ty Cổ phần Kiên Hùng,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+DGW,Công ty Cổ phần Thế Giới Số,Bán lẻ,Phân phối hàng chuyên dụng,CT
+KDM,Công ty Cổ phần Tập đoàn GCL,Xây dựng và Vật liệu,Xây dựng,CT
+LAS,Công ty Cổ phần Supe Phốt phát và Hóa chất Lâm Thao,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+VNX,Công ty Cổ phần Quảng cáo và Hội chợ Thương mại Vinexad,Truyền thông,Dịch vụ truyền thông,CT
+AMS,Công ty Cổ phần Cơ khí Xây dựng AMECC,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+LNC,Công ty Cổ phần Lệ Ninh,Hóa chất,"Nhựa, cao su & sợi",CT
+MBT,Công ty Cổ phần Bất động sản cho thuê Minh Bảo Tín,Bất động sản,Bất động sản,CT
+MLC,Công ty Cổ phần Môi trường Đô thị Tỉnh Lào Cai,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+VTM,Công ty Cổ phần Vận tải và Đưa đón thợ mỏ - Vinacomin,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+MGC,Công ty Cổ phần Địa chất mỏ - TKV,Tài nguyên Cơ bản,Khai khoáng,CT
+NAS,Công ty Cổ phần Dịch vụ Hàng không Sân bay Việt Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+L40,Công ty Cổ phần Đầu tư và Xây dựng 40,Xây dựng và Vật liệu,Xây dựng,CT
+VNY,Công ty Cổ phần Thuốc thú y Trung ương I,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+NQB,Công ty Cổ phần Cấp nước Quảng Bình,"Điện, nước & xăng dầu khí đốt",Nước,CT
+NUE,Công ty Cổ phần Môi trường Đô thị Nha Trang,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+PCM,Công ty Cổ phần Vật liệu Xây dựng Bưu điện,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PLX,Tập đoàn Xăng dầu Việt Nam,Dầu khí,Sản xuất và Khai thác dầu khí,CT
+PGB,Ngân hàng Thương mại Cổ phần Thịnh vượng và Phát triển,Ngân hàng,Ngân hàng,NH
+POT,Công ty Cổ phần Thiết bị Bưu điện,Công nghệ Thông tin,Phần cứng,CT
+PSE,Công ty Cổ phần Phân bón và hóa chất dầu khí Đông Nam Bộ,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+PMJ,Công ty Cổ phần Vật tư Bưu điện,Công nghệ Thông tin,Thiết bị viễn thông,CT
+PGS,Công ty Cổ phần Kinh doanh Khí Miền Nam,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+PTG,Công ty Cổ phần May Xuất Khẩu Phan Thiết,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+X20,Công ty Cổ phần X20,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+QPH,Công ty Cổ phần Thủy điện Quế Phong,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+SKH,Công ty Cổ phần Nước giải khát Sanest Khánh Hòa,Thực phẩm và đồ uống,Đồ uống & giải khát,CT
+SAM,Công ty Cổ phần SAM Holdings,Công nghệ Thông tin,Thiết bị viễn thông,CT
+SAL,Công ty Cổ phần Trục vớt Cứu hộ Việt Nam,Hàng & Dịch vụ Công nghiệp,Xe tải & Đóng tàu,CT
+SDC,Công ty Cổ phần Tư vấn Sông Đà,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+SSB,Ngân hàng Thương mại Cổ phần Đông Nam Á,Ngân hàng,Ngân hàng,NH
+TPS,Công ty Cổ phần Bến bãi vận tải Sài Gòn,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SZE,Công ty Cổ phần Môi trường Sonadezi,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+STG,Công ty Cổ phần Kho Vận Miền Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+STW,Công ty Cổ phần Cấp nước Sóc Trăng,"Điện, nước & xăng dầu khí đốt",Nước,CT
+DOP,Công ty Cổ phần Vận tải Xăng dầu Đồng Tháp,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+IDJ,Công ty Cổ phần Đầu tư IDJ Việt Nam,Bất động sản,Bất động sản,CT
+MKV,Công ty Cổ phần Dược Thú Y Cai Lậy,Y tế,Dược phẩm,CT
+PID,Công ty Cổ phần Trang trí nội thất Dầu khí,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PPI,Công ty Cổ phần Đầu tư và Phát triển dự án hạ tầng Thái Bình Dương,Bất động sản,Bất động sản,CT
+SHI,Công ty Cổ phần Quốc tế Sơn Hà,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+SJ1,Công ty Cổ phần Nông nghiệp Hùng Hậu,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+SSF,Công ty Cổ phần Giáo dục G Sài Gòn,Hàng cá nhân & Gia dụng,Giầy dép,CT
+TID,Công ty Cổ phần Tổng Công ty Tín Nghĩa,Bất động sản,Bất động sản,CT
+TTL,Tổng Công ty Thăng Long - Công ty Cổ phần,Xây dựng và Vật liệu,Xây dựng,CT
+KGM,Công ty Cổ phần Xuất nhập khẩu Kiên Giang,Bán lẻ,Bán lẻ phức hợp,CT
+KTS,Công ty Cổ phần Đường Kon Tum,Thực phẩm và đồ uống,Thực phẩm,CT
+PLE,Công ty Cổ phần Tư vấn Xây dựng Petrolimex,Xây dựng và Vật liệu,Xây dựng,CT
+VNE,Tổng Công ty Cổ phần Xây dựng điện Việt Nam,Xây dựng và Vật liệu,Xây dựng,CT
+HNB,Công ty Cổ phần Bến xe Hà Nội,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+AAT,Công ty Cổ phần Tập đoàn Tiên Sơn Thanh Hóa,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+BMJ,Công ty Cổ phần Khoáng sản Miền Đông AHP,Tài nguyên Cơ bản,Khai khoáng,CT
+CT6,Công ty Cổ phần Công trình 6,Xây dựng và Vật liệu,Xây dựng,CT
+CX8,Công ty Cổ phần Đầu tư và Xây lắp Constrexim số 8,Xây dựng và Vật liệu,Xây dựng,CT
+DAS,Công ty Cổ phần Máy - Thiết bị Dầu khí Đà Nẵng,Ô tô và phụ tùng,Sản xuất ô tô,CT
+DBM,Công ty Cổ phần Dược - Vật tư Y tế Đắk Lắk,Y tế,Dược phẩm,CT
+ABW,Công ty Cổ phần Chứng khoán An Bình,Dịch vụ tài chính,Môi giới chứng khoán,CK
+DCM,Công ty Cổ phần - Tổng Công ty Phân bón Dầu Khí Cà Mau,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+DTE,Công ty Cổ phần Đầu tư Năng lượng Đại Trường Thành Holdings,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+BCG,Công ty Cổ phần Tập đoàn Bamboo Capital,Dịch vụ tài chính,Tài chính đặc biệt,CT
+DP2,Công ty Cổ phần Dược phẩm Trung ương 2,Y tế,Dược phẩm,CT
+LM3,Công ty Cổ phần Lilama 3,Xây dựng và Vật liệu,Xây dựng,CT
+CMF,Công ty Cổ phần Thực phẩm Cholimex,Thực phẩm và đồ uống,Thực phẩm,CT
+GER,Công ty Cổ phần Thể thao Ngôi sao Geru,Hóa chất,"Nhựa, cao su & sợi",CT
+DKG,Công ty Cổ Phần Tập đoàn DamiK,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PAT,Công ty Cổ phần Phốt pho Apatit Việt Nam,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+EGL,Công ty Cổ phần Môi Trường Đô Thị Gia Lâm,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+TMT,Công ty Cổ phần Ô tô TMT,Ô tô và phụ tùng,Sản xuất ô tô,CT
+HHV,Công ty Cổ phần Đầu tư Hạ tầng Giao thông Đèo Cả,Xây dựng và Vật liệu,Xây dựng,CT
+C69,Công ty Cổ phần Xây dựng 1369,Xây dựng và Vật liệu,Xây dựng,CT
+DQC,Công ty Cổ phần Tập đoàn Điện Quang,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+LTG,Công ty Cổ phần Tập đoàn Lộc Trời,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VDL,Công ty Cổ phần Thực phẩm Lâm Đồng,Thực phẩm và đồ uống,Vang & Rượu mạnh,CT
+GE2,Tổng Công ty Phát điện 2 - Công ty Cổ phần,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+GSM,Công ty Cổ phần Thủy điện Hương Sơn,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VHH,Công ty Cổ phần Đầu tư Kinh doanh nhà Thành Đạt,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+PGT,Công ty Cổ phần PGT Holdings,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+DAE,Công ty Cổ phần Sách Giáo dục tại Thành phố Đà Nẵng,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+HMR,Công ty Cổ phần Đá Hoàng Mai,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+C47,Công ty Cổ phần Xây dựng 47,Xây dựng và Vật liệu,Xây dựng,CT
+ILS,Công ty Cổ phần Đầu tư Thương mại và Dịch vụ Quốc tế,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+EVG,Công ty Cổ phần Tập đoàn Everland,Xây dựng và Vật liệu,Xây dựng,CT
+VIT,Công ty Cổ phần Viglacera Tiên Sơn,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+FRM,Công ty Cổ phần Lâm nghiệp Sài Gòn,Tài nguyên Cơ bản,Lâm sản và Chế biến gỗ,CT
+HGT,Công ty Cổ phần Du lịch Hương Giang,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+DTI,Công ty Cổ phần Đầu tư Đức Trung,Du lịch và Giải trí,Khách sạn,CT
+HPM,Công ty Cổ phần Xây dựng Thương mại và Khoáng sản Hoàng Phúc,Tài nguyên Cơ bản,Khai khoáng,CT
+HJC,Công ty Cổ phần Hoà Việt,Hàng cá nhân & Gia dụng,Thuốc lá,CT
+VNC,Công ty Cổ phần Tập đoàn Vinacontrol,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+PAI,"Công ty Cổ phần Công nghê thông tin, Viễn thông và Tự động hóa Dầu khí",Viễn thông,Viễn thông cố định,CT
+HMH,Công ty Cổ phần Hải Minh,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+CNT,Công ty Cổ phần Tập đoàn CNT,Bất động sản,Bất động sản,CT
+VNZ,Công ty Cổ phần Tập đoàn VNG,Truyền thông,Giải trí & Truyền thông,CT
+HD6,Công ty Cổ phần Đầu tư và Phát triển nhà số 6 Hà Nội,Bất động sản,Bất động sản,CT
+L10,Công ty Cổ phần Lilama 10,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+L45,Công ty Cổ phần Lilama 45.1,Xây dựng và Vật liệu,Xây dựng,CT
+LCM,Công ty Cổ phần Khai thác và Chế biến Khoáng sản Lào Cai,Tài nguyên Cơ bản,Khai khoáng,CT
+LMH,Công ty Cổ phần Quốc Tế Holding,Bất động sản,Bất động sản,CT
+HHB,Công ty Cổ Phần Bia Hà Nội - Hồng Hà,Thực phẩm và đồ uống,Sản xuất bia,CT
+MHC,Công ty Cổ phần MHC,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+L63,Công ty Cổ phần Lilama 69-3,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+HD2,Công ty Cổ phần Đầu tư phát triển nhà HUD2,Bất động sản,Bất động sản,CT
+VTB,Công ty Cổ phần Viettronics Tân Bình,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+MTS,Công ty Cổ phần Vật tư - TKV,Hàng & Dịch vụ Công nghiệp,Nhà cung cấp thiết bị,CT
+TNP,Công ty Cổ phần Cảng Thị Nại,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VPH,Công ty Cổ phần Vạn Phát Hưng,Bất động sản,Bất động sản,CT
+VSC,Công ty Cổ phần Container Việt Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+PDR,Công ty Cổ phần Phát triển Bất động sản Phát Đạt,Bất động sản,Bất động sản,CT
+VTH,Công ty Cổ phần Dây cáp điện Việt Thái,Hàng & Dịch vụ Công nghiệp,Hàng điện & điện tử,CT
+QNS,Công ty Cổ phần Đường Quảng Ngãi,Thực phẩm và đồ uống,Thực phẩm,CT
+QNW,Công ty Cổ phần Cấp thoát nước và xây dựng Quảng Ngãi,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PPY,Công ty Cổ phần Xăng dầu dầu khí Phú Yên,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+SDV,Công ty Cổ phần Dịch vụ Sonadezi,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+QBS,Công ty Cổ phần Xuất nhập khẩu Quảng Bình,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+XPH,Công ty Cổ phần Xà phòng Hà Nội,Hàng cá nhân & Gia dụng,Hàng cá nhân,CT
+SDU,Công ty Cổ phần Đầu tư Xây dựng và Phát triển Đô thị Sông Đà,Xây dựng và Vật liệu,Xây dựng,CT
+VNB,Công ty Cổ phần Sách Việt Nam,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+SCI,Công ty Cổ phần SCI E&C,Xây dựng và Vật liệu,Xây dựng,CT
+NSL,Công ty Cổ phần Cấp nước Sơn La,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MSH,Công ty Cổ phần May Sông Hồng,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+SHS,Công ty Cổ phần Chứng khoán Sài Gòn - Hà Nội,Dịch vụ tài chính,Môi giới chứng khoán,CK
+SII,Công ty Cổ phần Hạ tầng Nước Sài Gòn,"Điện, nước & xăng dầu khí đốt",Nước,CT
+STS,Công ty Cổ phần Dịch vụ vận tải Sài Gòn,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+SRB,Công ty Cổ phần Tập đoàn Sara,Công nghệ Thông tin,Phần mềm,CT
+STP,Công ty Cổ phần Công nghiệp Thương mại Sông Đà,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+TAL,Công Ty Cổ Phần Đầu Tư Bất Động Sản Taseco,Bất động sản,Bất động sản,CT
+BTS,Công ty Cổ phần Xi măng VICEM Bút Sơn,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CDC,Công ty Cổ phần Chương Dương,Xây dựng và Vật liệu,Xây dựng,CT
+FCM,Công ty Cổ phần Bê tông Phan Vũ Hà Nam,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+MTH,Công ty Cổ phần Môi trường Đô thị Hà Đông,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+NCT,Công ty Cổ phần Dịch vụ Hàng hóa Nội Bài,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+HND,Công ty Cổ phần Nhiệt điện Hải Phòng,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+VND,Công ty Cổ phần Chứng khoán VNDIRECT,Dịch vụ tài chính,Môi giới chứng khoán,CK
+NT2,Công ty Cổ phần Điện lực Dầu khí Nhơn Trạch 2,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+NVB,Ngân hàng Thương mại Cổ phần Quốc Dân,Ngân hàng,Ngân hàng,NH
+OGC,Công ty Cổ phần Tập đoàn Đại Dương,Dịch vụ tài chính,Tài chính đặc biệt,CT
+PDC,Công ty Cổ phần Du lịch Dầu khí Phương Đông,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+PFL,Công ty Cổ phần Dầu khí Đông Đô,Xây dựng và Vật liệu,Xây dựng,CT
+PNC,Công ty Cổ phần Văn hóa Phương Nam,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+PSL,Công ty Cổ phần Chăn nuôi Phú Sơn,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+GCB,Công ty Cổ phần PETEC Bình Định,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+PTD,Công ty Cổ phần Thiết kế - Xây dựng - Thương mại Phúc Thịnh,Xây dựng và Vật liệu,Xây dựng,CT
+POS,Công ty Cổ phần Vận hành và Xây lắp PTSC,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+DTD,Công ty Cổ phần Đầu tư Phát triển Thành Đạt,Bất động sản,Bất động sản,CT
+TCX,Công ty Cổ phần Chứng khoán Kỹ Thương,Dịch vụ tài chính,Môi giới chứng khoán,CK
+TVT,Tổng Công ty Việt Thắng - CTCP,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+MVB,Tổng Công ty Công nghiệp mỏ Việt Bắc TKV - Công ty Cổ phần,Tài nguyên Cơ bản,Khai khoáng,CT
+TLD,Công ty Cổ phần Đầu tư Xây dựng và Phát triển Đô thị Thăng Long,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+TLH,Công ty Cổ phần Tập đoàn Thép Tiến Lên,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+TTA,Công ty Cổ phần Đầu tư Xây dựng và Phát triển Trường Thành,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+AFX,Công ty Cổ phần Xuất Nhập khẩu Nông sản Thực phẩm An Giang,Bán lẻ,Phân phối thực phẩm,CT
+CEN,Công ty Cổ phần CENCON Việt Nam,Bán lẻ,Bán lẻ phức hợp,CT
+LDW,Công ty Cổ phần Cấp thoát nước Lâm Đồng,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CMV,Công ty Cổ phần Thương nghiệp Cà Mau,Bán lẻ,Bán lẻ phức hợp,CT
+VIN,Công ty Cổ phần Giao nhận Kho vận Ngoại thương Việt Nam,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+VLS,Công ty Cổ phần Sản xuất Thép Việt Long,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+BMG,Công ty Cổ phần May Bình Minh,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+UPS,Công ty Cổ phần Chứng khoán UP,Dịch vụ tài chính,Môi giới chứng khoán,CK
+AIG,Công ty Cổ phần Nguyên liệu Á Châu AIG,Thực phẩm và đồ uống,Thực phẩm,CT
+BMC,Công ty Cổ phần Khoáng sản Bình Định,Tài nguyên Cơ bản,Khai khoáng,CT
+CMW,Công ty Cổ phần Cấp nước Cà Mau,"Điện, nước & xăng dầu khí đốt",Nước,CT
+TVH,Công ty Cổ phần Tư vấn Xây dựng công trình Hàng hải,Xây dựng và Vật liệu,Xây dựng,CT
+MBN,Công ty Cổ phần Môi trường và Công trình đô thị Bắc Ninh,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+DKC,Công ty Cổ phần Chợ Lạng Sơn,Bán lẻ,Bán lẻ phức hợp,CT
+SWC,Tổng Công ty Cổ phần Đường Sông Miền Nam,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TPC,Công ty Cổ phần Nhựa Tân Đại Hưng,Hóa chất,"Nhựa, cao su & sợi",CT
+CCM,Công ty Cổ phần Khoáng sản và Xi măng Cần Thơ,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BCE,Công ty Cổ phần Xây dựng và Giao thông Bình Dương,Xây dựng và Vật liệu,Xây dựng,CT
+MTV,Công ty Cổ phần Dịch vụ Môi trường và Công trình Đô thị Vũng Tàu,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+DVG,Công ty Cổ phần Đại Việt Group DVG,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+BTT,Công ty Cổ phần Thương mại - Dịch vụ Bến Thành,Bán lẻ,Bán lẻ phức hợp,CT
+E29,Công ty cổ phần Đầu tư Xây dựng và Kỹ thuật 29,Xây dựng và Vật liệu,Xây dựng,CT
+ADC,Công ty Cổ phần Mĩ thuật và Truyền thông,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+HCI,Công ty Cổ phần Đầu tư - Xây dựng Hà Nội,Xây dựng và Vật liệu,Xây dựng,CT
+TAB,Công ty Cổ phần Freco Việt Nam,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+VC3,Công ty Cổ phần Tập đoàn Nam Mê Kông,Bất động sản,"Tư Vấn, Định giá, Môi giới Bất động sản",CT
+TST,Công ty Cổ phần Dịch vụ Kỹ thuật Viễn thông,Công nghệ Thông tin,Dịch vụ Máy tính,CT
+VCM,Công ty Cổ phần BV Life,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+TDF,Công ty Cổ phần Trung Đô,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+GHC,Công ty Cổ phần Thủy điện Gia Lai,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+DIH,Công ty Cổ phần Đầu tư Phát triển Xây dựng - Hội An,Xây dựng và Vật liệu,Xây dựng,CT
+VFG,Công ty Cổ phần Khử trùng Việt Nam,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+VFR,Công ty Cổ phần Vận tải và Thuê tàu,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+CYC,Công ty Cổ phần Gạch men Chang Yih,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CAR,Công ty cổ phần Tập đoàn Giáo dục Trí Việt,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+EIB,Ngân hàng Thương mại Cổ phần Xuất nhập khẩu Việt Nam,Ngân hàng,Ngân hàng,NH
+BMF,Công ty Cổ phần Vật liệu Xây dựng và Chất đốt Đồng Nai,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+VCS,Công ty Cổ phần VICOSTONE,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+HTP,Công ty Cổ phần In Sách Giáo Khoa Hòa Phát,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+FIC,Tổng Công ty Vật liệu Xây dựng số 1 - Công ty Cổ phần,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+CI5,Công ty Cổ phần Đầu tư Xây dựng số 5,Xây dựng và Vật liệu,Xây dựng,CT
+DRI,Công ty Cổ phần Đầu tư Cao su Đắk Lắk,Hóa chất,"Nhựa, cao su & sợi",CT
+VSN,Công ty Cổ phần Việt Nam Kỹ Nghệ Súc Sản,Thực phẩm và đồ uống,Thực phẩm,CT
+HEV,Công ty Cổ phần Sách Đại học - Dạy nghề,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+HPI,Công ty Cổ phần Khu công nghiệp Hiệp Phước,Bất động sản,Bất động sản,CT
+HBH,Công ty Cổ phần HABECO - Hải Phòng,Thực phẩm và đồ uống,Sản xuất bia,CT
+TUG,Công ty Cổ phần Lai dắt và Vận tải Cảng Hải Phòng,Hàng & Dịch vụ Công nghiệp,"Kho bãi, hậu cần và bảo dưỡng",CT
+HRC,Công ty Cổ phần Cao su Hòa Bình,Hóa chất,"Nhựa, cao su & sợi",CT
+HSI,Công ty Cổ phần Vật tư Tổng hợp và Phân bón Hóa sinh,Hóa chất,"Sản phẩm hóa dầu, Nông dược & Hóa chất khác",CT
+VGV,Tổng Công ty Tư vấn Xây dựng Việt Nam - CTCP,Bất động sản,Bất động sản,CT
+HAF,Công ty Cổ phần Thực phẩm Hà Nội,Thực phẩm và đồ uống,Thực phẩm,CT
+IMP,Công ty Cổ phần Dược phẩm Imexpharm,Y tế,Dược phẩm,CT
+IPA,Công ty Cổ phần Tập đoàn Đầu tư I.P.A,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+FMC,Công ty Cổ phần Thực phẩm Sao Ta,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+VNS,Công ty Cổ phần Ánh Dương Việt Nam,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+CTB,Công ty Cổ phần Chế tạo Bơm Hải Dương,Hàng & Dịch vụ Công nghiệp,Máy công nghiệp,CT
+NLG,Công ty Cổ phần Đầu tư Nam Long,Bất động sản,Bất động sản,CT
+VOS,Công ty Cổ phần Vận tải Biển Việt Nam,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+VPG,Công ty Cổ phần Đầu tư Thương mại Xuất nhập khẩu Việt Phát,Tài nguyên Cơ bản,Khai khoáng,CT
+MA1,Công ty Cổ phần Thiết bị,Bất động sản,Bất động sản,CT
+KVC,Công ty Cổ phần Sản xuất Xuất nhập khẩu Inox Kim Vĩ,Tài nguyên Cơ bản,Thép và sản phẩm thép,CT
+MPY,Công ty Cổ phần Môi trường đô thị Phú Yên,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+PTV,Công ty Cổ phần Thương mại Dầu khí,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+NDF,Công ty Cổ phần Chế biến thực phẩm nông sản xuất khẩu Nam Định,Thực phẩm và đồ uống,Thực phẩm,CT
+NOS,Công ty Cổ phần Vận tải Biển và Thương mại Phương Đông,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+XHC,Công ty Cổ phần Xuân Hòa Việt Nam,Hàng cá nhân & Gia dụng,Thiết bị gia dụng,CT
+XMP,Công ty Cổ phần Thủy điện Xuân Minh,"Điện, nước & xăng dầu khí đốt",Sản xuất & Phân phối Điện,CT
+YEG,Công ty Cổ phần Tập đoàn Yeah1,Truyền thông,Giải trí & Truyền thông,CT
+PBC,Công ty Cổ phần Dược Phẩm Trung ương 1 - Pharbaco,Y tế,Dược phẩm,CT
+VTC,Công ty Cổ phần Viễn Thông VTC,Công nghệ Thông tin,Thiết bị viễn thông,CT
+PPS,Công ty Cổ phần Dịch vụ Kỹ thuật Điện lực Dầu khí Việt Nam,Hàng & Dịch vụ Công nghiệp,Tư vấn & Hỗ trợ KD,CT
+TOW,Công ty Cổ phần Cấp nước Trà Nóc - Ô Môn,"Điện, nước & xăng dầu khí đốt",Nước,CT
+PTS,Công ty Cổ phần Vận tải và Dịch vụ Petrolimex Hải Phòng,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT
+PND,Công ty Cổ phần Xăng dầu Dầu khí Nam Định,"Điện, nước & xăng dầu khí đốt",Phân phối xăng dầu & khí đốt,CT
+MQN,Công ty Cổ phần Môi trường đô thị Quảng Ngãi,Hàng & Dịch vụ Công nghiệp,Chất thải & Môi trường,CT
+PVV,Công ty Cổ phần Vinaconex 39,Xây dựng và Vật liệu,Xây dựng,CT
+PRE,Tổng Công ty Cổ phần Tái bảo hiểm Hà Nội,Bảo hiểm,Tái bảo hiểm,BH
+S72,Công ty Cổ phần Sông Đà 7.02,Xây dựng và Vật liệu,Xây dựng,CT
+SAB,Tổng Công ty Cổ phần Bia - Rượu - Nước Giải khát Sài Gòn,Thực phẩm và đồ uống,Sản xuất bia,CT
+SD2,Công ty Cổ phần Sông Đà 2,Xây dựng và Vật liệu,Xây dựng,CT
+VC1,Công ty Cổ phần Xây dựng số 1,Xây dựng và Vật liệu,Xây dựng,CT
+BSG,Công ty Cổ phần Xe khách Sài Gòn,Du lịch và Giải trí,Vận tải hành khách & Du lịch,CT
+SGD,Công ty Cổ phần Sách Giáo dục tại Thành phố Hồ Chí Minh,Truyền thông,"Sách, ấn bản & sản phẩm văn hóa",CT
+SGS,Công ty Cổ phần Vận tải biển Sài Gòn,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+SNZ,Tổng Công ty Cổ phần Phát triển Khu Công nghiệp,Xây dựng và Vật liệu,Xây dựng,CT
+SVD,Công ty Cổ phần Đầu tư & Thương mại Vũ Đăng,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+SVT,Công ty Cổ phần Công nghệ Sài Gòn Viễn Đông,Bán lẻ,Dịch vụ tiêu dùng chuyên ngành,CT
+TDW,Công ty Cổ phần Cấp nước Thủ Đức,"Điện, nước & xăng dầu khí đốt",Nước,CT
+CSC,Công ty Cổ phần Tập đoàn COTANA,Xây dựng và Vật liệu,Xây dựng,CT
+ILC,Công ty Cổ phần Hợp tác lao động với nước ngoài,Hàng & Dịch vụ Công nghiệp,Đào tạo & Việc làm,CT
+GVT,Công ty Cổ phần Giấy Việt Trì,Tài nguyên Cơ bản,Sản xuất giấy,CT
+LHG,Công ty Cổ phần Long Hậu,Bất động sản,Bất động sản,CT
+LKW,Công ty Cổ phần Cấp nước Long Khánh,"Điện, nước & xăng dầu khí đốt",Nước,CT
+MCP,Công ty Cổ phần In và Bao bì Mỹ Châu,Hàng & Dịch vụ Công nghiệp,Containers & Đóng gói,CT
+NDN,Công ty Cổ phần Đầu tư Phát triển Nhà Đà Nẵng,Bất động sản,Bất động sản,CT
+PPH,Tổng Công ty Cổ phần Phong Phú,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+DAT,Công ty Cổ phần Đầu tư Du lịch và Phát triển Thủy sản,Thực phẩm và đồ uống,Nuôi trồng nông & hải sản,CT
+PVS,Tổng Công ty Cổ phần Dịch vụ Kỹ thuật Dầu khí Việt Nam,Dầu khí,Thiết bị và Dịch vụ Dầu khí,CT
+QHD,Công ty Cổ phần Que hàn điện Việt Đức,Hàng & Dịch vụ Công nghiệp,Công nghiệp phức hợp,CT
+RCL,Công ty Cổ phần Địa ốc Chợ Lớn,Bất động sản,Bất động sản,CT
+SFI,Công ty Cổ phần Đại lý Vận tải SAFI,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TEG,Công ty Cổ phần Trường Thành Energy Group,Bất động sản,Bất động sản,CT
+TET,Công ty Cổ phần Vải sợi May mặc Miền Bắc,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+THS,Công ty Cổ phần Thanh Hoa Sông Đà,Bán lẻ,Bán lẻ phức hợp,CT
+DTG,Công ty Cổ phần Dược phẩm Tipharco,Y tế,Dược phẩm,CT
+VIP,Công ty Cổ phần Vận tải Xăng dầu VIPCO,Hàng & Dịch vụ Công nghiệp,Vận tải Thủy,CT
+TTB,Công ty Cổ phần TTBGROUP,Xây dựng và Vật liệu,Vật liệu xây dựng & Nội thất,CT
+G20,Công ty Cổ phần Đầu tư Dệt may Vĩnh Phúc,Hàng cá nhân & Gia dụng,Hàng May mặc,CT
+IVS,Công ty Cổ phần Chứng khoán Guotai Junan (Việt Nam),Dịch vụ tài chính,Môi giới chứng khoán,CK
+VTZ,Công ty Cổ phần Sản xuất và Thương mại Nhựa Việt Thành,Hóa chất,"Nhựa, cao su & sợi",CT
+PC1,Công ty Cổ phần Tập đoàn PC1,Xây dựng và Vật liệu,Xây dựng,CT
+PSP,Công ty Cổ phần Cảng Dịch vụ Dầu khí Đình Vũ,Hàng & Dịch vụ Công nghiệp,Dịch vụ vận tải,CT

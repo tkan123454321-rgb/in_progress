@@ -66,7 +66,8 @@ models:
           +materialized: incremental
       
 
-
+seeds:
+  +schema: bronze
 
 data_tests:
   transform:
