@@ -7,15 +7,15 @@ from typing import Any, ClassVar, Dict, List, Tuple, TypeVar, Set, Iterable, Opt
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 import uuid
-from utils.logger_config import setup_logger
+from common.core.logger_config import setup_logger
 import pyarrow as pa
 from schema.schema_metadata import TABLE_REGISTRY 
 from pyiceberg.schema import Schema
 from pyiceberg.partitioning import PartitionSpec
-from utils.metadata_manager import MetadataManager
-from utils.postgres_client import PostgresClient
-from utils.lakehouse_client import LakeHouseClient
-from utils.other_utils import get_target_anchor, get_fallback_year
+from common.infrastructure.metadata_manager import MetadataManager
+from common.clients.postgres_client import PostgresClient
+from common.clients.lakehouse_client import LakeHouseClient
+from common.core.time_utils import get_target_anchor, get_fallback_year
 import math
 
 

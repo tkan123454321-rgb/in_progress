@@ -1,10 +1,11 @@
-from utils.lakehouse_client import LakeHouseClient
-from utils.postgres_client import PostgresClient
-from utils.logger_config import setup_logger
+from common.clients.lakehouse_client import LakeHouseClient
+from common.clients.postgres_client import PostgresClient
+from common.core.logger_config import setup_logger
 from datetime import datetime, timedelta, timezone
 from psycopg import sql
 from typing import Sequence, Generator
 from trino.exceptions import Error as TrinoError
+
 logger = setup_logger(component="minio_maintenance")
 
 

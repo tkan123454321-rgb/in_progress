@@ -107,6 +107,18 @@ from utils.postgres_client import PostgresClient
 with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
     loader.export_web_data()
 # %%
-from utils.other_utils import export_silver_company_to_seed
-export_silver_company_to_seed()
+class NhanVien:
+    def __init__(self, ten, tuoi):
+        self.ten = ten
+        self.tuoi = tuoi
+
+# Tạo ra một object tên là bác
+qmj = NhanVien("Bác QMJ", 30)
+
+# 1. Bác gọi thuộc tính kiểu bình thường (Đi cửa chính)
+print(qmj.ten)  # In ra: Bác QMJ
+
+# 2. Vén bức màn bí mật: Xem cái "Nhật ký" của object này có gì?
+print(qmj.__dict__)  
+# In ra: {'ten': 'Bác QMJ', 'tuoi': 30}
 # %%

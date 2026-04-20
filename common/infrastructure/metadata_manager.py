@@ -1,7 +1,7 @@
 from __future__ import annotations
-from utils.logger_config import setup_logger
-from utils.postgres_client import PostgresClient
-from utils.lakehouse_client import LakeHouseClient, NoSuchTableError
+from common.core.logger_config import setup_logger
+from common.clients.postgres_client import PostgresClient
+from common.clients.lakehouse_client import LakeHouseClient, NoSuchTableError
 from typing import Literal, TYPE_CHECKING
 from datetime import datetime, timedelta, timezone, date
 import polars as pl
@@ -12,8 +12,8 @@ from typing import ClassVar, Generator, Sequence
 from contextlib import contextmanager
 import trino.dbapi
 from pyiceberg.expressions import EqualTo
-from utils.exception import MetadataManagerError
-from utils.other_utils import get_target_anchor, get_fallback_year
+from common.core.exception import MetadataManagerError
+from common.core.time_utils import get_target_anchor, get_fallback_year
 from zoneinfo import ZoneInfo
 if TYPE_CHECKING:
     from schema.producer_schema import BaseMetadata

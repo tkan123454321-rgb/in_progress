@@ -41,30 +41,44 @@ models:
 
   elementary:
     +schema: elementary
-    +materialized: table
     +views_enabled: false
-    +incremental_strategy: 'merge'
     edr:
       run_results:
-          dbt_run_results:
-            +materialized: incremental
-          dbt_invocations:
-            +materialized: incremental
-          elementary_test_results:
-            +materialized: incremental
-          dbt_source_freshness_results:
-            +materialized: incremental
-          test_result_rows:
-            +materialized: incremental
+        model_run_results:
+          +materialized: table
+        snapshot_run_results:
+          +materialized: table
+        seed_run_results:
+          +materialized: table
+        job_run_results:
+          +materialized: table
+        alert_schema_changes:
+          +materialized: table
       
-      data_monitoring:
-        data_monitoring:
-          +materialized: incremental
+      alerts:
+        alerts_dbt_models:
+          +materialized: table
+        alerts_dbt_tests:
+          +materialized: table
+        alerts_anomaly_detection:
+          +materialized: table
+        alerts_dbt_source_freshness:
+          +materialized: table
+        alerts_schema_changes:
+          +materialized: table
 
+      data_monitoring:
+        anomaly_detection:
+          +materialized: table
+      system:
+        monitors_runs:
+          +materialized: table
+      dbt_artifacts:
+        dbt_artifacts_hashes:
+          +materialized: table
       
-        schema_changes:
-          +materialized: incremental
-      
+
+
 
 seeds:
   +schema: bronze
