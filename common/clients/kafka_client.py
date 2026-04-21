@@ -2,39 +2,46 @@ import os
 import logging
 from typing import ClassVar, Dict, Optional
 from confluent_kafka.admin import AdminClient, NewTopic # type: ignore
-from utils.logger_config import setup_logger
+from common.core.logger_config import setup_logger
 
-logger = setup_logger(component="utils")
+logger = setup_logger(component="infrastructure")
 
 class KafkaClient:
     """
-    Class quản lý các tác vụ Admin của Kafka (Tạo, Xóa, Kiểm tra Topic).
+    Manages Kafka administrative tasks such as topic validation and creation.
+    
+    This client ensures that the required infrastructure (topics with specific 
+    retention and compaction policies) is firmly in place before any producers 
+    or consumers attempt to interact with the message broker.
     """
-    # 1. Khai báo Class Variables cho cấu hình mặc định
+    # default configs
     DEFAULT_BOOTSTRAP: ClassVar[str] = 'kafka:29092'
     DEFAULT_PARTITIONS: ClassVar[int] = 3
     DEFAULT_REPLICATION: ClassVar[int] = 1
-    
-    # Gom toàn bộ config rườm rà của Topic lên đây cho sạch ruột hàm
     TOPIC_CONFIG: ClassVar[Dict[str, str]] = {
         'cleanup.policy': 'compact,delete', 
-        'segment.ms': '3600000',            # Thời gian tối đa của một segment (1 giờ)
-        'segment.bytes': '104857600',       # Kích thước tối đa của một segment (100MB)
-        'min.cleanable.dirty.ratio': '0.5', # Tỷ lệ rác đạt 50% thì nén
-        'retention.ms': '86400000',         # Thời gian lưu tối đa (24h)
-        'delete.retention.ms': '86400000',  # Thời gian giữ tombstone (24h)
+        'segment.ms': '3600000',            # Force roll segments every 1 hour
+        'segment.bytes': '104857600',       # Max segment size (100MB)
+        'min.cleanable.dirty.ratio': '0.5', # Trigger compaction when 50% is dirty
+        'retention.ms': '86400000',         # Delete messages older than 24h
+        'delete.retention.ms': '86400000',  # Keep tombstone markers for 24h
     }
     
     def __init__(self, topic_name: str) -> None:
         """
-        Khởi tạo là tự động kết nối Kafka Admin luôn.
-        Nếu không truyền bootstrap_servers, tự động lấy cấu hình mặc định.
+        Initializes the Kafka Admin client and guarantees the target topic exists.
+
+        Args:
+            topic_name (str): The name of the Kafka topic to manage.
         """
         self.admin_client = AdminClient({'bootstrap.servers': self.DEFAULT_BOOTSTRAP})
         self._check_and_create_topic(topic_name)  # Kiểm tra và tạo topic mặc định ngay khi khởi tạo
         
         
     def _check_and_create_topic(self, topic_name: str):
+        """
+        Validates if the topic exists; if not, provisions it with strict configurations.
+        """
         try:
             metadata = self.admin_client.list_topics()
             logger.debug(f"Các topic hiện có: {list(metadata.topics.keys())}")

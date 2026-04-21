@@ -5,17 +5,25 @@ import boto3
 from botocore.exceptions import ClientError
 from botocore.config import Config
 from typing import ClassVar
-from utils.logger_config import setup_logger
+from common.core.logger_config import setup_logger
 import sys
 from confluent_kafka.admin import AdminClient, NewTopic # pyright: ignore[reportPrivateImportUsage]
 from pyiceberg.exceptions import NoSuchTableError
 from typing import Sequence, Generator, Literal
 
-logger = setup_logger(component="utils")
+logger = setup_logger(component="infrastructure")
 
 
 
 class LakeHouseClient:
+    """
+    Manages connection and infrastructure for the Data Lakehouse ecosystem.
+    
+    This client orchestrates 3 components:
+    1. Storage: MinIO.
+    2. Catalog: Nessie.
+    3. Compute: Trino.
+    """
     _ACCESS_KEY: ClassVar[str] = os.getenv('MINIO_USER', 'default_user')
     _SECRET_KEY: ClassVar[str] = os.getenv('MINIO_PASSWORD', 'default_pass')
     ENDPOINT_URL: ClassVar[str] = "http://minio:9000"
@@ -31,7 +39,12 @@ class LakeHouseClient:
     ]
     
     
-    def __init__(self) -> None:   
+    def __init__(self) -> None:
+        """
+        Initializes clients for S3 and Nessie, and ensures infrastructure 
+        (buckets and namespaces) is properly configured.
+        """  
+        # Initialize MinIO (S3) Client
         self.s3_client = boto3.client(
             service_name='s3',
             endpoint_url=self.ENDPOINT_URL,         
@@ -40,7 +53,9 @@ class LakeHouseClient:
             config=Config(signature_version='s3v4'), 
             region_name=self.REGION             
         )
-        
+        # STEP 1: Ensure physical storage exists BEFORE configuring logical namespaces
+        self._ensure_bucket_exists()
+        # Initialize Nessie Catalog (Iceberg)
         self.catalog = load_catalog(
             "nessie_catalog",
             **{"type": "rest",
@@ -54,11 +69,18 @@ class LakeHouseClient:
                 "py-io-impl": "pyiceberg.io.pyarrow.PyArrowFileIO"
             }
         )
+        # 4. Create required namespaces (bronze, silver, gold, etc.) 
         self._ensure_medallion_layers()
-        self._ensure_bucket_exists()
+
     
     @staticmethod
     def _get_trino_connection() -> trino.dbapi.Connection:
+        """
+        Establishes a connection to the Trino.
+        
+        Returns:
+            trino.dbapi.Connection.
+        """
         return trino.dbapi.connect(
             host="trino",
             port=8080,
@@ -67,6 +89,13 @@ class LakeHouseClient:
         
 
     def _ensure_medallion_layers(self) -> None:
+        """
+        checks the existence of namespaces (schemas) required
+        (Bronze, Silver, Gold, etc.) within the Iceberg catalog. If any are missed, it creates them.
+        
+        Raises:
+            RuntimeError: If namespace provisioning fails.
+        """
         for layer in self.REQUIRED_SCHEMAS:
             try:
                 self.catalog.create_namespace_if_not_exists(layer)
@@ -76,6 +105,9 @@ class LakeHouseClient:
 
 
     def _ensure_bucket_exists(self) -> None:
+        """
+        Checks if the MinIO bucket exists. If not, creates it.
+        """
         try:
             self.s3_client.head_bucket(Bucket=self.BUCKET_NAME)
         

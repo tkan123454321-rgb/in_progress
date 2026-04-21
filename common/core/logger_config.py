@@ -4,14 +4,14 @@ import logging
 import os
 import sys
 from datetime import datetime, timezone, timedelta
-from typing import Dict
+from typing import Dict, Any, Literal
 from unittest import result
 import logging_loki
 from queue import Queue
 
 
 global_level = logging.INFO
-
+ALLOWED_COMPONENTS = ["ingest","load", "maintenance", "infrastructure"]
 class JsonFormatter(Formatter):
     
     def formatException(self, exc_info):
@@ -40,7 +40,7 @@ class JsonFormatter(Formatter):
         }
         return json.dumps(log_record, ensure_ascii=False)
 
-def setup_logger(component: str, env: str = "dev", **kwargs) -> LoggerAdapter:
+def setup_logger(component: Literal["ingest","load", "maintenance", "infrastructure"], env: str = "dev", **kwargs) -> LoggerAdapter:
     """
     Initializes and configures a centralized logger for the data pipeline.
 
@@ -48,7 +48,7 @@ def setup_logger(component: str, env: str = "dev", **kwargs) -> LoggerAdapter:
     1. LokiQueueHandler: Asynchronously pushes logs to a Loki with specific tags.
     2. StreamHandler: Outputs JSON-formatted logs to standard Console output.
     Args:
-        component (str): The name of the pipeline component or module (e.g., 'ingestion', 'transformation').
+        component (Literal["ingest","load", "maintenance", "infrastructure"]): The name of the pipeline component or module (e.g., 'ingestion', 'transformation').
         env (str, optional): The execution environment (e.g., 'dev', 'prod', 'staging'). Defaults to "dev".
         **kwargs: Additional contextual information. 
                   - Expected key: `run_id` (str) to track specific Airflow DAG runs or execution instances.
@@ -57,9 +57,11 @@ def setup_logger(component: str, env: str = "dev", **kwargs) -> LoggerAdapter:
         logging.LoggerAdapter: A configured logger instance wrapped in an adapter, 
                                containing contextual extras (component, env, run_id).
     """
+    
     logger = getLogger(f"pipeline.{component}")
     logger.setLevel(global_level)
-    
+    if component not in ALLOWED_COMPONENTS:
+        raise ValueError(f"Component '{component}' is invalid. please choose from {ALLOWED_COMPONENTS}.")
     if not logger.hasHandlers():
     
         handler = logging_loki.LokiQueueHandler(

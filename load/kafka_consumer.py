@@ -1,21 +1,15 @@
 import time
 import requests
 from zoneinfo import ZoneInfo
-from utils.exception import RetryableAPIError
-from utils.logger_config import setup_logger
+from common.core.exception import RetryableAPIError
+from common.core.logger_config import setup_logger
 from confluent_kafka import Consumer, KafkaError, KafkaException, error, Message, TopicPartition
 import os
 import socket
 import json
-from load.lakehouse_loader import LakeHouseClient
-from utils.kafka_client import KafkaClient
-import sys
-import uuid
-from datetime import datetime
+from common.clients.lakehouse_client import LakeHouseClient
+from common.clients.kafka_client import KafkaClient
 from typing import Any, Callable, Iterable, ClassVar, Sequence
-from polars.exceptions import PolarsError
-import polars as pl
-import pyarrow as pa
 from contextlib import contextmanager
 
 logger = setup_logger(component="load")

@@ -46,8 +46,7 @@ sinks:
   # debug_only:
   #   type: file
   #   inputs: 
-  #     - trino_processed
-  #   # Tự động tạo file mới với tên chứa: Năm-Tháng-Ngày_Giờ-Phút-Giây
+  #     - trino_processed   
   #   path: /tmp/vector_log/trino_RAW_DATA_%Y-%m-%d_%H-%M-%S.json
   #   encoding:
   #     codec: json

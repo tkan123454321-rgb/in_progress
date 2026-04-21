@@ -1,63 +1,83 @@
-import logging
+from typing import ClassVar
 import socket
 from typing import Any
-from utils.kafka_client import ClassVar, KafkaClient
+from common.clients.kafka_client import KafkaClient
 from confluent_kafka import Producer
 from confluent_kafka.error import ProduceError
 from confluent_kafka.cimpl import KafkaException
-from utils.logger_config import setup_logger
 import os
 import time
-import pandas as pd
-from utils.logger_config import setup_logger
+from common.core.logger_config import setup_logger
 from contextlib import contextmanager
 
-# cài đặt logger
-logger = setup_logger(component="extract")   
-# Cấu hình Kafka Producer
+logger = setup_logger(component="ingest")   
 
-# hàm kiểm tra và tạo topic 
     
 class StockTickerProducer(KafkaClient):
+    """
+    A Kafka Producer specifically designed for sending stock ticker data.
+    
+    This class handles message production with built-in retry mechanisms,
+    buffer management, and graceful shutdowns.
+    """
     _PRODUCER_CONFIG: ClassVar[dict[str, Any]] = {
-            'enable.idempotence': True, # Đảm bảo tin không bị duplicate
-            'compression.type': 'lz4',      # Nén để giảm dung lượng mạng
-            'linger.ms': 50             # Chờ 50ms để gom batch 
+            'enable.idempotence': True, # Ensures strictly exactly-once semantics (prevents duplicates)
+            'compression.type': 'lz4',   # Compresses batch data
+            'linger.ms': 50             # Waits 50ms to group messages into a batch before dispatching
         }
     def __init__(self,
                  topic_name: str, 
                  update_conf: dict[str, str | int | float | bool] | None = None):
+        """
+        Initializes the StockTickerProducer.
+
+        Args:
+            topic_name (str): The target Kafka topic to produce messages to.
+            update_conf (dict, optional): Additional Kafka producer configurations 
+                                          to override or append to the defaults.
+        """
         super().__init__(topic_name)
 
         pid = os.getpid()
         hostname = socket.gethostname()
         self.topic_name = topic_name
         self.client_id = f"stock-producer-{hostname}-{pid}"
-        # 1. Cấu hình Producer
         self.conf = {
-            'bootstrap.servers': self.DEFAULT_BOOTSTRAP,  # Sử dụng cấu hình mặc định từ KafkaClient
+            'bootstrap.servers': self.DEFAULT_BOOTSTRAP, 
             'client.id': self.client_id,
-            ** self._PRODUCER_CONFIG,  # Thêm cấu hình mặc định của Producer
+            ** self._PRODUCER_CONFIG,  
         }
         
         if update_conf:
             self.conf.update(update_conf)
             
-        logger.debug(f"Cấu hình Producer: {self.conf}")
-        
-        # 2. Khởi tạo Resource
+        logger.info(f"Initializing Kafka Producer. Topic: '{self.topic_name}', Client ID: '{self.client_id}'.")
         self.producer = Producer(self.conf)   
 
 
-
-    # Hàm báo cáo kết quả gửi tin nhắn
-    def _on_delivery_report(self, err, msg):
+    def _on_delivery_report(self, err, msg)-> None:
+        """
+        Callback triggered by Kafka once a message is successfully delivered or fails.
+        """
         if err is not None:
-            logger.error(f"gửi thất bại {err}", exc_info=True)
+            logger.error(f"Message delivery failed. Topic: '{msg.topic()}', Error: {err}", exc_info=True)
         else:
-            logger.debug(f"nạp Thành công {msg.value().decode('utf-8')} | offset: {msg.offset()} |topic: {msg.topic()} | partition: {msg.partition()} | client_id: {self.conf['client.id']}")
+            logger.debug(
+                f"Message delivered successfully. "
+                f"Topic: '{msg.topic()}', Partition: {msg.partition()}, Offset: {msg.offset()}."
+            )
 
-    def single_message_data(self, message, key):
+    def single_message_data(self, message, key) -> bool:
+        """
+        Produces a single message to Kafka with a retry mechanism.
+
+        Args:
+            message (bytes): The payload of the message to send.
+            key (str): The partition key (Stock Ticker symbol).
+
+        Returns:
+            bool: True if successfully queued, False if it fails after max retries.
+        """
         retry_delay = 0.2
         attempt = 0 
         while True:
@@ -69,30 +89,36 @@ class StockTickerProducer(KafkaClient):
                     key=key
                 )
                 self.producer.poll(0)
-                logger.debug(f"Đã gửi tin nhắn với key: {key} đến topic: {self.topic_name}", extra = {'client_id': self.conf['client.id']} )
+                logger.debug(f"Queued single message. Topic: '{self.topic_name}', Key: '{key}'.")
                 return True
             except BufferError as e:
-                logger.warning(f" Lỗi: {e}, Buffer đầy, đang chờ {retry_delay}s để worker dọn dẹp.")
+                logger.warning(f"Local buffer full. Retrying in {retry_delay}s. Key: '{key}', Error: {e}")
                 self.producer.poll(retry_delay)
             except ProduceError as e:
                 kafka_error = e.args[0]
                 if kafka_error.retriable():
                     attempt += 1
                     if attempt > 5:
-                        logger.error(f" Lỗi: {kafka_error}, đã vượt quá số lần thử lại", exc_info=True)
+                        logger.error(f"Max retries (5) exceeded for single message. Key: '{key}', Error: {kafka_error}", exc_info=True)
                         return False
-                    logger.warning(f" Lỗi có thể retry, đang chờ {retry_delay}s trước khi thử lại.")
+                    
+                    logger.warning(f"Retriable Kafka error. Attempt: {attempt}/5. Retrying in {retry_delay}s. Key: '{key}'.")
                     time.sleep(retry_delay)
                     self.producer.poll(0)
                 else:
-                    logger.error(f" Lỗi không thể retry: {kafka_error}", exc_info=True)
+                    logger.error(f"Non-retriable Kafka error encountered. Key: '{key}', Error: {kafka_error}", exc_info=True)
                     return False
     
     def batch_message_data(self, messages_list: list[bytes], key: str) -> bool:
         """
-        Gửi một BATCH tin nhắn lên Kafka.
-        messages_list: Danh sách các payload (bytes) của cùng 1 ticker (Ví dụ: 4 loại BCTC).
-        key: Tên mã cổ phiếu (Ticker).
+        Produces a batch of messages to Kafka sharing the same partition key.
+
+        Args:
+            messages_list (list[bytes]): List of payloads for the same ticker (e.g., Financial statements).
+            key (str): The partition key (Stock Ticker symbol).
+
+        Returns:
+            bool: True if the entire batch is queued successfully, False otherwise.
         """
         formatted_messages = [
             {'value': msg, 'key': key} for msg in messages_list
@@ -103,7 +129,6 @@ class StockTickerProducer(KafkaClient):
         
         while True:
             try:
-                # 2. Gọi hàm produce_batch thần thánh
                 num_queued = self.producer.produce_batch(
                     topic=self.topic_name,
                     messages=formatted_messages,
@@ -112,55 +137,62 @@ class StockTickerProducer(KafkaClient):
                 self.producer.poll(0)
                 
                 logger.debug(
-                    f"📦 Đã đưa vào hàng đợi {num_queued}/{len(messages_list)} tin nhắn "
-                    f"cho mã {key} tại topic {self.topic_name}.", 
-                    extra={'client_id': self.conf.get('client.id', 'unknown')}
+                    f"Batch queued successfully. "
+                    f"Topic: '{self.topic_name}', Key: '{key}', Messages: {num_queued}/{len(messages_list)}."
                 )
                 return True
                 
             except BufferError as e:
-                # Buffer đầy: Không tăng attempt, chỉ chờ worker của Kafka dọn dẹp rồi nhét lại
-                logger.warning(f"⚠️ Lỗi {e}: Buffer đầy khi gửi batch mã {key}. Đang chờ {retry_delay}s...")
+                logger.warning(f"Batch buffer full. Retrying in {retry_delay}s. Key: '{key}', Error: {e}")
                 self.producer.poll(retry_delay)
                 
-            except KafkaException as e: # BỎ Exception, CHỈ BẮT KafkaException
+            except KafkaException as e: 
                 kafka_error = e.args[0]
                 
                 if kafka_error.retriable():
                     attempt += 1
                     if attempt > 5:
-                        logger.error(f"❌ Lỗi Kafka: {kafka_error}. Vượt quá 5 lần thử cho batch mã {key}.", exc_info=True)
+                        logger.error(f"Max retries (5) exceeded for batch message. Key: '{key}', Error: {kafka_error}", exc_info=True)
                         return False
                     
-                    logger.warning(f"🔄 Lỗi có thể retry (Attempt {attempt}/5) cho mã {key}. Chờ {retry_delay}s...")
+                    logger.warning(f"Retriable Kafka error in batch. Attempt: {attempt}/5. Retrying in {retry_delay}s. Key: '{key}'.")
                     time.sleep(retry_delay)
                     self.producer.poll(0)
                 else:
-                    logger.error(f"🚨 Lỗi KHÔNG thể retry khi gửi batch mã {key}: {kafka_error}", exc_info=True)
+                    logger.error(f"Non-retriable Kafka error in batch. Key: '{key}', Error: {kafka_error}", exc_info=True)
                     return False
                 
-    def close(self):
-        # Hàm này quan trọng để flush nốt dữ liệu thừa trước khi tắt
-        logger.info("flushing producer before closing...")
-        self.producer.flush(10)
-            
+    def close(self)-> int:
+        """
+        Flushes outstanding messages to Kafka before shutting down the producer.
+        
+        Returns:
+            int: The number of messages still in the queue after flushing. 
+                 Returns 0 if all messages were successfully delivered.
+        """
+        logger.info(f"Flushing producer queue for topic '{self.topic_name}' before shutting down.")
+        return self.producer.flush(10)
+
     @classmethod
     @contextmanager
     def managed(cls, topic_name: str, update_conf: dict | None = None):
         """
-        Factory method bọc Class lại thành một Context Manager.
-        Sử dụng: with StockTickerProducer.managed("my_topic") as producer:
+        Factory method providing a Context Manager for the Producer.
+        Ensures graceful shutdown and flushing of messages upon exit.
+
+        Usage:
+            with StockTickerProducer.managed("my_topic") as producer:
+                producer.single_message_data(msg, key)
         """
-        logger.info("🔌 [Kafka] Khởi tạo và mở kết nối Producer...")
-        # 1. SETUP: Tạo đối tượng
+        logger.info(f"Opening managed Kafka producer connection for topic '{topic_name}'.")
         producer_instance = cls(topic_name=topic_name, update_conf=update_conf)
         
         try:
-            # 2. YIELD: Nhả cái object ra cho khối 'with' xài
             yield producer_instance
             
         finally:
-            if producer_instance.close() is None:
-                logger.info("🔒 Đã đóng producer sau khi nạp metadata cơ bản thành công.")
+            remaining_messages = producer_instance.close()
+            if remaining_messages == 0:
+                logger.info(f"Producer closed gracefully. All messages flushed for topic '{topic_name}'.")
             else:
-                logger.critical("⚠️ Chưa flush hết dữ liệu khi đóng producer sau nạp metadata cơ bản.")
+                logger.critical(f"Producer closed with unflushed messages. Topic: '{topic_name}', Dropped count: {remaining_messages}.")

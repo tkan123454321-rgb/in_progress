@@ -1,28 +1,41 @@
 from typing import Optional, Dict, Any
 
 class PipelineBaseError(Exception):
-    """Lớp gốc cho toàn bộ hệ thống Data Pipeline."""
+    """
+    Base exception class for the entire Data Pipeline system.
+    
+    All custom exceptions in the pipeline must inherit from this class. 
+    It provides a standardized structure to attach contextual metadata (details) 
+    to the error, making structured logging and debugging much easier.
+    """
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         self.message = message
         self.details = details or {}
         
-        # Format hiển thị cực kỳ tường minh khi in ra log
-        detail_str = f" | Details: {self.details}" if self.details else ""
-        super().__init__(f"{self.message}: {detail_str}")
+        # Format the output clearly for logs, avoiding trailing colons if details are empty
+        error_msg = self.message
+        if self.details:
+            error_msg += f" | Details: {self.details}"
+            
+        super().__init__(error_msg)
 
 
 class RetryableAPIError(PipelineBaseError):
     """
-    Bắn ra khi gặp sự cố mạng hoặc phía Server API (Timeout, 500, 502, 503).
-    Báo hiệu cho luồng chính biết cần đem tin nhắn này đi thử lại.
+    Raised when a transient network or server-side API error occurs (e.g., Timeout, 500, 502, 503).
+    
+    This exception acts as a signal to the main orchestrator or Kafka consumer 
+    that the operation failed due to external factors, but it is safe to put 
+    the message back into the queue and retry later.
     """
     def __init__(self, ticker: str, reason: Exception, message_id: Optional[str] = None):
         super().__init__(
-            message=f"Sự cố API",
+            message="Transient API connectivity or server issue encountered",
             details={
                 "ticker": ticker, 
                 "message_id": message_id,
-                "reason_msg": f"{type(reason).__name__}: {str(reason)}"
+                "error_type": type(reason).__name__,
+                "error_reason": str(reason)
             }
         )
 
