@@ -1,42 +1,61 @@
 from typing_extensions import Literal
 from schema.producer_schema import BaseMetadata
-import polars as pl
-from time import time
 from dotenv import load_dotenv
-from utils.logger_config import setup_logger
+from common.core.logger_config import setup_logger
 from pyiceberg.exceptions import NoSuchTableError
 import pyarrow as pa
 from pyarrow import Table
-from utils.lakehouse_client import LakeHouseClient
+from common.clients.lakehouse_client import LakeHouseClient
 logger = setup_logger(component = "load")
 load_dotenv()
 
 
 class LakehouseLoader(LakeHouseClient):
     """
-    Class chuyên dụng để GHI (Load/Ingest) dữ liệu vào Lakehouse.
+    Specialized client for loading data into the Lakehouse.
+    
+    Inherits infrastructure connectivity from LakeHouseClient and provides 
+    methods to physically write PyArrow tables into Iceberg format on MinIO.
     """
     def __init__(self) -> None:
         super().__init__()
            
     def _put_lakehouse(
         self, 
-        config: BaseMetadata,  # 🎯 Nhận trực tiếp đối tượng đã khởi tạo
+        config: BaseMetadata,  
         arrow_table: pa.Table, 
         mode: Literal["append", "overwrite"] = "append"
     ) -> bool:
+        """
+        Writes a PyArrow table to an Iceberg table in the Bronze layer.
+        
+        Supports automatic schema evolution (union by name) and handles 
+        the initial bootstrapping if the table does not exist.
+        
+        Args:
+            config (BaseMetadata): config (BaseMetadata): The instance of data classes located in `schema.producer_schema`.
+            arrow_table (pa.Table): The in-memory PyArrow table to be written.
+            mode (Literal["append", "overwrite"], optional): Write mode. Defaults to "append".
+            
+        Returns:
+            bool: True if the write operation was successful.
+        """
 
-        # 1. Kiểm tra kiểu dữ liệu (Dùng TypeError chuẩn xác hơn ValueError)
+        # STEP 1: Input Validation (Fail-fast)
+        # Ensure the payload is strictly a PyArrow Table 
         if not isinstance(arrow_table, pa.Table):
-            logger.error(f"❌ Input không phải PyArrow Table, nhận được: {type(arrow_table)}")
-            raise TypeError("Input bắt buộc phải là PyArrow Table")
+            error_msg = f"Invalid input type. Expected PyArrow Table, received: {type(arrow_table)}"
+            logger.error(error_msg)
+            raise TypeError(error_msg)
 
         table_name = f"bronze.{config.bronze_layer_name}" # type: ignore
 
         try:
-            # 2. Bảng ĐÃ TỒN TẠI -> Load, Đồng bộ Schema và Ghi theo Mode
+            # STEP 2: Existing Table Workflow
+            # If the table exists, we load it, evolve the schema safely, and write the data.
             table = self.catalog.load_table(table_name)
-            
+            # Auto-schema evolution: Merge the new incoming schema with the existing Iceberg schema.
+            # This safely handles newly added columns from upstream APIs.
             with table.update_schema() as update:
                 update.union_by_name(arrow_table.schema)
                 
@@ -45,12 +64,13 @@ class LakehouseLoader(LakeHouseClient):
             else:
                 table.append(arrow_table)
                 
-            logger.debug(f"🧊 Đã cập nhật Schema và ghi ({mode}) thành công vào {table_name}")
+            logger.debug(f"Successfully synced schema and wrote ({mode}) data to '{table_name}'.")
             return True
 
         except NoSuchTableError:
-            # 3. Bảng CHƯA TỒN TẠI -> Tạo mới
-            # Lưu ý: Khi tạo bảng mới thì luôn luôn dùng append để đẩy data mẻ đầu tiên vào
+            # STEP 3: Initial Table Bootstrapping
+            # If the table doesn't exist yet, we create it using the strict schema 
+            # and partition specs defined in the configuration model.
             table = self.catalog.create_table(
                 identifier=table_name, 
                 schema=config.iceberg_schema,
@@ -58,5 +78,5 @@ class LakehouseLoader(LakeHouseClient):
                 )
             table.append(arrow_table)
             
-            logger.info(f"🧊 Đã tạo mới và ghi mẻ đầu tiên thành công vào {table_name}")
+            logger.info(f"Successfully created table and ingested the first batch into '{table_name}'.")
             return True

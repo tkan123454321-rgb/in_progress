@@ -34,10 +34,6 @@ models:
       +schema: gold
       +materialized: table
       +enabled: true
-    obt:
-      +schema: obt
-      +materialized: table
-      +enabled: true
 
   elementary:
     +schema: elementary

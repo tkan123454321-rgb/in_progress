@@ -1,7 +1,7 @@
-{ { config(materialized = 'table') } } WITH base_metrics AS (
+{{ config(materialized = 'table') }} WITH base_metrics AS (
     -- Lấy nguyên liệu đã được làm sạch và đủ điều kiện
     SELECT *
-    FROM { { ref('int_qmj_profitability') } }
+    FROM {{ ref('int_qmj_profitability') }}
     WHERE status = 'qualified'
 ),
 ranked_profitability AS (
@@ -102,12 +102,11 @@ SELECT ticker,
     z_cfoa,
     z_gmar,
     z_acc,
-    { { check_qmj_z_score_column('profitability') } } AS unqualified_reason,
+    {{ check_qmj_z_score_column('profitability') }} AS unqualified_reason,
     CASE
-        WHEN { { check_qmj_z_score_column('profitability') } } IS NULL THEN 'qualified'
+        WHEN {{ check_qmj_z_score_column('profitability') }} IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status -- Thêm các cột audit để track dữ liệu
-    { %
-set audit_cols = get_audit_columns('intermediate') % } { % for col in audit_cols % },
-    { { col.expr } } AS { { col.alias } } { % endfor % }
+    {% set audit_cols = get_audit_columns('intermediate') %} {% for col in audit_cols %},
+    {{ col.expr }} AS {{ col.alias }} {% endfor %}
 FROM z_profitability

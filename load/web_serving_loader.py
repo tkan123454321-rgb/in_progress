@@ -1,18 +1,31 @@
-from utils.lakehouse_client import LakeHouseClient
+"""
+Serving Layer Data Loader.
+
+This module orchestrates the movement of heavily transformed data (OBT - One Big Table) 
+from the analytical Lakehouse (Trino) to the operational serving database (PostgreSQL), 
+as well as exporting static assets for the frontend UI.
+"""
+
+from common.clients.lakehouse_client import LakeHouseClient
 from pathlib import Path
-from utils.postgres_client import PostgresClient
-from utils.logger_config import setup_logger
-from utils.other_utils import map_trino_to_pg_type
+from common.clients.postgres_client import PostgresClient
+from common.core.logger_config import setup_logger
+from common.clients.postgres_client import map_trino_to_pg_type
 from psycopg import sql
 from typing import Tuple, Any
 
 logger = setup_logger(component="load")
 
 class WebServingLoader:
+    """
+    Handles the synchronization of analytical data to the web serving layer.
+    Implements zero-downtime deployment patterns to ensure the frontend 
+    never queries an empty or partially loaded table.
+    """
     def __init__(self, pg_client: PostgresClient, lake_client: LakeHouseClient):
         """
-        Nhận 2 client đã được khởi tạo sẵn từ bên ngoài.
-        Maintenance chỉ làm nhiệm vụ điều phối (Orchestrator).
+        Initializes the loader by injecting pre-configured database clients.
+        Acts purely as an orchestrator for the existing connections.
         """
         self.pg_conn = pg_client.get_db_connection(db_name="ops_db")
         self.trino_conn = lake_client._get_trino_connection()
@@ -22,22 +35,27 @@ class WebServingLoader:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Ủy quyền dọn dẹp cho thư viện gốc"""
+        """Delegates connection teardown to the underlying client libraries."""
         if self.pg_conn:
             self.pg_conn.__exit__(exc_type, exc_val, exc_tb)
-            logger.info("🔒 Đã đóng kết nối tới PostgreSQL.")
+            logger.info("Closed connection to PostgreSQL.")
         if self.trino_conn:
             self.trino_conn.__exit__(exc_type, exc_val, exc_tb)
-            logger.info("🔒 Đã đóng kết nối tới Trino.")
+            logger.info("Closed connection to Trino.")
             
     def _extract_trino_payload(self)-> Tuple[str, str, list[tuple]]:
         """
-        Hàm nội bộ: Chuyên đi khai thác Schema và Dữ liệu từ Trino.
-        Trả về 3 món đồ chơi: final_sql_columns (để CREATE), column_names (để COPY), và rows (dữ liệu).
+        Extracts both the schema and the raw data from the Lakehouse's OBT layer.
+        
+        Returns:
+            Tuple containing:
+            - final_sql_columns: String formatted for CREATE TABLE statement.
+            - copy_columns_str: String formatted for COPY statement.
+            - rows: The actual data records.
         """
-        logger.info("🔍 Đang quét bản vẽ và dữ liệu từ Lakehouse (obt.obt_web)...")
+        logger.info("Extracting schema definition and data payload from Lakehouse (obt.obt_web).")
         with self.trino_conn.cursor() as cur:
-            # 1. Lấy Schema
+            # STEP 1: Extract Schema definitions
             cur.execute("""
                 SELECT column_name, data_type 
                 FROM information_schema.columns 
@@ -57,45 +75,49 @@ class WebServingLoader:
             final_sql_columns = ", ".join(key_values)
             copy_columns_str = ", ".join(col_names) # Ra dạng: "ticker", "qmj_score", ...
 
-            # 2. Lấy Data
+            # STEP 2: Extract Data records
             cur.execute("SELECT * FROM obt.obt_web")
             rows = cur.fetchall()
 
         return (final_sql_columns, copy_columns_str, rows)
     
     def sync_obt_to_postgres(self):
-        """hàm chính: Chuyên đi đồng bộ dữ liệu từ Trino về Postgres bằng cách tạo bảng tạm, COPY, rồi tráo bảng."""
+        """
+        Main execution method. Synchronizes data from Trino to PostgreSQL 
+        using a Zero-Downtime swap pattern.
+        """
         try:
+            # STEP 1: Fetch payload from Lakehouse
             final_sql_columns, copy_columns_str, rows = self._extract_trino_payload()
             
             if not rows:
-                logger.warning("⚠️ Bảng Lakehouse rỗng, dừng đồng bộ!")
+                logger.warning("Lakehouse table is empty. halting synchronization process.")
                 return
 
-            logger.info("🔥 Bắt đầu nạp Postgres cho bảng web.web_obt...")
+            logger.info("Initiating PostgreSQL synchronization for 'web.web_obt'.")
+            # STEP 2: Execute safe transaction block
             with self.pg_conn.transaction():
                 with self.pg_conn.cursor() as pg_cur:
                     
-                    # 1. Xây bảng tạm web.web_obt_temp
+                    # 2.1. Build temporary table
                     pg_cur.execute("DROP TABLE IF EXISTS web.web_obt_temp")
                     pg_cur.execute(f"CREATE TABLE web.web_obt_temp ({final_sql_columns})")  # type: ignore
-                    # 2. Xả lũ bằng COPY (Cú pháp SQL thuần túy, cực dễ đọc)
-                    logger.info(f"🌪️ Đang xả lũ {len(rows)} dòng bằng COPY...")
+                    # 2.2. Bulk insert via COPY (High-performance loading)
+                    logger.info(f"Executing bulk COPY for {len(rows)} records.")
                     copy_query = f"COPY web.web_obt_temp ({copy_columns_str}) FROM STDIN"
                     
                     with pg_cur.copy(copy_query) as copy_operation: # type: ignore
                         for row in rows:
                             copy_operation.write_row(row)
 
-                    # 3. Đánh Index trên bảng tạm (Bác nhớ sửa tên cột theo ý muốn)
-                    logger.info("⚡ Đang tạo Index...")
+                    # 2.3. Build indexes on the temporary table BEFORE swapping
                     self._create_optimal_indexes(pg_cur)
 
-                    # 4. Tráo Bảng
-                    logger.info("🔀 Đang tráo bảng (Zero-Downtime Swap)...")
+                    # 2.4. Zero-Downtime Table Swap
+                    logger.info("Performing zero-downtime table swap.")
                     pg_cur.execute("DROP TABLE IF EXISTS web.web_obt_old")
                     
-                    # Cất bảng cũ đi
+                    # Archive the current active table
                     pg_cur.execute("""
                         DO $$ 
                         BEGIN
@@ -105,10 +127,10 @@ class WebServingLoader:
                         END $$;
                     """)
                     
-                    # Đổi bảng tạm thành bảng chính
+                    # Promote the temporary table to active status
                     pg_cur.execute("ALTER TABLE web.web_obt_temp RENAME TO web_obt")
                     
-            logger.info("🎉 THÀNH CÔNG! Dữ liệu đã lên sóng.")
+            logger.info("Synchronization complete. Data is now live in PostgreSQL.")
 
         except Exception as e:
             logger.error(f"❌ Lỗi rồi: {e}")
@@ -119,20 +141,24 @@ class WebServingLoader:
         Hardcode 100% cho bảng web.web_obt_temp.
         Không tự đặt tên Index để tránh lỗi trùng lặp khi Swap bảng.
         """
-        logger.info("⚡ Đang xây dựng hệ thống Index siêu tốc cho bộ lọc Web...")
+        logger.info("Constructing analytical indexes on the temporary table.")
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("ticker")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("year", "quarter")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("qmj_rank")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("z_value_recent")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("z_momentum_recent")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("year", "quarter", "qmj_rank")')
-        logger.info("✅ Đã đánh Index xong! Bảng tạm sẵn sàng lên sóng.")
+        logger.info("Index construction complete.")
 
     def export_web_data(self):
+        """
+        Exports the finalized OBT table directly from the Iceberg catalog 
+        to a local CSV file for static frontend serving.
+        """
         try:
-            # 1. Load bảng OBT (bảng cuối cùng đã qua dbt xào nấu)
-            table_path = "obt.obt_web" 
-            logger.info(f"🚀 Đang bắt đầu xuất dữ liệu từ {table_path}...")
+
+            table_path = "gold.obt_web" 
+            logger.info(f"Initiating data export from Lakehouse table: '{table_path}'.")
             
             table = self.catalog.load_table(table_path)
             
@@ -142,10 +168,10 @@ class WebServingLoader:
             output_path = project_root / "web_ui" / "data_qmj.csv"
             df.write_csv(output_path)
             
-            logger.info(f"✅ Đã xuất {df.height} dòng ra {output_path} thành công!")
+            logger.info(f"Successfully exported {df.height} records to '{output_path}'.")
             
         except Exception as e:
-            logger.error(f"❌ Lỗi khi xuất dữ liệu: {str(e)}")
+            logger.error(f"Failed to export web data. Error: {e}", exc_info=True)
                 
                  
                     

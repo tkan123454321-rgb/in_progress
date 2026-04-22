@@ -1,6 +1,8 @@
-{ { config(materialized = 'table') } } WITH intermediate_data AS (
+{{ config(materialized = 'table') }} 
+
+WITH intermediate_data AS (
     SELECT *
-    FROM { { ref('int_qmj_scoring_profitability') } }
+    FROM {{ ref('int_qmj_scoring_profitability') }}
     WHERE status = 'qualified' -- Chỉ lấy hàng tuyển lên lớp Gold
 ),
 calculate_sum AS (
@@ -32,7 +34,11 @@ SELECT ticker,
     ) / NULLIF(
         STDDEV_SAMP(final_rank) OVER (PARTITION BY absolute_quarter),
         0
-    ) AS qmj_profitability_score { %
-set audit_cols = get_audit_columns('gold') % } { % for col in audit_cols % },
-    { { col.expr } } AS { { col.alias } } { % endfor % }
+    ) AS qmj_profitability_score 
+    
+    {% set audit_cols = get_audit_columns('gold') %} 
+    {% for col in audit_cols %}
+    , {{ col.expr }} AS {{ col.alias }} 
+    {% endfor %}
+
 FROM final_ranking

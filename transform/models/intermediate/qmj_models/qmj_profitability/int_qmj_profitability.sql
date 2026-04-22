@@ -1,4 +1,6 @@
-{ { config(materialized = 'table') } } WITH calc_wc AS (
+{{ config(materialized = 'table') }}
+
+WITH calc_wc AS (
     SELECT *,
         (
             total_equity - minority_interest - preferred_stock
@@ -6,7 +8,7 @@
         (
             current_assets - current_liabilities - cash_and_equivalents + short_term_debt + income_taxes_payable
         ) AS working_capital
-    FROM { { ref('int_ttm_metrics') } }
+    FROM {{ ref('int_ttm_metrics') }}
     WHERE ttm_status = 'valid_ttm'
 ),
 calc_delta AS (
@@ -46,7 +48,7 @@ calc_all_profitability AS (
 -- 🔥 Đưa Macro check xuống CTE này để SQL kịp nhận diện các cột gpoa, roe...
 apply_dq AS (
     SELECT *,
-        { { check_qmj_column('profitability') } } AS unqualified_reason
+        {{ check_qmj_column('profitability') }} AS unqualified_reason
     FROM calc_all_profitability
 )
 SELECT ticker,
@@ -64,7 +66,11 @@ SELECT ticker,
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
-    unqualified_reason { %
-set audit_cols = get_audit_columns('intermediate') % } { % for col in audit_cols % },
-    { { col.expr } } AS { { col.alias } } { % endfor % }
+    unqualified_reason
+    
+    {% set audit_cols = get_audit_columns('intermediate') %}
+    {% for col in audit_cols %}
+    , {{ col.expr }} AS {{ col.alias }}
+    {% endfor %}
+
 FROM apply_dq

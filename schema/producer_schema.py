@@ -1,3 +1,13 @@
+"""
+This module contains specific data classes defining attributes and methods
+tailored for each data type in the pipeline.
+By using Pydantic for robust data validation and Object-Oriented Programming (OOP) inheritance, the 
+architecture strictly adheres to the DRY (Don't Repeat Yourself) principle. 
+
+This design ensures easy readability, simple debugging, and quick extensibility 
+for integrating new data sources in the future.
+"""
+
 from abc import ABC, abstractmethod
 import json
 import os
@@ -13,50 +23,84 @@ from schema.schema_metadata import TABLE_REGISTRY
 from pyiceberg.schema import Schema
 from pyiceberg.partitioning import PartitionSpec
 from common.infrastructure.metadata_manager import MetadataManager
-from common.clients.postgres_client import PostgresClient
-from common.clients.lakehouse_client import LakeHouseClient
 from common.core.time_utils import get_target_anchor, get_fallback_year
 import math
 
 
-logger = setup_logger(component="schema")
+logger = setup_logger(component="infrastructure")
 class BaseMetadata(BaseModel,ABC):
-    """Lớp cha để định danh mọi loại Metadata trong hệ thống"""
+    """
+    Abstract Base Class defining the blueprint for all metadata schemas.
+    It manages shared attributes, Kafka message generation, and data transformation rules.
+    """
     model_config = ConfigDict(
         strict=True, 
         str_strip_whitespace=True, 
         extra='ignore'
     )
     
-    ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "other_data" # default, có thể override ở class con nếu muốn
+    ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "other_data" 
     batch_size: int 
     table_name_postgres: str = "ingestion_kafka_state"
     table_watermark_name_postgres: Optional[str] = "ingestion_watermark"
     url_template: str
     data_type : str
     bronze_layer_name: str 
-    
-    # 1. static fields (lấy thẳng từ YAML, không động theo từng mã)
     source: str = Field(default_factory=lambda: os.getenv("MY_SOURCE", "UNKNOWN"))
     created_at_ts: datetime = Field(default_factory=lambda: datetime.now(ZoneInfo("UTC")))
     batch_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    ticker: str = Field(default="") # field động, sẽ được update theo từng mã trong quá trình tạo message Kafka
+    ticker: str = Field(default="") # Dynamic field (Updated per ticker during message generation)
     
     def __enter__(self):
-        """Khởi tạo tiêu chuẩn cho mọi class con"""
-        logger.info(f"🚪 [BASE] Bắt đầu phiên làm việc với topic: {self.data_type}")
+        logger.info(f"Initiating pipeline session. Data Type: '{self.data_type}'.")
         return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            logger.error(f"Pipeline session interrupted for '{self.__class__.__name__}'. Error: {exc_val}", exc_info=True)
+            return False
+        logger.info(f"Pipeline session closed successfully. Data Type: '{self.data_type}'.")
+              
+    
+    def _create_kafka_message(self, ticker: str, batch_id: str, **kwargs) -> Tuple[str, bytes]:
+        """
+        A unified helper method used by all child classes to generate a Kafka payload.
+        """
+        # STEP 1: Prepare the dynamic fields to update
+        update_data = {"ticker": ticker, "batch_id": batch_id}
+        if kwargs:
+            update_data.update(kwargs)
+            
+        # STEP 2: Create a lightweight copy of the model with the new values
+        updated_instance = self.model_copy(update=update_data)
+        
+        # STEP 3: Serialize to JSON bytes (filtering only required tracking fields)
+        message_bytes = updated_instance.model_dump_json(
+            include={ 
+                "ticker", "batch_id", "data_type", "source", 
+                "created_at_ts", "url" 
+            },
+            ensure_ascii=False
+        ).encode('utf-8')
+        
+        return ticker, message_bytes
     
     def _generate_kafka_message(self, 
                                  ticker_list: list[str], 
                                  metadata_manager: MetadataManager, 
                                  batch_id: str ):       
-        """Hàm trừu tượng, bắt buộc class con phải implement để tạo message Kafka"""
+        """
+        Abstract method to generate Kafka claim-check messages.
+        Must be implemented by child classes to yield tuples of (ticker, [message_bytes]).
+        """
     pass
 
     def transform_message(self, msg: dict[str, Any], api_data: Any) -> dict:
+        """
+        Default transformation logic. Appends the heavy API payload to the Kafka message.
+        """
         if not isinstance(api_data, list):
-            raise ValueError(f"Dữ liệu Historical phải là List, nhưng lại nhận được: {type(api_data)}")
+            raise TypeError(f"Expected API data to be a List, but received: {type(api_data)}")
         processed_time = datetime.now(ZoneInfo("UTC"))
         return {
                 **msg,  
@@ -64,28 +108,23 @@ class BaseMetadata(BaseModel,ABC):
                 "message_processed_time": processed_time                   
             }
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        # 1. Logic xử lý lỗi chung (Nếu có lỗi văng ra trong khối with)
-        if exc_type:
-            logger.error(f"❌ Luồng {self.__class__.__name__} bị gián đoạn do lỗi: {exc_val}")
-            return False
-        logger.info(f"đóng kết nối thành công cho class dữ liệu {self.__class__.__name__}")
-              
     
     @property
     def iceberg_schema(self) -> Schema:
-        """Tự động tra sổ lấy Schema dựa vào data_type của Class con"""
+        """Retrieves the exact Iceberg schema from the global registry."""
         if self.bronze_layer_name not in TABLE_REGISTRY:
-            raise ValueError(f"Chưa định nghĩa Schema cho bảng: {self.bronze_layer_name}")
+            raise ValueError(f"Schema not found in registry for table: '{self.bronze_layer_name}'")
         return TABLE_REGISTRY[self.bronze_layer_name]["schema"]
 
     @property
     def iceberg_partition_spec(self) -> PartitionSpec:
-        """Tự động tra sổ lấy Partition Spec dựa vào data_type của Class con"""
+        """Retrieves the Iceberg partition specification from the global registry."""
         if self.bronze_layer_name not in TABLE_REGISTRY:
-            raise ValueError(f"Chưa định nghĩa Partition cho bảng: {self.bronze_layer_name}")
+            raise ValueError(f"Partition Spec not found in registry for table: '{self.bronze_layer_name}'")
         return TABLE_REGISTRY[self.bronze_layer_name]["partition_spec"]
-
+# ==========================================
+# Specific Data Types classes (Inherit from BaseMetadata)
+# ==========================================
 class Fundamental(BaseMetadata):
     batch_size : int = 100
     ticker_list_mode : str = "fundamental"
@@ -104,33 +143,10 @@ class Fundamental(BaseMetadata):
         """Chỉ gọi hàm nhân bản cực nhẹ của object."""
         for ticker in ticker_list:
             ticker, message_bytes = self._create_kafka_message(ticker=ticker, batch_id=batch_id)
-            
-            # Bọc cái message_bytes vào trong 1 cái list
-            
             yield ticker, [message_bytes]
-
-    def _create_kafka_message(self, ticker: str, batch_id: str) -> Tuple[str, bytes]:
-        """Tạo payload và trả về (ticker, bytes)"""
-        # model_copy update data động cực nhanh mà không chạy lại validation rule
-        updated_instance = self.model_copy(update={"ticker": ticker,
-                                                   "batch_id": batch_id
-                                                   })
-        
-        message_bytes = updated_instance.model_dump_json(
-            include={ # những field data nào sẽ được đưa vào message Kafka, có thể tùy chỉnh ở đây nếu muốn
-                "ticker", 
-                "batch_id", 
-                "data_type", 
-                "source", 
-                "created_at_ts", 
-                "url" 
-            },
-            ensure_ascii=False
-        ).encode('utf-8')
-        
-        return ticker, message_bytes
     
     def transform_message(self, msg: dict[str, Any], api_data: Any) -> dict:
+        # safely convert the dict/list API data into a JSON string
         processed_time = datetime.now(ZoneInfo("UTC"))
         msg.update({
             "data": json.dumps(api_data, ensure_ascii=False),
@@ -139,8 +155,11 @@ class Fundamental(BaseMetadata):
         return msg
     
     def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> pa.Table:
+        # STEP 1: Parse the memory buffer into a Polars LazyFrame
+        # STEP 2: Add ingestion timestamps
+        # STEP 3: Execute the computation and convert to PyArrow Table
         if not buffer:
-            raise ValueError("Danh sách records trống.")
+            raise ValueError("Data buffer is empty. Cannot build PyArrow payload.")
         
         lf = pl.LazyFrame(buffer)
         df = lf.collect()
@@ -151,21 +170,29 @@ class Fundamental(BaseMetadata):
         return df.to_arrow()
     
 class Fundamental_1(Fundamental):
+    """
+    Handles core company information data.
+    Includes data points such as company type, outstanding shares, 
+    3-month average trading volume, and foreign ownership ratio,...
+    """
     data_type: str = "fundamental_1"
     bronze_layer_name: str = "fundamental_1"
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/fundamental"
     
 class Fundamental_2(Fundamental):
+    """
+    Handles exchange-related company information.
+    Includes data points such as the listed exchange name and the current listing status.
+    """
     data_type: str = "fundamental_2"
     bronze_layer_name: str = "fundamental_2"
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}"
  
- 
- 
- 
- 
     
 class HistoricalQuotes(BaseMetadata):
+    """
+    Handles historical price and volume data for individual tickers.
+    """
     batch_size: int = 10
     default_limit: int = 500
     default_offset: int = 0
@@ -176,7 +203,7 @@ class HistoricalQuotes(BaseMetadata):
     end_date: date = Field(default_factory=lambda: date.today() - timedelta(days=1))
     
     
-    
+    # after calling `create_kafka_message`, the `url` field will be dynamically computed based on the updated `ticker`and other data fields for each message
     @computed_field
     def url(self) -> str:
         return self.url_template.format(
@@ -191,15 +218,18 @@ class HistoricalQuotes(BaseMetadata):
     def _generate_kafka_message(self, ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
-            raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+            raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
+        # STEP 1: update the list of tickers with latest reference ticker list from lakehouse
+        # STEP 2: Synchronize watermarks to determine the latest date to fetch data for each tickers.
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config = self) 
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config = self) 
-            # 1. Tính số ngày theo lịch (Calendar Days)
+            #  Calculate calendar days difference
             calendar_days = (self.end_date - start_date).days 
             if calendar_days < 0: 
                 continue
+            # STEP 3: Estimate trading days to set API limits (approx. 250 trading days per year)
             estimated_trading_days = int(calendar_days * (250 / 365)) + 20
             ticker, message_bytes = self._create_kafka_message(
                 ticker=ticker,
@@ -208,32 +238,13 @@ class HistoricalQuotes(BaseMetadata):
                 batch_id = batch_id,
                 limit=estimated_trading_days
             )
-            # Nhét vào giỏ
             yield ticker, [message_bytes]
-
-    def _create_kafka_message(self, ticker: str, start_date: date, offset: int, batch_id: str, limit: int) -> Tuple[str, bytes]:
-        
-        updated_instance = self.model_copy(update={
-            "ticker": ticker, 
-            "start_date": start_date,
-            "default_limit": limit,
-            "default_offset": offset,
-            "batch_id": batch_id
-
-        })
-        
-        message_bytes = updated_instance.model_dump_json(
-            include={ 
-                "ticker", "batch_id", "data_type", "source", 
-                "created_at_ts", "url" 
-            },
-            ensure_ascii=False
-        ).encode('utf-8')
-        return ticker, message_bytes
     
     def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
         lf = pl.LazyFrame(buffer)
+        # STEP 1: Explode the list of historical records into individual rows
         df = lf.explode("data")
+        # STEP 2: Extract nested fields and assign appropriate data types
         df = df.with_columns([
             pl.col("data").struct.field("date").cast(pl.Datetime).dt.date().alias("event_date"),
             pl.col("data").struct.field("date").cast(pl.Datetime).dt.year().cast(pl.Int32).alias("year"),
@@ -245,11 +256,15 @@ class HistoricalQuotes(BaseMetadata):
         return df.collect().to_arrow()
 
 class VNINDEXHistoricalQuotes(HistoricalQuotes):
+    """Handles historical quotes specifically for the VNINDEX."""
     ticker_list_mode: Literal['fundamental', 'other_data', 'vnindex'] = "vnindex"
     data_type : str = "vnindex_historical_quotes"
     
 
 class FinancialReportsQuarter(BaseMetadata):
+    """
+    Base class for handling quarterly financial report data for individual tickers.
+    """
     bronze_layer_name: str = "financial_reports_quarter"
     batch_size: int = 10
     default_limit : int = 0
@@ -277,9 +292,11 @@ class FinancialReportsQuarter(BaseMetadata):
     def _generate_kafka_message(self,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
-            raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+            raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
+        
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
+        
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config=self) 
             start_year = start_date.year
@@ -288,9 +305,9 @@ class FinancialReportsQuarter(BaseMetadata):
             limit += 2
             if limit <= 0:
                 logger.warning(
-                    f"[FINANCIAL_REPORTS][SKIP_TICKER] Bỏ qua mã {ticker:<5} | "
-                    f"Lý do: Watermark DB (Q{start_quarter}/{start_year}: {start_date}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
-                    f"Calc_Limit: {limit} <= 0"
+                    f"[SKIP_TICKER] Ticker {ticker:<5} | "
+                    f"Reason: Watermark (Q{start_quarter}/{start_year}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
+                    f"Calculated Limit: {limit}"
                 )
                 continue
 
@@ -300,38 +317,20 @@ class FinancialReportsQuarter(BaseMetadata):
                 type_id=self.type_id,
                 batch_id=batch_id
             )
-            # Nhét vào giỏ
             yield ticker, [message_bytes]
         
     
-    def _create_kafka_message(self, ticker: str, limit: int, type_id: int, batch_id: str) -> Tuple[str, bytes]:
-        
-        updated_instance = self.model_copy(update={
-            "ticker": ticker, 
-            "default_limit": limit,
-            "type_id": type_id,
-            "batch_id": batch_id
-        })
-        
-        message_bytes = updated_instance.model_dump_json(
-            include={ 
-                "ticker", "batch_id", "data_type", "source", 
-                "created_at_ts", "url" 
-            },
-            ensure_ascii=False
-        ).encode('utf-8')
-        return ticker, message_bytes
-    
     def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
         lf = pl.LazyFrame(buffer)
+        # STEP 1: Flatten nested JSON structures to extract individual indicator values
         df = lf.explode("data").unnest("data").explode("values").unnest("values").select([
                 pl.col("ticker"),
                 pl.col("batch_id"),
                 pl.col("data_type"),
                 pl.col("source"),
                 pl.col("url"),
-                pl.col("id").alias("indicator_id").cast(pl.Int32),     # Lấy cột id và đổi tên
-                pl.col("name").alias("indicator_name"), # Lấy cột name và đổi tên
+                pl.col("id").alias("indicator_id").cast(pl.Int32),     
+                pl.col("name").alias("indicator_name"), 
                 pl.col("year").cast(pl.Int32),
                 pl.col("quarter").cast(pl.Int32),
                 pl.col("value").cast(pl.Float64),
@@ -342,6 +341,7 @@ class FinancialReportsQuarter(BaseMetadata):
         return df.collect().to_arrow()
 
 class FundamentalQuarter(FinancialReportsQuarter):
+    """This class handles quarterly fundamental metrics."""
     data_type: str = "fundamental_quarter"
     url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/financial-data?type=Q&count={limit}"
     bronze_layer_name: str = "fundamental_quarter"
@@ -358,9 +358,11 @@ class FundamentalQuarter(FinancialReportsQuarter):
     def _generate_kafka_message(self,  ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str
 )-> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
-            raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
+           raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
+       
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
+        
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config=self) 
             start_year = start_date.year
@@ -369,9 +371,9 @@ class FundamentalQuarter(FinancialReportsQuarter):
             limit += 2
             if limit <= 0:
                 logger.warning(
-                    f"[FINANCIAL_REPORTS][SKIP_TICKER] Bỏ qua mã {ticker:<5} | "
-                    f"Lý do: Watermark DB (Q{start_quarter}/{start_year}: {start_date}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
-                    f"Calc_Limit: {limit} <= 0"
+                    f"[SKIP_TICKER] Ticker {ticker:<5} | "
+                    f"Reason: Watermark (Q{start_quarter}/{start_year}) >= Target (Q{self.target_quarter}/{self.target_year}) | "
+                    f"Calculated Limit: {limit}"
                 )
                 continue
 
@@ -380,25 +382,8 @@ class FundamentalQuarter(FinancialReportsQuarter):
                 limit=limit,
                 batch_id=batch_id
             )
-            # Nhét vào giỏ
+       
             yield ticker, [message_bytes]
-    
-    def _create_kafka_message(self, ticker: str, limit: int, batch_id: str) -> Tuple[str, bytes]:
-        
-        updated_instance = self.model_copy(update={
-            "ticker": ticker, 
-            "default_limit": limit,
-            "batch_id": batch_id
-        })
-        
-        message_bytes = updated_instance.model_dump_json(
-            include={ 
-                "ticker", "batch_id", "data_type", "source", 
-                "created_at_ts", "url" 
-            },
-            ensure_ascii=False
-        ).encode('utf-8')
-        return ticker, message_bytes
     
 
     def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
@@ -406,10 +391,9 @@ class FundamentalQuarter(FinancialReportsQuarter):
         lf = pl.LazyFrame(buffer)
         
         df = (
-            lf.explode("data")   # 1. Tách list các quý thành từng dòng
-            .unnest("data")    # 2. Đập vỡ vỏ bọc để lòi ra year, quarter, financialValues...
+            lf.explode("data")   # STEP 1: Split quarters into individual rows
+            .unnest("data")    # STEP 2: Explode the nested structure to access year, quarter, financialValues...
             .select([
-                # --- Các cột Metadata (Giữ nguyên như schema cũ của bác) ---
                 pl.col("ticker"),
                 pl.col("batch_id"),
                 pl.col("data_type"),
@@ -443,6 +427,9 @@ class FinancialReportsQuarterCashFlowIndirect(FinancialReportsQuarter):
     
 
 class FinancialReportsYear(BaseMetadata):
+    """
+    Handles yearly financial reports data extraction.
+    """
     bronze_layer_name: str = "financial_reports_year"
     batch_size: int = 10
     default_limit : int = 0
@@ -466,40 +453,31 @@ class FinancialReportsYear(BaseMetadata):
         )
         
     def _generate_kafka_message(self, ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str) -> Iterable[Tuple[str, List[bytes]]]:
-        """
-        Generate messages for yearly financial reports.
-        Logic: target_year - start_year + 1
-        """
         if not self.table_watermark_name_postgres:
-            raise ValueError(f"⚠️ [{self.data_type}] Bắt buộc phải có tên bảng Watermark để chạy loại dữ liệu này!")
-        # 1. Đồng bộ danh sách ticker trước
+           raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
+
+
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(
             config=self
         )
 
         for ticker in ticker_list:
-            # 2. Lấy start_date từ Watermark (vốn là updated_at của mẻ thành công cuối)
             start_date = metadata_manager._get_smart_start_date(
                 ticker=ticker, 
                 config=self
             )
             
             start_year = start_date.year
-            
-            # 3. Tính toán Limit theo công thức "Thần toán" của ông giáo
-            # Ví dụ: target_year = 2025, start_year = 2020 -> limit = 6
+        
             limit = (self.target_year - start_year) + 1
             
-            # 4. Kiểm tra điều kiện dừng (Nếu đã cập nhật đến năm hiện tại rồi)
             if limit <= 0:
                 logger.debug(f"⏭️ [{self.data_type.upper()}] {ticker} is up to date (Start: {start_year}, Target: {self.target_year}).")
                 continue
 
-            # 5. Buffer nhẹ (Tùy chọn): Nếu ông giáo muốn lấy thừa 1 năm cho chắc
-            # limit += 1 
 
-            # 6. Tạo tin nhắn và yield
+
             ticker, message_bytes = self._create_kafka_message(
                 ticker=ticker,
                 limit=limit,
@@ -507,24 +485,6 @@ class FinancialReportsYear(BaseMetadata):
                 type_id=self.type_id
             )
             yield ticker, [message_bytes]
-    
-    def _create_kafka_message(self, ticker: str, limit: int, batch_id: str, type_id: int) -> Tuple[str, bytes]:
-        
-        updated_instance = self.model_copy(update={
-            "ticker": ticker, 
-            "default_limit": limit,
-            "batch_id": batch_id, 
-            "type_id": type_id
-        })
-            
-        message_bytes = updated_instance.model_dump_json(
-            include={ 
-                "ticker", "batch_id", "data_type", "source", 
-                "created_at_ts", "url" 
-            },
-            ensure_ascii=False
-        ).encode('utf-8')
-        return ticker, message_bytes
     
     
     def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> Any:
@@ -535,8 +495,8 @@ class FinancialReportsYear(BaseMetadata):
                 pl.col("data_type"),
                 pl.col("source"),
                 pl.col("url"),
-                pl.col("id").alias("indicator_id").cast(pl.Int32),     # Lấy cột id và đổi tên
-                pl.col("name").alias("indicator_name"), # Lấy cột name và đổi tên
+                pl.col("id").alias("indicator_id").cast(pl.Int32),     
+                pl.col("name").alias("indicator_name"),
                 pl.col("year").cast(pl.Int32),
                 pl.col("quarter").cast(pl.Int32), 
                 pl.col("value").cast(pl.Float64),
