@@ -6,10 +6,10 @@
     unique_key=['ticker', 'year', 'quarter']
 ) }}
 
-{% set indicators = get_financial_reports_column('fundamental_quarter') %}
+{% set indicators = get_fundamental_columns('fundamental_quarter') %}
 {% set audit_cols = get_audit_columns('silver') %} 
 
-WITH deduped_bronze AS (
+WITH deduped_data AS (
     SELECT 
         *,
         ROW_NUMBER() OVER (
@@ -28,8 +28,8 @@ WITH deduped_bronze AS (
 
 applied_dq_rules AS (
     SELECT *,
-        {{ dq_check_financial_reports('fundamental_quarter') }} AS unqualified_reason
-    FROM deduped_bronze
+        {{ check_fundamental_columns('fundamental_quarter') }} AS unqualified_reason
+    FROM deduped_data
     WHERE rn = 1
 )
 
@@ -38,22 +38,20 @@ SELECT
     ticker,
     year,
     quarter,
-    
-    -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
+
     {% for ind in indicators %}
         COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
     {% endfor %}
 
-    -- Cột Audit
     {% for col in audit_cols %}
     {{ col.expr }} AS {{ col.alias }},
     {% endfor %}
     
-    -- Đánh cờ trạng thái
     CASE 
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
+    
     unqualified_reason
 
 FROM applied_dq_rules

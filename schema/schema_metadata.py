@@ -70,7 +70,12 @@ FUNDAMENTAL_QUARTER_SCHEMA = Schema(
     NestedField(field_id=4, name="value", field_type=StringType(), required=False),
     *COMMON_META_FIELDS  
 )
-
+DIVIDEND_SCHEMA = Schema(
+    NestedField(field_id=1, name="ticker", field_type=StringType(), required=False),
+    NestedField(field_id=2, name="year", field_type=IntegerType(), required=False),
+    NestedField(field_id=3, name="data", field_type=StringType(), required=False),
+    *COMMON_META_FIELDS  
+)
 # =======================================================================
 #  PARTITION & SORT 
 # =======================================================================
@@ -144,6 +149,11 @@ TABLE_REGISTRY = {
     },
     "fundamental_quarter": {
         "schema": FUNDAMENTAL_QUARTER_SCHEMA,
+        "partition_spec": PARTITION_BY_REPORT_YEAR, 
+        "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
+    },
+    "dividend_year": {
+        "schema": DIVIDEND_SCHEMA,
         "partition_spec": PARTITION_BY_REPORT_YEAR, 
         "sort_order": GLOBAL_SORT_BY_BRONZE_TIME
     }

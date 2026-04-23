@@ -162,12 +162,21 @@ class Fundamental(BaseMetadata):
             raise ValueError("Data buffer is empty. Cannot build PyArrow payload.")
         
         lf = pl.LazyFrame(buffer)
-        df = lf.collect()
-        df = df.with_columns(
-            pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time"),
-            pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC")
+        df = (
+            lf.select([
+                pl.col("ticker"),
+                pl.col("data"), 
+                pl.col("batch_id"),
+                pl.col("data_type"),
+                pl.col("source"),
+                pl.col("url"),
+                pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
+                pl.col("message_processed_time"), 
+                pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
+            ])
         )
-        return df.to_arrow()
+        
+        return df.collect().to_arrow()
     
 class Fundamental_1(Fundamental):
     """
@@ -223,6 +232,7 @@ class HistoricalQuotes(BaseMetadata):
         # STEP 2: Synchronize watermarks to determine the latest date to fetch data for each tickers.
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config = self) 
+
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config = self) 
             #  Calculate calendar days difference
@@ -236,7 +246,7 @@ class HistoricalQuotes(BaseMetadata):
                 start_date=start_date,
                 offset=self.default_offset,
                 batch_id = batch_id,
-                limit=estimated_trading_days
+                default_limit=estimated_trading_days
             )
             yield ticker, [message_bytes]
     
@@ -294,6 +304,7 @@ class FinancialReportsQuarter(BaseMetadata):
         if not self.table_watermark_name_postgres:
             raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
         
+        
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
         
@@ -313,7 +324,7 @@ class FinancialReportsQuarter(BaseMetadata):
 
             ticker, message_bytes = self._create_kafka_message(
                 ticker=ticker,
-                limit=limit,
+                default_limit=limit,
                 type_id=self.type_id,
                 batch_id=batch_id
             )
@@ -362,7 +373,7 @@ class FundamentalQuarter(FinancialReportsQuarter):
        
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
         metadata_manager.sync_watermark(config=self) 
-        
+
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(ticker, config=self) 
             start_year = start_date.year
@@ -379,7 +390,7 @@ class FundamentalQuarter(FinancialReportsQuarter):
 
             ticker, message_bytes = self._create_kafka_message(
                 ticker=ticker,
-                limit=limit,
+                default_limit=limit,
                 batch_id=batch_id
             )
        
@@ -455,13 +466,10 @@ class FinancialReportsYear(BaseMetadata):
     def _generate_kafka_message(self, ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str) -> Iterable[Tuple[str, List[bytes]]]:
         if not self.table_watermark_name_postgres:
            raise ValueError(f"[{self.data_type}] Watermark table name is required to run this data type.")
-
-
+       
         metadata_manager.reconcile_watermark_from_lakehouse(config=self)
-        metadata_manager.sync_watermark(
-            config=self
-        )
-
+        metadata_manager.sync_watermark(config=self)
+        
         for ticker in ticker_list:
             start_date = metadata_manager._get_smart_start_date(
                 ticker=ticker, 
@@ -480,7 +488,7 @@ class FinancialReportsYear(BaseMetadata):
 
             ticker, message_bytes = self._create_kafka_message(
                 ticker=ticker,
-                limit=limit,
+                default_limit=limit,
                 batch_id=batch_id,
                 type_id=self.type_id
             )
@@ -523,3 +531,60 @@ class FinancialReportsYearCashFlowIndirect(FinancialReportsYear):
     data_type: str = "cash_flow_indirect_year"
     type_id: int = 4
     
+class Dividend(BaseMetadata):
+    """
+    Handles dividend data extraction for individual tickers.
+    """
+    batch_size: int = 10
+    default_limit : int = 0
+    data_type: str = "dividend"
+    bronze_layer_name: str = "dividend_year"
+    table_watermark_name_postgres: Optional[str] = None
+    url_template: str = "https://restv2.{source}.vn/symbols/{ticker}/dividends?count={limit}"
+    start_date: date = Field(default_factory=lambda: date(get_fallback_year(), 1, 1))
+    end_date: date = Field(default_factory=lambda: date.today() - timedelta(days=1))
+    
+    @computed_field
+    def url(self) -> str:
+        return self.url_template.format(
+            source=self.source, 
+            ticker=self.ticker, 
+            limit=self.default_limit
+        )
+
+    def _generate_kafka_message(self, ticker_list: list[str], metadata_manager: MetadataManager, batch_id: str) -> Iterable[Tuple[str, List[bytes]]]:
+        for ticker in ticker_list:
+            limit = (date.today().year - self.start_date.year) + 1
+
+            ticker, message_bytes = self._create_kafka_message(
+                ticker=ticker,
+                default_limit=limit,
+                batch_id=batch_id,
+            )
+            yield ticker, [message_bytes]
+    
+    def _build_arrow_payload_lazy(self, buffer: list[dict[str, Any]]) -> pa.Table:
+        """
+        Converts the message buffer into a PyArrow Table using Polars LazyFrame for optimized execution.
+        """
+        if not buffer:
+            raise ValueError("Data buffer is empty. Cannot build PyArrow payload.")
+        
+        lf = pl.LazyFrame(buffer)
+        df = (
+            lf.explode("data")
+              .select([
+                  pl.col("ticker"),
+                  pl.col("data").struct.field("year").cast(pl.Int32).alias("year"),
+                  pl.col("data").struct.json_encode().alias("data"),
+                  pl.col("batch_id"),
+                  pl.col("data_type"),
+                  pl.col("source"),
+                  pl.col("url"),
+                  pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
+                  pl.col("message_processed_time").str.to_datetime(time_unit="us", time_zone="UTC"),
+                  pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
+              ])
+        )
+        
+        return df.collect().to_arrow()

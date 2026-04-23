@@ -7,6 +7,7 @@ test-paths: ["tests"]
 analysis-paths: ["analyses"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
+docs-paths: ["docs"]
 
 
 clean-targets: [target, logs, .user.yml]
@@ -72,12 +73,9 @@ models:
       dbt_artifacts:
         dbt_artifacts_hashes:
           +materialized: table
-      
-
-
 
 seeds:
-  +schema: bronze
+  +schema: seeds
 
 data_tests:
   transform:
@@ -104,8 +102,6 @@ vars:
     detection_delay: 
       period: day 
       count: 1
-    # timestamp_column: loaded_at # set at silver layer level
-    # where_expression: EXTRACT(DOW FROM timestamp_column) BETWEEN 2 AND 6 # set at silver layer level
 
 query-comment:
   comment: >-

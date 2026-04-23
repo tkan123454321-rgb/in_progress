@@ -1,11 +1,11 @@
 {{ config(
     materialized='incremental',
     on_schema_change='sync_all_columns',
-    tags=['staging', 'fundamental_quarter'], 
+    tags=['staging', 'quarter'], 
     incremental_strategy='append'
 ) }}
 
-{% set indicators = get_financial_reports_column('fundamental_quarter') %}
+{% set indicators = get_fundamental_column('fundamental_quarter') %}
 {% set audit_cols = get_audit_columns('staging') %} 
 
 with raw_source as (

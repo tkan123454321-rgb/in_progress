@@ -65,7 +65,7 @@ pivoted_data AS (
 --bước 3: Áp dụng quy tắc DQ để tạo cột unqualified_reason
 applied_dq_rules AS (
     SELECT *,
-        {{ dq_check_financial_reports('income_statement') }} AS unqualified_reason
+        {{ check_financial_reports('income_statement') }} AS unqualified_reason
     FROM pivoted_data
 )
 SELECT 

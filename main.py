@@ -15,24 +15,25 @@ from utils.logger_config import setup_logger
 # %%
 from ingestion.ingest_main import ingest_main
 from load.load_main import load_main
-from schema.producer_schema import FinancialReportsYearBalanceSheet, FinancialReportsYearIncomeStatement, FinancialReportsYearCashFlowDirect, FinancialReportsYearCashFlowIndirect, FinancialReportsYear, BaseMetadata, HistoricalQuotes, FinancialReportsQuarterCashFlowDirect, FinancialReportsQuarterCashFlowIndirect, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterBalanceSheet, FundamentalQuarter, VNINDEXHistoricalQuotes, Fundamental_1, Fundamental_2
-financial_report_list = [
-    FinancialReportsQuarterBalanceSheet,
-    FinancialReportsQuarterIncomeStatement,
-    FinancialReportsQuarterCashFlowDirect,
-    FinancialReportsQuarterCashFlowIndirect,
-]
-historical =[
-    HistoricalQuotes
-]
-fundamental =[
-    Fundamental_1,
-    Fundamental_2
-]
-for model_cls in fundamental:
-    load_main(
-        model_cls=model_cls
-    )
+from schema.producer_schema import FinancialReportsYearBalanceSheet, FinancialReportsYearIncomeStatement, FinancialReportsYearCashFlowDirect, FinancialReportsYearCashFlowIndirect, FinancialReportsYear, BaseMetadata, HistoricalQuotes, FinancialReportsQuarterCashFlowDirect, FinancialReportsQuarterCashFlowIndirect, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterBalanceSheet, FundamentalQuarter, VNINDEXHistoricalQuotes, Fundamental_1, Fundamental_2, Dividend
+# financial_report_list = [
+#     FinancialReportsQuarterBalanceSheet,
+#     FinancialReportsQuarterIncomeStatement,
+#     FinancialReportsQuarterCashFlowDirect,
+#     FinancialReportsQuarterCashFlowIndirect,
+# ]
+# historical =[
+#     HistoricalQuotes
+# ]
+# fundamental =[
+#     Fundamental_1,
+#     Fundamental_2
+# ]
+# for model_cls in fundamental:
+#     load_main(
+#         model_cls=model_cls
+#     )
+load_main(model_cls = Dividend)
 
 
 # %%
@@ -94,31 +95,63 @@ with LakehouseMaintenance(lake_client=LakeHouseClient(), pg_client=PostgresClien
 
 
 # %%
-from load.web_serving_loader import WebServingLoader
-from utils.lakehouse_client import LakeHouseClient
-from utils.postgres_client import PostgresClient
-with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
-    loader.sync_obt_to_postgres()
+import polars as pl
+import json
+raw_data ="""[
+    {
+        "year": 2023,
+        "cashDividend": 0.0,
+        "stockDividend": 18.0,
+        "totalAssets": 630500685000000.0,
+        "stockHolderEquity": 50098280000000.0
+    },
+    {
+        "year": 2024,
+        "cashDividend": 500.0,
+        "stockDividend": 0.0,
+        "totalAssets": 747478069000000.0,
+        "stockHolderEquity": 58067344000000.0
+    },
+    {
+        "year": 2025,
+        "cashDividend": 500.0,
+        "stockDividend": 24.0,
+        "totalAssets": 892008709000000.0,
+        "stockHolderEquity": 68130938000000.0
+    },
+    {
+        "year": 2026,
+        "cashDividend": 0.0,
+        "stockDividend": 0.0,
+        "totalAssets": null,
+        "stockHolderEquity": null
+    }
+]"""
+
+full_data =[{
+    "ticker": "AAA",
+    "url": "https://example.com/AAA/financials",
+    "data": json.loads(raw_data)
+},
+{
+    "ticker": "BBB",
+    "url": "https://example.com/BBB/financials",
+    "data": json.loads(raw_data)
+}]
+df = pl.DataFrame(full_data)
+df = df.explode("data").unnest("data")
+print(df)
+
+
 
 # %%
-from load.web_serving_loader import WebServingLoader
-from utils.lakehouse_client import LakeHouseClient
-from utils.postgres_client import PostgresClient
-with WebServingLoader(pg_client=PostgresClient(), lake_client=LakeHouseClient()) as loader:
-    loader.export_web_data()
+
 # %%
-class NhanVien:
-    def __init__(self, ten, tuoi):
-        self.ten = ten
-        self.tuoi = tuoi
-
-# Tạo ra một object tên là bác
-qmj = NhanVien("Bác QMJ", 30)
-
-# 1. Bác gọi thuộc tính kiểu bình thường (Đi cửa chính)
-print(qmj.ten)  # In ra: Bác QMJ
-
-# 2. Vén bức màn bí mật: Xem cái "Nhật ký" của object này có gì?
-print(qmj.__dict__)  
-# In ra: {'ten': 'Bác QMJ', 'tuoi': 30}
+from common.clients.api_client import _get_session
+with _get_session() as session:
+    response = session.get("https://restv2.fireant.vn/symbols/SHB/dividends?count=9")
+    print(response.json())
+# %%
+from common.core.time_utils import get_fallback_year
+print(get_fallback_year())
 # %%

@@ -9,14 +9,14 @@
 {% set indicators = get_financial_reports_column('historical_quotes') %}
 {% set audit_cols = get_audit_columns('silver') %}
 
-WITH deduped_staging AS (
+WITH deduped_data AS (
     SELECT 
         *,
         ROW_NUMBER() OVER (
-            PARTITION BY ticker, date -- Lọc trùng theo mã và ngày
+            PARTITION BY ticker, date 
             ORDER BY bronze_ingested_time DESC
         ) as rn
-    FROM {{ ref('staging_historical_quotes') }} -- Trỏ vào bảng staging vừa làm
+    FROM {{ ref('staging_historical_quotes') }} 
 
     {% if is_incremental() %}
       WHERE staged_at > (
@@ -28,22 +28,20 @@ WITH deduped_staging AS (
 
 applied_dq_rules AS (
     SELECT *,
-        {{ dq_check_financial_reports('historical_quotes') }} AS unqualified_reason
-    FROM deduped_staging
+        {{ check_financial_reports('historical_quotes') }} AS unqualified_reason
+    FROM deduped_data
     WHERE rn = 1
 )
+
 SELECT 
     ticker,
     date,
     EXTRACT(YEAR FROM date) AS year,
     EXTRACT(MONTH FROM date) AS month,
     EXTRACT(QUARTER FROM date) AS quarter,
-    
-    -- Absolute IDs để phục vụ LAG/LEAD mượt mà ở các tầng sau
     (EXTRACT(YEAR FROM date) * 12 + EXTRACT(MONTH FROM date)) AS absolute_month,
     (EXTRACT(YEAR FROM date) * 4 + EXTRACT(QUARTER FROM date)) AS absolute_quarter,
     
-    -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
     {% for ind in indicators %}
         COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
     {% endfor %}
@@ -56,6 +54,7 @@ SELECT
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
+
     unqualified_reason
 
 FROM applied_dq_rules

@@ -1,31 +1,23 @@
 sources:
   - name: bronze
     schema: bronze
-    description: "Dữ liệu thô, chưa qua xử lý, được lấy trực tiếp từ nguồn. Đây là nơi lưu trữ dữ liệu gốc, chưa được làm sạch hay biến đổi."
+    description: "Raw, unprocessed data ingested directly from the source system. This layer acts as the single source of truth for original, uncleaned, and untransformed data."
     tables:
       - name: fundamental_1
-        description: "Dữ liệu cơ bản của các công ty niêm yết, bao gồm vốn hoá thị trường, số lượng cổ phiếu đang lưu hành,..."
+        description: "Basic fundamental data of listed companies, including market capitalization, outstanding shares, and core company metadata."
         config:
           loaded_at_field: bronze_ingested_time
           freshness:
-            warn_after: 
-              count: 35
-              period: day
-            error_after:
-              count: 60
-              period: day
+            warn_after: {count: 35, period: day}
+            error_after: {count: 60, period: day}
       
       - name: fundamental_2
-        description: "Dữ liệu về sàn giao dịch, trạng thái niêm yết của công ty, phục vụ cho việc phân loại công ty theo sàn HOSE, HNX, UPCOM"
+        description: "Exchange listing status and trading classification data, used to categorize companies by stock exchanges (HOSE, HNX, UPCOM)."
         config:
           loaded_at_field: bronze_ingested_time
           freshness:
-            warn_after: 
-              count: 35
-              period: day
-            error_after:
-              count: 60
-              period: day
+            warn_after: {count: 35, period: day}
+            error_after: {count: 60, period: day}
       
       - name: financial_reports_quarter
         description: "Quarterly financial statements (Income Statement, Balance Sheet, Cash Flow) of listed companies. Stored in an Entity-Attribute-Value (EAV) format."
@@ -34,28 +26,22 @@ sources:
         freshness:
           warn_after: {count: 120, period: day}
           error_after: {count: 180, period: day}
+
       - name: fundamental_quarter
         description: "Quarterly fundamental data for listed equities. Includes core financial metrics such as market capitalization, outstanding shares, and comprehensive accounting figures."
         config:
           loaded_at_field: bronze_ingested_time
           freshness:
-            warn_after: 
-              count: 120
-              period: day
-            error_after:
-              count: 180
-              period: day
+            warn_after: {count: 120, period: day}
+            error_after: {count: 180, period: day}
+            
       - name: historical_quotes
         description: "Historical daily stock price data for listed companies, including open, high, low, close prices, and trading volume. This data is essential for time-series analysis and modeling."
         config:
           loaded_at_field: bronze_ingested_time
           freshness:
-            warn_after: 
-              count: 7
-              period: day
-            error_after: 
-              count: 30
-              period: day
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
 
      
       

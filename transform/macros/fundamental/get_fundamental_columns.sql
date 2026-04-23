@@ -14,6 +14,12 @@
             {'json_key': 'exchange', 'type': 'VARCHAR', 'alias': 'exchange', 'is_mandatory': True},
             {'json_key': 'isListing', 'type': 'BOOLEAN', 'alias': 'is_listing', 'is_mandatory': True}
         ]) }}
+    {% elif fundamental_type == 'fundamental_quarter' %}
+        {{ return([
+            {'json_key': 'PreferredStock', 'alias': 'preferred_stock', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': False, 'name_vn': 'Cổ phiếu ưu đãi'},
+            {'json_key': 'MarketCapAtPeriodEnd', 'alias': 'market_cap', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Vốn hóa thị trường cuối kỳ'},
+            {'json_key': 'ShareAtPeriodEnd', 'alias': 'shares_outstanding', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Số lượng cổ phiếu lưu hành'}
+        ]) }}
     {% else %}
         {{ exceptions.raise_compiler_error("Invalid fundamental type: " ~ fundamental_type) }}
     {% endif %}

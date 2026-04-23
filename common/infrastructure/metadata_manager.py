@@ -337,7 +337,7 @@ class MetadataManager:
             query = sql.SQL("""
                 SELECT updated_at 
                 FROM ingestion.{table} 
-                WHERE ticker = %(ticker)s AND data_type = %(data_type)s
+                WHERE ticker = %(ticker)s AND data_type = %(data_type)s AND ticker_status = 'active'
             """).format(table=sql.Identifier(config.table_watermark_name_postgres))
             
             cursor.execute(query, {"ticker": ticker, "data_type": config.data_type})

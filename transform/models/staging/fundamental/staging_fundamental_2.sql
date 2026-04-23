@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    tags=['staging', 'fundamental']
+) }}
 
 {% set max_ingest_time = get_max_timestamp('bronze', 'fundamental_2', 'bronze_ingested_time') %}
 {% set fields = get_fundamental_columns('fundamental_2') %}

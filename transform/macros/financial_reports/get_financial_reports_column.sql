@@ -87,12 +87,7 @@
             {'id': 6, 'alias': 'exchange_rate_effect', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': False, 'name_vn': 'Ảnh hưởng của thay đổi tỷ giá'},
             {'id': 7, 'alias': 'ending_cash', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Tiền và tương đương tiền cuối kỳ'}
         ]) }}
-    {% elif report_type == 'fundamental_quarter' %}
-        {{ return([
-            {'json_key': 'PreferredStock', 'alias': 'preferred_stock', 'type': 'DECIMAL(20,4)', 'is_mandatory': False, 'must_be_positive': False, 'name_vn': 'Cổ phiếu ưu đãi'},
-            {'json_key': 'MarketCapAtPeriodEnd', 'alias': 'market_cap', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Vốn hóa thị trường cuối kỳ'},
-            {'json_key': 'ShareAtPeriodEnd', 'alias': 'shares_outstanding', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Số lượng cổ phiếu lưu hành'}
-        ]) }}
+    
     {% elif report_type == 'historical_quotes' %}
         {{ return([
             {'json_key': 'priceBasic', 'alias': 'price_basic', 'type': 'DECIMAL(20,4)', 'is_mandatory': True, 'must_be_positive': True, 'name_vn': 'Giá tham chiếu'},

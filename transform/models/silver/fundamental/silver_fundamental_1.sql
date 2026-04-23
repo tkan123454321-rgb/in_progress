@@ -1,6 +1,7 @@
 {{ config(
-    materialized='table'
-    ) }}
+    materialized='table',
+    tags=['silver', 'fundamental']
+) }}
 
 {% set fields = get_fundamental_columns('fundamental_1') %}
 {% set audit_cols = get_audit_columns('silver') %}
@@ -16,22 +17,7 @@ with deduped_data as (
 applied_dq_rules AS (
     SELECT 
         *,
-        NULLIF(
-            CONCAT_WS(', ',
-                {% for field in fields %}
-                CASE 
-                    -- Nếu Macro đánh dấu là bắt buộc (True), thì nôn ra dòng check NULL này:
-                    {% if field.is_mandatory %}
-                    WHEN {{ field.alias }} IS NULL THEN '{{ field.alias }} is null'
-                    {% endif %}
-                    
-                    -- Dòng check âm thì áp dụng cho tất cả:
-                    WHEN {{ field.alias }} < 0 THEN '{{ field.alias }} < 0' 
-                END{% if not loop.last %},{% endif %}
-                {% endfor %}
-            ),
-            ''
-        ) AS unqualified_reason
+        {{ check_fundamental_columns('fundamental_1') }} AS unqualified_reason
 
     FROM deduped_data  
     WHERE rn = 1

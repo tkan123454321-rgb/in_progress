@@ -63,7 +63,7 @@ pivoted_data AS (
 -- BƯỚC 3: lọc null, lọc conflict rows, và đánh dấu unqualified reason
 applied_dq_rules AS (
     SELECT *,
-        {{ dq_check_financial_reports('cash_flow_indirect') }} AS unqualified_reason
+        {{ check_financial_reports('cash_flow_indirect') }} AS unqualified_reason
     FROM pivoted_data
 )
 

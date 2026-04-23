@@ -1,7 +1,10 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    tags=['silver', 'dim_company']
+) }}
 {% set audit_cols = get_audit_columns('silver') %}
 
-WITH cleaned_data AS (
+WITH deduped_data AS (
     SELECT *,
         ROW_NUMBER() OVER (
             PARTITION BY ticker
@@ -24,5 +27,5 @@ SELECT ticker,
     {{ col.expr }} AS {{ col.alias }}
     {% endif %}
     {% endfor %}
-FROM cleaned_data
+FROM deduped_data
 WHERE rn = 1
