@@ -1,0 +1,143 @@
+models:
+  - name: silver_historical_quotes
+    description: "Cleaned and validated daily historical price quotes. This layer applies strict data quality rules, ensuring accurate dates, non-negative prices, and deduplication before supplying pricing data to the Gold layer."
+    data_tests:
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          arguments:
+            column_list: ["silver_invocation_id", "silver_updated_at"]
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: ["ticker", "date"] 
+
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker of the company."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              arguments:
+                regex: "^[A-Z0-9]{3}$"
+          - relationships:
+              arguments:
+                to: ref('gold_dim_company')
+                field: ticker
+
+      - name: date
+        data_type: date
+        description: "The trading date of the historical quote."
+        data_tests:
+          - not_null
+
+      - name: year
+        data_type: bigint
+        description: "The extracted year of the trading date."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 2000
+                max_value: 2050
+
+      - name: month
+        data_type: bigint
+        description: "The extracted month of the trading date (1-12)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+      - name: quarter
+        data_type: bigint
+        description: "The extracted quarter of the trading date (1-4)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+
+      - name: absolute_month
+        data_type: bigint
+        description: "A continuous index representing the month since year 0 (e.g., Year * 12 + Month) for easier time-series joining."
+        data_tests:
+          - not_null
+
+      - name: absolute_quarter
+        data_type: bigint
+        description: "A continuous index representing the quarter since year 0 (e.g., Year * 4 + Quarter) for easier time-series joining."
+        data_tests:
+          - not_null
+
+      - name: price_basic
+        data_type: decimal
+        description: "The unadjusted basic reference price for the trading session."
+        data_tests:
+          - not_null
+
+      - name: price_open
+        data_type: decimal
+        description: "The unadjusted opening price of the stock."
+
+      - name: price_high
+        data_type: decimal
+        description: "The unadjusted highest price of the stock during the trading session."
+
+
+      - name: price_low
+        data_type: decimal
+        description: "The unadjusted lowest price of the stock during the trading session."
+
+
+      - name: price_close
+        data_type: decimal
+        description: "The unadjusted closing price of the stock at the end of the trading session."
+
+      - name: total_volume
+        data_type: double
+        description: "Total number of shares traded during the session."
+        data_tests:
+          - not_null
+
+      - name: total_value
+        data_type: double
+        description: "Total value of shares traded during the session in the local currency."
+        data_tests:
+          - not_null
+
+      - name: unqualified_reason
+        data_type: varchar
+        description: "A comma-separated list of DQ violations. Null if the record passes all DQ checks."
+
+      - name: status
+        data_type: varchar
+        description: "Data quality status indicator. Evaluated as 'qualified' if no DQ rules are violated, otherwise 'unqualified'."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+          - invalid_rate:
+              description: "Custom test to check the ratio of unqualified records, expressed in basis points (bps). 500 bps = 5%."
+              arguments:
+                invalid_value: 'unqualified'
+              config:
+                error_if: "> 500"
+
+      - name: silver_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID generated during the Silver run."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+      - name: silver_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the record was validated and updated in the Silver layer."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32

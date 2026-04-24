@@ -1,0 +1,7 @@
+[0m08:48:46  Running with dbt=1.11.3
+[0m08:48:46  Registered adapter: trino=1.10.1
+[0m08:48:46  Encountered an error:
+Compilation Error in model silver_dim_company (models/silver/company/silver_dim_company.sql)
+  Encountered unknown tag 'endif'. Jinja was looking for the following tags: 'endfor' or 'else'. The innermost block that needs to be closed is 'for'.
+    line 27
+      {% endif %}

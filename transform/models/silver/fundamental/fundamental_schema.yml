@@ -14,7 +14,7 @@ models:
             or_equal: true
       - dbt_expectations.expect_table_columns_to_contain_set:
           arguments:
-            column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+            column_list: ["silver_invocation_id", "silver_updated_at"]
     columns:
       - name: ticker
         data_type: varchar
@@ -96,14 +96,6 @@ models:
               config:
                 error_if: "> 500"
 
-      - name: staging_invocation_id
-        data_type: varchar
-        description: "Audit column: The unique dbt invocation ID generated during the Staging run, used for data lineage."
-
-      - name: staged_at
-        data_type: timestamp(6) with time zone
-        description: "Audit column: Timestamp indicating when the record was processed and standardized in the Staging layer."
-
       - name: silver_invocation_id
         data_type: varchar
         description: "Audit column: The unique dbt invocation ID generated during the Silver run."
@@ -131,7 +123,7 @@ models:
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           arguments:
-            column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+            column_list: ["silver_invocation_id", "silver_updated_at"]
     columns:
       - name: ticker
         data_type: varchar
@@ -177,14 +169,6 @@ models:
               config:
                 error_if: "> 500"
 
-      - name: staging_invocation_id
-        data_type: varchar
-        description: "Audit column: The unique dbt invocation ID generated during the Staging run, used for data lineage."
-
-      - name: staged_at
-        data_type: timestamp(6) with time zone
-        description: "Audit column: Timestamp indicating when the record was processed and standardized in the Staging layer."
-
       - name: silver_invocation_id
         data_type: varchar
         description: "Audit column: The unique dbt invocation ID generated during the Silver run."
@@ -212,7 +196,7 @@ models:
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           arguments:
-            column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+            column_list: ["silver_invocation_id", "silver_updated_at"]
       - dbt_expectations.expect_compound_columns_to_be_unique:
           arguments:
             column_list: ["ticker", "year", "quarter"]
@@ -228,7 +212,7 @@ models:
                 regex: "^[A-Z0-9]{3}$"
           - relationships:
               arguments:
-                to: ref('silver_dim_company')
+                to: ref('gold_dim_company')
                 field: ticker
 
       - name: year
@@ -285,14 +269,6 @@ models:
                 invalid_value: 'unqualified'
               config:
                 error_if: "> 500"
-
-      - name: staging_invocation_id
-        data_type: varchar
-        description: "Audit column: The unique dbt invocation ID generated during the Staging run."
-
-      - name: staged_at
-        data_type: timestamp(6) with time zone
-        description: "Audit column: Timestamp indicating when the record was processed in the Staging layer."
 
       - name: silver_invocation_id
         data_type: varchar

@@ -1,23 +1,24 @@
-{{ config(materialized='table',
+{{ config(materialized='ephemeral',
     tags=['intermediate', 'financial_report_joined']
 ) }}
 
+{% set audit_cols = get_audit_columns('intermediate') %}
+
+
+-- STEP 1: Extract qualified data from silver layers 
 WITH income_statement AS (
-    -- Thêm cờ has_is để lát nữa bắt lỗi
     SELECT *, 1 AS has_is 
     FROM {{ ref('silver_ic_quarter') }}
     WHERE status = 'qualified'
 ),
 
 balance_sheet AS (
-    -- Thêm cờ has_bs để lát nữa bắt lỗi
     SELECT *, 1 AS has_bs 
     FROM {{ ref('silver_bl_quarter') }}
     WHERE status = 'qualified'
 ),
 
 cash_flow AS (
-    -- Thêm cờ has_cf để lát nữa bắt lỗi
     SELECT *, 1 AS has_cf 
     FROM {{ ref('silver_cf_quarter') }}
     WHERE status = 'qualified'
@@ -29,16 +30,14 @@ fundamental AS (
     WHERE status = 'qualified'
 ),
 
+-- STEP 2: Combine all financial statements using FULL OUTER JOIN
 joined_data AS (
     SELECT 
-        -- 1. CHỈ GỌI TÊN KHÓA (Trino tự động Coalesce nhờ mệnh đề USING)
         ticker,
         year,
         quarter,
         
-        -- Lấy report_date (Ưu tiên bảng có dữ liệu sớm/chính xác nhất)
-        
-        -- 2. NHẶT NGUYÊN LIỆU TỪ INCOME STATEMENT
+        -- Income Statement metrics
         is_stmt.gross_revenue,
         is_stmt.net_revenue,
         is_stmt.cogs,
@@ -48,7 +47,7 @@ joined_data AS (
         is_stmt.net_income,
         is_stmt.net_income_parent,
 
-        -- 3. NHẶT NGUYÊN LIỆU TỪ BALANCE SHEET
+        -- Balance Sheet metrics
         bs.total_assets,
         bs.total_equity,
         bs.current_assets,
@@ -61,24 +60,21 @@ joined_data AS (
         bs.long_term_debt,
         bs.retained_earnings,
 
-        -- 4. NHẶT NGUYÊN LIỆU TỪ CASH FLOW
+        -- Cash Flow metrics
         cf.cfo,
         cf.depreciation,
         cf.capex,
 
+        -- Fundamental metrics
         fund.market_cap,
         fund.shares_outstanding,
         fund.preferred_stock,
 
-        -- 5. BỘ LỌC TỬ THẦN (Sử dụng cờ đánh dấu thay cho cột ticker)
-        NULLIF(
-            CONCAT_WS(' | ',
-                CASE WHEN is_stmt.has_is IS NULL THEN 'missing_income_statement' ELSE NULL END,
-                CASE WHEN bs.has_bs IS NULL THEN 'missing_balance_sheet' ELSE NULL END,
-                CASE WHEN cf.has_cf IS NULL THEN 'missing_cash_flow' ELSE NULL END,
-                CASE WHEN fund.has_fund IS NULL THEN 'missing_fundamental' ELSE NULL END
-            ), 
-        '') AS unqualified_reason
+        -- Presence flags for Data Quality checks
+        is_stmt.has_is,
+        bs.has_bs,
+        cf.has_cf,
+        fund.has_fund
 
         -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
         {% set audit_cols = get_audit_columns('intermediate') %}
@@ -93,12 +89,67 @@ joined_data AS (
         USING (ticker, year, quarter)
     FULL OUTER JOIN fundamental fund 
         USING (ticker, year, quarter)
+),
+
+-- STEP 3: Evaluate completeness and generate Data Quality reasons
+applied_dq_rules AS (
+    SELECT 
+        *,
+        NULLIF(
+            CONCAT_WS(' | ',
+                CASE WHEN has_is IS NULL THEN 'missing_income_statement' ELSE NULL END,
+                CASE WHEN has_bs IS NULL THEN 'missing_balance_sheet' ELSE NULL END,
+                CASE WHEN has_cf IS NULL THEN 'missing_cash_flow' ELSE NULL END,
+                CASE WHEN has_fund IS NULL THEN 'missing_fundamental' ELSE NULL END
+            ), 
+        '') AS unqualified_reason
+    FROM joined_data
 )
 
+
+
+-- STEP 4: Finalize the model, define status, and inject audit columns
 SELECT 
-    *,
+    -- Select all business columns (excluding temporary presence flags like has_is)
+    ticker,
+    year,
+    quarter,
+    gross_revenue,
+    net_revenue,
+    cogs,
+    gross_profit,
+    interest_expense,
+    profit_before_tax,
+    net_income,
+    net_income_parent,
+    total_assets,
+    total_equity,
+    current_assets,
+    current_liabilities,
+    cash_and_equivalents,
+    income_taxes_payable,
+    minority_interest,
+    total_liabilities,
+    short_term_debt,
+    long_term_debt,
+    retained_earnings,
+    cfo,
+    depreciation,
+    capex,
+    market_cap,
+    shares_outstanding,
+    preferred_stock,
+
+    unqualified_reason,
+
     CASE 
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status
-FROM joined_data
+
+    
+    {% for col in audit_cols %}
+    , {{ col.expr }} AS {{ col.alias }}
+    {% endfor %}
+
+FROM applied_dq_rules

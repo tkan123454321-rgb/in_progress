@@ -1,0 +1,156 @@
+[0m13:49:45  Running with dbt=1.11.3
+[0m13:49:45  Registered adapter: trino=1.10.1
+[0m13:49:46  [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 2 unused configuration paths:
+- models.transform.bronze
+- models.elementary.edr.run_results.alert_schema_changes
+[0m13:49:46  Found 70 models, 1 analysis, 2 seeds, 2 operations, 249 data tests, 2 snapshots, 6 sources, 1935 macros
+[0m13:49:46  [[33mWARNING[0m]: SSL certificate validation is disabled by default. It is legacy behavior which will be changed in future releases. It is strongly advised to enable `require_certificate_validation` flag or explicitly set `cert` configuration to `True` for security reasons. You may receive an error after that if your SSL setup is incorrect.
+You may opt into the new behavior sooner by setting `flags.require_certificate_validation` to `True` in `dbt_project.yml`.
+Visit https://docs.getdbt.com/reference/global-configs/behavior-changes for more information.
+version: 2
+
+models:
+  - name: int_ttm_metrics
+    description: ""
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: ""
+
+      - name: year
+        data_type: integer
+        description: ""
+
+      - name: quarter
+        data_type: integer
+        description: ""
+
+      - name: absolute_quarter
+        data_type: integer
+        description: ""
+
+      - name: gross_revenue_ttm
+        data_type: decimal
+        description: ""
+
+      - name: net_revenue_ttm
+        data_type: decimal
+        description: ""
+
+      - name: cogs_ttm
+        data_type: decimal
+        description: ""
+
+      - name: gross_profit_ttm
+        data_type: decimal
+        description: ""
+
+      - name: profit_before_tax_ttm
+        data_type: decimal
+        description: ""
+
+      - name: interest_expense_ttm
+        data_type: decimal
+        description: ""
+
+      - name: net_income_ttm
+        data_type: decimal
+        description: ""
+
+      - name: net_income_parent_ttm
+        data_type: decimal
+        description: ""
+
+      - name: cfo_ttm
+        data_type: decimal
+        description: ""
+
+      - name: depreciation_ttm
+        data_type: decimal
+        description: ""
+
+      - name: capex_ttm
+        data_type: decimal
+        description: ""
+
+      - name: total_assets
+        data_type: decimal
+        description: ""
+
+      - name: total_equity
+        data_type: decimal
+        description: ""
+
+      - name: current_assets
+        data_type: decimal
+        description: ""
+
+      - name: current_liabilities
+        data_type: decimal
+        description: ""
+
+      - name: cash_and_equivalents
+        data_type: decimal
+        description: ""
+
+      - name: income_taxes_payable
+        data_type: decimal
+        description: ""
+
+      - name: minority_interest
+        data_type: decimal
+        description: ""
+
+      - name: total_liabilities
+        data_type: decimal
+        description: ""
+
+      - name: short_term_debt
+        data_type: decimal
+        description: ""
+
+      - name: long_term_debt
+        data_type: decimal
+        description: ""
+
+      - name: market_cap
+        data_type: decimal
+        description: ""
+
+      - name: shares_outstanding
+        data_type: decimal
+        description: ""
+
+      - name: preferred_stock
+        data_type: decimal
+        description: ""
+
+      - name: retained_earnings
+        data_type: decimal
+        description: ""
+
+      - name: risk_free_rate
+        data_type: double
+        description: ""
+
+      - name: cpi_index
+        data_type: double
+        description: ""
+
+      - name: quarter_gap
+        data_type: integer
+        description: ""
+
+      - name: ttm_status
+        data_type: varchar
+        description: ""
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: ""
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: ""
+

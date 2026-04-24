@@ -10,8 +10,9 @@
 {% set audit_cols = get_audit_columns('silver') %} 
 {% set is_pivot = true %}
 
--- BƯỚC 1: LỌC TRÙNG VÀ INCREMENTAL TRỰC TIẾP TỪ BRONZE
-WITH deduped_bronze AS (
+-- STEP 1: DEDUPLICATE BRONZE DATA
+-- Retrieve the latest record for each ticker, year, quarter, and indicator_id based on ingestion time.
+WITH deduped_data AS (
     SELECT 
         *,
         ROW_NUMBER() OVER (
@@ -30,62 +31,46 @@ WITH deduped_bronze AS (
     {% endif %}
 ),
 
--- BƯỚC 2: PIVOT TỪ TẬP DỮ LIỆU ĐÃ SẠCH (rn = 1)
+-- STEP 2: PIVOT INDICATORS
+-- Transform the data from long format (rows) to wide format (columns).
 pivoted_data AS (
     SELECT
         ticker,
         year,
         quarter,
         
-        
-    -- 1. Xoay cột (Pivot) các chỉ số tài chính
     {% for ind in indicators %}
         MAX(CASE WHEN indicator_id = {{ ind.id }} THEN CAST(value AS {{ ind.type }}) END) AS {{ ind.alias }},
     {% endfor %}
 
-    -- 2. Đẻ cột Audit (Trở về vòng lặp cơ bản)
-    {% for col in audit_cols %}
-        {% if not col.is_from_staging %}
-        
-            {% if is_pivot and col.needs_agg %}
-                MAX({{ col.expr }}) AS {{ col.alias }}
-            {% else %}
-                {{ col.expr }} AS {{ col.alias }}
-            {% endif %}
-            
-            {%- if not loop.last %},{% endif -%}   
-            
-        {% endif %}
-    {% endfor %}
-
-    FROM deduped_bronze
+    FROM deduped_data
     WHERE rn = 1 
     GROUP BY ticker, year, quarter
 ),
---bước 3: Áp dụng quy tắc DQ để tạo cột unqualified_reason
+-- STEP 3: APPLY DATA QUALITY RULES
+-- Evaluate data against predefined Data Quality rules to capture the unqualified reason.
 applied_dq_rules AS (
     SELECT *,
         {{ check_financial_reports('income_statement') }} AS unqualified_reason
     FROM pivoted_data
 )
+-- STEP 4: FINAL SELECTION & FORMATTING
+-- Handle null values, append system audit columns, and determine the final DQ status.
 SELECT 
     ticker,
     year,
     quarter,
     
-    -- Xử lý mượt mà: Có số thì lấy, API lười trả NULL thì ép về 0
+    -- Replace NULL values with 0 for all financial indicators
     {% for ind in indicators %}
         COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
     {% endfor %}
 
     -- Cột Audit
     {% for col in audit_cols %}
-        {% if not col.is_from_staging %}
-            {{ col.expr }} AS {{ col.alias }},
-        {% endif %}
+        {{ col.expr }} AS {{ col.alias }},
     {% endfor %}
     
-    -- Đánh cờ trạng thái
     CASE 
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'

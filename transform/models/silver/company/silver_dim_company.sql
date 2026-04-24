@@ -23,9 +23,7 @@ SELECT ticker,
     COALESCE(sector_detail, 'Unclassified') AS sector_detail,
     company_type
     {% for col in audit_cols %}
-    {% if not col.is_from_staging %},
-    {{ col.expr }} AS {{ col.alias }}
-    {% endif %}
+    ,{{ col.expr }} AS {{ col.alias }}
     {% endfor %}
 FROM deduped_data
 WHERE rn = 1

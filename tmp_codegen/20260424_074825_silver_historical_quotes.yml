@@ -1,0 +1,8 @@
+[0m07:48:27  Running with dbt=1.11.3
+[0m07:48:27  Registered adapter: trino=1.10.1
+[0m07:48:28  Encountered an error:
+Compilation Error in model obt_web (models/gold/web/obt_web.sql)
+  Tên layer_name không hợp lệ! Hãy chọn 'staging', 'silver', hoặc 'gold'.
+  
+  > in macro get_audit_columns (macros/utils/get_audit_columns.sql)
+  > called by model obt_web (models/gold/web/obt_web.sql)

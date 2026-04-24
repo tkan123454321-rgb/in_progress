@@ -4,7 +4,7 @@ models:
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           arguments:
-            column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+            column_list: ["silver_invocation_id", "silver_updated_at"]
       - dbt_expectations.expect_compound_columns_to_be_unique:
           arguments:
             column_list: ["ticker", "year"]
@@ -44,14 +44,6 @@ models:
         description: "The percentage or ratio of stock dividend issued to shareholders. Nulls are coalesced to 0."
         data_tests:
           - not_null
-
-      - name: staged_at
-        data_type: timestamp(6) with time zone
-        description: "Audit column: Timestamp indicating when the record was processed in the Staging layer."
-
-      - name: staging_invocation_id
-        data_type: varchar
-        description: "Audit column: The unique dbt invocation ID generated during the Staging run."
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone

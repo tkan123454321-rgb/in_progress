@@ -1,0 +1,77 @@
+models:
+  - name: int_ttm_metrics
+    description: "Intermediate model that calculates Trailing Twelve Months (TTM) aggregations for income statements and cash flows using window functions. It also evaluates the continuity of the quarters to ensure data validity."
+    data_tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: ["ticker", "absolute_quarter"]
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          arguments:
+            column_list: ["int_invocation_id", "int_updated_at"]
+
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker of the company."
+        data_tests:
+          - not_null
+
+
+      - name: year
+        data_type: integer
+        description: "The reporting financial year."
+        data_tests:
+          - not_null
+
+      - name: quarter
+        data_type: integer
+        description: "The reporting financial quarter."
+        data_tests:
+          - not_null
+
+      - name: absolute_quarter
+        data_type: integer
+        description: "An absolute integer representation of the quarter (year * 4 + quarter). Used as the primary time-axis for window functions."
+        data_tests:
+          - not_null
+
+      - name: quarter_gap
+        data_type: integer
+        description: "The difference between the current absolute_quarter and the one 3 rows preceding. Used to detect missing quarters."
+
+      - name: ttm_status
+        data_type: varchar
+        description: "Status indicating whether the TTM calculation is valid. Evaluated as 'valid_ttm' if the gap is exactly 3 quarters, otherwise 'broken_ttm'."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['valid_ttm', 'broken_ttm']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+          
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+
+  - name: int_financial_report_joined
+    description: "(Ephemeral) Intermediate model that joins income statements, balance sheets, cash flows, and fundamental metrics. It generates flags to identify missing reports."
+    columns:
+      - name: unqualified_reason
+        data_type: varchar
+        description: "A pipe-separated list of missing statement types (e.g., 'missing_cash_flow | missing_fundamental'). Null if all reports are present."
+      
+      - name: status
+        data_type: varchar
+        description: "Data completeness status. Evaluated as 'qualified' if no reports are missing, otherwise 'unqualified'."

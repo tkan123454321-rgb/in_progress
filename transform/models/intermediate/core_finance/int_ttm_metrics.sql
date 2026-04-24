@@ -2,21 +2,35 @@
     tags=['intermediate', 'ttm_metrics']
 ) }}
 
-WITH ttm_calc AS (
+{% set audit_cols = get_audit_columns('intermediate') %}
+-- STEP 1: Extract qualified financial data and calculate absolute quarter
+WITH base_financials AS (
     SELECT 
-        -- 1. GIỮ LẠI THÔNG TIN CƠ BẢN
+        *,
+        (year * 4 + quarter) AS absolute_quarter
+    FROM {{ ref('int_financial_report_joined') }}
+    WHERE status = 'qualified'
+),
+
+-- STEP 2: Extract macro-economic data
+macro_data AS (
+    SELECT 
+        absolute_quarter,
+        risk_free_rate,
+        cpi_index
+    FROM {{ ref('macro_risk_free_rate') }}
+),
+
+-- STEP 3: Apply window functions to calculate Trailing Twelve Months (TTM) sums
+ttm_calculations AS (
+    SELECT 
+        -- Basic Identifiers
         ticker,
         year,
         quarter,
-        
-        -- Tính Alias để show ra bảng kết quả cho dễ nhìn
-        (year * 4 + quarter) AS absolute_quarter,
+        absolute_quarter,
 
-        -- CHỖ NÀY LÀ CÚ CHỐT: Bung thẳng công thức vào trong LAG và phép trừ
-        ((year * 4 + quarter) - LAG((year * 4 + quarter), 3) OVER w_window) AS quarter_gap,
-
-
-        -- 2. CỘNG DỒN TTM 4 QUÝ CHO INCOME STATEMENT (Dùng w_ttm)
+        -- Income Statement TTM (Sum of the last 4 consecutive quarters)
         SUM(gross_revenue) OVER w_ttm AS gross_revenue_ttm,
         SUM(net_revenue) OVER w_ttm AS net_revenue_ttm,
         SUM(cogs) OVER w_ttm AS cogs_ttm,
@@ -26,12 +40,12 @@ WITH ttm_calc AS (
         SUM(net_income) OVER w_ttm AS net_income_ttm,
         SUM(net_income_parent) OVER w_ttm AS net_income_parent_ttm,
 
-        -- 3. CỘNG DỒN TTM 4 QUÝ CHO CASH FLOW (Dùng w_ttm)
+        -- Cash Flow TTM (Sum of the last 4 consecutive quarters)
         SUM(cfo) OVER w_ttm AS cfo_ttm,
         SUM(depreciation) OVER w_ttm AS depreciation_ttm,
         SUM(capex) OVER w_ttm AS capex_ttm,
 
-        -- 4. BÊ NGUYÊN BALANCE SHEET SANG (Không cộng dồn vì là số dư cuối kỳ)
+        -- Balance Sheet & Fundamentals (Point-in-time metrics, pass-through)
         total_assets,
         total_equity,
         current_assets,
@@ -47,34 +61,78 @@ WITH ttm_calc AS (
         preferred_stock,
         retained_earnings
 
-        {% set audit_cols = get_audit_columns('intermediate') %}
+    FROM base_financials
+    WINDOW 
+        w_ttm AS (PARTITION BY ticker ORDER BY absolute_quarter ROWS BETWEEN 3 PRECEDING AND CURRENT ROW)
+),
+
+-- STEP 4: Apply Data Quality Rules for TTM continuity
+applied_dq_rules AS (
+    SELECT 
+        *,
+        -- Continuity Check: Gap between current quarter and the quarter 3 rows ago
+        (absolute_quarter - LAG(absolute_quarter, 3) OVER w_window) AS quarter_gap,
+        
+        CASE 
+            WHEN (absolute_quarter - LAG(absolute_quarter, 3) OVER w_window) = 3 THEN 'valid_ttm'
+            ELSE 'broken_ttm' 
+        END AS ttm_status
+
+    FROM ttm_calculations
+    WINDOW 
+        w_window AS (PARTITION BY ticker ORDER BY absolute_quarter)
+)
+
+-- STEP 5: Finalize the model, join macro data, and inject metadata
+SELECT 
+        d.ticker,
+        d.year,
+        d.quarter,
+        d.absolute_quarter,
+        
+        -- TTM Metrics
+        d.gross_revenue_ttm,
+        d.net_revenue_ttm,
+        d.cogs_ttm,
+        d.gross_profit_ttm,
+        d.profit_before_tax_ttm,
+        d.interest_expense_ttm,
+        d.net_income_ttm,
+        d.net_income_parent_ttm,
+        d.cfo_ttm,
+        d.depreciation_ttm,
+        d.capex_ttm,
+
+        -- Point-in-time Metrics
+        d.total_assets,
+        d.total_equity,
+        d.current_assets,
+        d.current_liabilities,
+        d.cash_and_equivalents,
+        d.income_taxes_payable,
+        d.minority_interest,
+        d.total_liabilities,
+        d.short_term_debt,
+        d.long_term_debt,
+        d.market_cap,
+        d.shares_outstanding,
+        d.preferred_stock,
+        d.retained_earnings,
+
+        -- Macro Metrics
+        m.risk_free_rate,
+        m.cpi_index,
+
+        -- Validation Status
+        d.quarter_gap,
+        d.ttm_status
+
+        -- Auto-generated audit columns
         {% for col in audit_cols %}
         , {{ col.expr }} AS {{ col.alias }}
         {% endfor %}
 
-    FROM {{ ref('int_financial_report_joined') }}
-    WHERE status = 'qualified' 
-    WINDOW 
-        w_ttm AS (PARTITION BY ticker ORDER BY year, quarter ROWS BETWEEN 3 PRECEDING AND CURRENT ROW),
-        w_window AS (PARTITION BY ticker ORDER BY year, quarter)
-),
-rf_rate AS (
-    SELECT 
-        absolute_quarter,
-        risk_free_rate,
-        cpi_index
-    FROM {{ ref('macro_risk_free_rate') }}
-)
+FROM applied_dq_rules d
+LEFT JOIN macro_data m 
+    ON d.absolute_quarter = m.absolute_quarter
 
-SELECT 
-    t.*,
-    r.risk_free_rate,
-    r.cpi_index,
-    -- 6. GÁN NHÃN SỐ PHẬN CHUẨN XÁC
-    CASE 
-        WHEN quarter_gap = 3 THEN 'valid_ttm'
-        ELSE 'broken_ttm' 
-    END AS ttm_status
-FROM ttm_calc t
-LEFT JOIN rf_rate r 
-ON t.absolute_quarter = r.absolute_quarter

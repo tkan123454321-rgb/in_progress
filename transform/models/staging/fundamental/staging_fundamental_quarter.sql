@@ -5,7 +5,7 @@
     incremental_strategy='append'
 ) }}
 
-{% set indicators = get_fundamental_column('fundamental_quarter') %}
+{% set indicators = get_fundamental_columns('fundamental_quarter') %}
 {% set audit_cols = get_audit_columns('staging') %} 
 
 with raw_source as (

@@ -104,7 +104,7 @@ super_obt AS (
 )
 
 SELECT 
-    * {% set audit_cols = get_audit_columns('obt') %}
+    * {% set audit_cols = get_audit_columns('gold') %}
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
