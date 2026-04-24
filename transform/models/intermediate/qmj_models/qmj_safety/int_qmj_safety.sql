@@ -1,15 +1,14 @@
 {{ config(
     materialized='table',
-    tags=['int', 'qmj_safety']
+    tags=['intermediate', 'qmj_safety']
 ) }}
-
+{% set audit_cols = get_audit_columns('intermediate') %}
+-- STEP 1: Extract qualified components from prior intermediate models
 WITH ttm_metrics AS (
     SELECT * FROM {{ ref('int_ttm_metrics') }} 
     WHERE ttm_status = 'valid_ttm'
 ),
-
 bab_score AS (
-    -- Đổi tên cột year, quarter cho khớp để dùng mệnh đề USING
     SELECT 
         *
     FROM {{ ref('int_qmj_beta_final') }}
@@ -26,8 +25,8 @@ o_score AS (
     WHERE status = 'qualified'
 ),
 
+-- STEP 2: Combine all safety components using FULL OUTER JOIN
 joined_all AS (
-    -- Dùng FULL OUTER JOIN + USING: Sạch sẽ, không rớt data
     SELECT 
         ticker,
         year,
@@ -52,46 +51,58 @@ joined_all AS (
     FULL OUTER JOIN o_score o USING (ticker, year, quarter, absolute_quarter)
 ),
 
+-- STEP 3: Calculate Leverage (LEV) and Return on Equity (ROE)
 calc_lev_and_roe AS (
     SELECT 
         *,
-        -- 1. Tính LEV Score
+        -- Leverage Score = -(Total Debt) / Total Assets
         -(short_term_debt + long_term_debt + minority_interest + preferred_stock) / NULLIF(total_assets, 0) AS lev_score,
         
-        -- 2. Tính ROE để làm đầu vào cho EVOL
+        -- ROE is calculated here as an input for EVOL
         net_income_parent_ttm / NULLIF(book_equity, 0) AS roe
     FROM joined_all
 ),
 
+-- STEP 4: Calculate Earnings Volatility (EVOL) over the past 16 quarters
 calc_evol AS (
     SELECT 
         *,
-        -- Tính biến động ROE trong 16 quý
-        STDDEV_SAMP(roe) OVER (
-            PARTITION BY ticker 
-            ORDER BY absolute_quarter 
-            ROWS BETWEEN 15 PRECEDING AND CURRENT ROW
-        ) AS evol_raw,
+        -- Raw EVOL: Standard deviation of ROE
+        STDDEV_SAMP(roe) OVER w_16q AS evol_raw,
         
-        COUNT(roe) OVER (
-            PARTITION BY ticker 
-            ORDER BY absolute_quarter 
-            ROWS BETWEEN 15 PRECEDING AND CURRENT ROW
-        ) AS count_roe_quarters
+        -- Count available quarters to enforce the minimum 12-quarter rule
+        COUNT(roe) OVER w_16q AS count_roe_quarters
     FROM calc_lev_and_roe
+    WINDOW w_16q AS (
+        PARTITION BY ticker 
+        ORDER BY absolute_quarter 
+        ROWS BETWEEN 15 PRECEDING AND CURRENT ROW
+    )
 ),
 
-apply_dq AS (
+-- STEP 5: Apply Data Quality Rules for the combined Safety factor
+applied_dq_rules AS (
     SELECT 
         *,
-        -- Gán điểm EVOL (đảo dấu)
+        -- EVOL Score is the negative of the raw volatility
         (-1 * evol_raw) AS evol_score,
         
-        -- Gọi Macro để bắt lỗi toàn bộ
-        {{ check_qmj_column('safety') }} AS unqualified_reason
+        -- Embedded DQ checks
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Check EVOL history
+                CASE WHEN count_roe_quarters < 12 THEN 'Err: Not enough ROE history for EVOL (<12 quarters)' ELSE NULL END,
+
+                -- Check 5 core safety components for nulls
+                CASE WHEN bab_score IS NULL THEN 'missing_bab_score' ELSE NULL END,
+                CASE WHEN altman_z_score IS NULL THEN 'missing_altman_z_score' ELSE NULL END,
+                CASE WHEN ohlson_o_score IS NULL THEN 'missing_ohlson_o_score' ELSE NULL END,
+                CASE WHEN lev_score IS NULL THEN 'missing_lev_score' ELSE NULL END,
+                CASE WHEN evol_raw IS NULL THEN 'missing_evol' ELSE NULL END
+            ), 
+        '') AS unqualified_reason
     FROM calc_evol
 )
-
 SELECT 
     ticker,
     year,
@@ -108,12 +119,12 @@ SELECT
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
     END AS status,
+
     unqualified_reason
 
     -- Audit Columns
-    {% set audit_cols = get_audit_columns('intermediate') %}
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
 
-FROM apply_dq
+FROM applied_dq_rules

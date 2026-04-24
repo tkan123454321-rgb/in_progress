@@ -1,36 +1,46 @@
 {{ config(
-    materialized='table',
-    tags=['intermediate', 'qmj_beta_vol'],
-    properties={
-        "sorted_by": "ARRAY['ticker', 'date']"
-    }
+    materialized='ephemeral',
+    tags=['intermediate', 'qmj_beta_vol']
 ) }}
 
+
+-- STEP 1: Extract qualified daily stock prices
 WITH silver_stock AS (
-    SELECT date, ticker, price_close, price_basic
+    SELECT 
+        date, 
+        ticker, 
+        price_close, 
+        price_basic
     FROM {{ ref('silver_historical_quotes') }}
-    WHERE status = 'qualified' AND ticker != 'VNINDEX'
+    WHERE status = 'qualified' 
+        AND ticker != 'VNINDEX'
 ),
 
+-- STEP 2: Extract qualified daily market index (VNINDEX) prices
 silver_vnindex AS (
-    SELECT date, price_close, price_basic
+    SELECT 
+        date, 
+        price_close, 
+        price_basic
     FROM {{ ref('silver_historical_quotes') }}
     WHERE status = 'qualified' AND ticker = 'VNINDEX'
 ),
 
+-- STEP 3: Calculate daily logarithmic returns for both stock and market
 joined_daily_returns AS (
     SELECT 
         s.date,
         s.ticker,
-        
-        -- Sạch sẽ tuyệt đối: Tin tưởng 100% vào Data Type từ lớp Silver
+
         LN(s.price_close / NULLIF(s.price_basic, 0)) AS stock_ret,
         LN(m.price_close / NULLIF(m.price_basic, 0)) AS mkt_ret
 
     FROM silver_stock s
-    JOIN silver_vnindex m ON s.date = m.date
+    JOIN silver_vnindex m 
+        ON s.date = m.date
 ),
 
+-- STEP 4: Calculate 1-year rolling volatilities (252 trading days)
 rolling_volatilities AS (
     SELECT 
         date,
@@ -48,13 +58,28 @@ rolling_volatilities AS (
     )
 ),
 
+-- STEP 5: Apply Data Quality Rules for volatility calculations
 applied_dq_rules AS (
     SELECT 
         *,
-        {{ check_qmj_column('beta_volatility') }} AS unqualified_reason
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- 1. Check if Log Return calculation resulted in NULL due to division by zero
+                CASE WHEN stock_ret IS NULL THEN 'stock_ret (log return) is null' ELSE NULL END,
+                CASE WHEN mkt_ret IS NULL THEN 'mkt_ret (market log return) is null' ELSE NULL END,
+                
+                -- 2. Apply AQR's rule: Minimum of 120 trading days required
+                CASE WHEN count_trading_days < 120 THEN 'Err: Not enough trading days (<120)' ELSE NULL END,
+                
+                -- 3. Check final Standard Deviation results
+                CASE WHEN vol_stock_1y IS NULL THEN 'vol_stock_1y is null' ELSE NULL END,
+                CASE WHEN vol_mkt_1y IS NULL THEN 'vol_mkt_1y is null' ELSE NULL END
+            ), 
+        '') AS unqualified_reason
     FROM rolling_volatilities
 )
 
+-- STEP 6: Finalize ephemeral model with status
 SELECT 
     date,
     ticker,
@@ -63,15 +88,10 @@ SELECT
     vol_stock_1y,
     vol_mkt_1y,
     count_trading_days,
-    
+    unqualified_reason,
     CASE 
         WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
-    END AS status,
-    unqualified_reason
-    {% set audit_cols = get_audit_columns('intermediate') %}
-    {% for col in audit_cols %}
-    , {{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
-
+    END AS status
+    -- Note: Audit columns are omitted as this is an ephemeral model
 FROM applied_dq_rules

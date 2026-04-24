@@ -1,0 +1,54 @@
+models:
+  - name: int_qmj_growth
+    description: "Intermediate model calculating the 5 core growth metrics (Delta GPOA, Delta ROE, Delta ROA, Delta CFOA, Delta GMAR) for growth factor in QMJ models."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all historical data points (16-quarter gap) are present and no metrics are null."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_qmj_scoring_growth
+    description: "Intermediate model standardizing the 5 growth components into Z-Scores using cross-sectional ranking per quarter."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all 5 growth Z-scores are valid and not null."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1

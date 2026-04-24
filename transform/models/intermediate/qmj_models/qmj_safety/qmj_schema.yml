@@ -1,0 +1,143 @@
+models:
+  # ==========================================
+  # 1. MATERIALIZED: table
+  # ==========================================
+  - name: int_o_score
+    description: "Intermediate model calculating the Ohlson O-Score"
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if no DQ rules are violated, otherwise 'unqualified'."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_z_score
+    description: "Intermediate model calculating the Altman Z-Score for bankruptcy risk."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if no DQ rules are violated."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_qmj_beta_final
+    description: "Intermediate model calculating Time-Series Beta and Betting Against Beta (BAB) score."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if no DQ rules are violated."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_qmj_safety
+    description: "Intermediate model that joins all safety components and calculates Leverage (LEV) and Earnings Volatility (EVOL) scores."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all safety components and EVOL history are valid."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_qmj_scoring_safety
+    description: "Intermediate model calculating standardized z-scores for all 5 safety components (BAB, LEV, O-Score, Z-Score, EVOL) into Z-Scores."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all 5 Z-scores are valid."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+  # ==========================================
+  # 2. MATERIALIZED: EPHEMERAL 
+  # ==========================================
+  - name: int_qmj_beta_vol
+    description: "(Ephemeral) Calculates daily log returns and 1-year rolling volatilities for stocks and the market."

@@ -1,0 +1,54 @@
+models:
+  - name: int_qmj_profitability
+    description: "Intermediate model calculating the 6 core profitability metrics (GPOA, ROE, ROA, GMAR, CFOA, ACC) based on TTM data for the growth factor in QMJ model."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all 6 metrics are successfully calculated and delta working capital has a 4-quarter history."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_qmj_scoring_profitability
+    description: "Intermediate model standardizing the 6 profitability components into Z-Scores using cross-sectional ranking per quarter for the growth factor in QMJ model."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all 6 profitability Z-scores are valid and not null."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
