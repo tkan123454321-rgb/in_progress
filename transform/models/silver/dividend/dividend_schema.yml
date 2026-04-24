@@ -1,0 +1,91 @@
+models:
+  - name: silver_dividend
+    description: "Cleaned and validated annual dividend data. This layer applies data quality rules before passing metric values to snapshot steps."
+    data_tests:
+      - dbt_expectations.expect_table_columns_to_contain_set:
+          arguments:
+            column_list: ["staging_invocation_id", "staged_at", "silver_invocation_id", "silver_updated_at"]
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: ["ticker", "year"]
+
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker of the company."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              arguments:
+                regex: "^[A-Z0-9]{3}$"
+          - relationships:
+              arguments:
+                to: ref('silver_dim_company')
+                field: ticker
+
+      - name: year
+        data_type: integer
+        description: "The year corresponding to the corporate dividend action."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 2000
+                max_value: 2050
+
+      - name: cash_dividend
+        data_type: double
+        description: "The amount of cash dividend paid per share. Nulls are coalesced to 0."
+        data_tests:
+          - not_null
+
+      - name: stock_dividend
+        data_type: double
+        description: "The percentage or ratio of stock dividend issued to shareholders. Nulls are coalesced to 0."
+        data_tests:
+          - not_null
+
+      - name: staged_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the record was processed in the Staging layer."
+
+      - name: staging_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID generated during the Staging run."
+
+      - name: silver_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the record was validated and updated in the Silver layer."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: day
+                interval: 32
+
+      - name: silver_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID generated during the Silver run."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+      - name: status
+        data_type: varchar
+        description: "Data quality status indicator. Evaluated as 'qualified' if no DQ rules are violated, otherwise 'unqualified'."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+          - invalid_rate:
+              description: "Custom test to check the ratio of unqualified records, expressed in basis points (bps). 100 bps = 1%."
+              arguments:
+                invalid_value: 'unqualified'
+              config:
+                error_if: "> 500"
+
+      - name: unqualified_reason
+        data_type: varchar
+        description: "A list of DQ violations. Null or empty string if the record passes all DQ checks."

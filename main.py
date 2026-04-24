@@ -152,6 +152,23 @@ with _get_session() as session:
     response = session.get("https://restv2.fireant.vn/symbols/SHB/dividends?count=9")
     print(response.json())
 # %%
-from common.core.time_utils import get_fallback_year
-print(get_fallback_year())
+from common.clients.lakehouse_client import LakeHouseClient
+client = LakeHouseClient()
+
+query = """
+            SELECT DISTINCT ticker
+            FROM snapshots.dividend_snapshot
+            WHERE 
+                (
+                    dbt_valid_from >= CURRENT_DATE - INTERVAL '1' DAY
+                    OR 
+                    dbt_valid_to >= CURRENT_DATE - INTERVAL '1' DAY
+                )
+                AND (cash_dividend > 0 OR stock_dividend > 0)
+        """
+with client._get_trino_connection().cursor() as cur:
+    cur.execute(query)
+    result = cur.fetchall()
+    tickers =  {row[0] for row in result}
+print(tickers)
 # %%

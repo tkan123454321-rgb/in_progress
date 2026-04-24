@@ -23,9 +23,9 @@ sources:
         description: "Quarterly financial statements (Income Statement, Balance Sheet, Cash Flow) of listed companies. Stored in an Entity-Attribute-Value (EAV) format."
         config:
           loaded_at_field: bronze_ingested_time
-        freshness:
-          warn_after: {count: 120, period: day}
-          error_after: {count: 180, period: day}
+          freshness:
+            warn_after: {count: 120, period: day}
+            error_after: {count: 180, period: day}
 
       - name: fundamental_quarter
         description: "Quarterly fundamental data for listed equities. Includes core financial metrics such as market capitalization, outstanding shares, and comprehensive accounting figures."
@@ -34,7 +34,7 @@ sources:
           freshness:
             warn_after: {count: 120, period: day}
             error_after: {count: 180, period: day}
-            
+
       - name: historical_quotes
         description: "Historical daily stock price data for listed companies, including open, high, low, close prices, and trading volume. This data is essential for time-series analysis and modeling."
         config:
@@ -42,6 +42,14 @@ sources:
           freshness:
             warn_after: {count: 30, period: day}
             error_after: {count: 60, period: day}
+    
+      - name: dividend_year
+        description: "Annual corporate dividend data (including cash and stock dividends) for listed companies. This data is critical for tracking corporate actions, calculating dividend yields, and triggering retroactive adjustments for historical stock prices."
+        config:
+          loaded_at_field: bronze_ingested_time
+          freshness:
+            warn_after: {count: 365, period: day}
+            error_after: {count: 400, period: day}
 
      
       

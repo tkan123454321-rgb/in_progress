@@ -1,0 +1,17 @@
+snapshots:
+  - name: dim_company_snapshot
+    relation: ref('ephemeral_qualified_dim_company')
+    description: "SCD Type 2 snapshot to track structural changes of listed companies."
+    
+    config:
+      target_schema: snapshots
+      strategy: check
+      unique_key: ticker
+      check_cols: 
+        - company_name
+        - industry_group
+        - sector_detail
+        - company_type
+        - exchange
+        - is_listing
+      hard_deletes: new_record

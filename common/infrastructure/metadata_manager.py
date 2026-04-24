@@ -218,7 +218,31 @@ class MetadataManager:
 
 
 
-
+    def _get_dividend_changed_tickers(self) -> set[str]:
+        """
+        Queries the dbt snapshot table in the Lakehouse to find tickers that had 
+        meaningful dividend changes (inserts, updates, or deletes) in the last 24 hours.
+        
+        Returns:
+            set[str]: A set of tickers that require a full historical price reload.
+        """
+        query = """
+            SELECT DISTINCT ticker
+            FROM snapshots.dividend_snapshot
+            WHERE 
+                (
+                    dbt_valid_from >= CURRENT_DATE - INTERVAL '1' DAY
+                    OR 
+                    dbt_valid_to >= CURRENT_DATE - INTERVAL '1' DAY
+                )
+                AND (cash_dividend > 0 OR stock_dividend > 0)
+        """
+        with self.trino_conn.cursor() as cur:
+            cur.execute(query)
+            result = cur.fetchall()
+            return {row[0] for row in result}
+        
+        
     def sync_watermark(self, config: BaseMetadata) -> None:
         """
         Keeps the Postgres watermark table in sync with the master ticker list from the Lakehouse.
@@ -255,11 +279,15 @@ class MetadataManager:
             
             db_tickers = {row['ticker'] for row in db_data}  # type: ignore
             inactive_db_tickers = {row['ticker'] for row in db_data if row['ticker_status'] == 'inactive'}  # type: ignore
+            dividend_changed_tickers = set()  # Initialize an empty set for dividend changed tickers
+            
 
         # STEP 3: Calculate the differences (Deltas) using Python sets
         new_tickers = gold_tickers - db_tickers
         disappeared_tickers = db_tickers - gold_tickers
         reappeared_tickers = (gold_tickers & db_tickers) & inactive_db_tickers
+        if config.data_type == 'historical_quotes': 
+                dividend_changed_tickers = self._get_dividend_changed_tickers()
         
         # If everything matches perfectly, we can exit early and save database trips
         if not any([new_tickers, disappeared_tickers, reappeared_tickers]):
@@ -308,6 +336,17 @@ class MetadataManager:
                     
                     cur.executemany(reactivate_query, [{'ticker': t, 'data_type': config.data_type} for t in reappeared_tickers])
                     logger.info(f"Reactivated returning tickers. Data Type: '{config.data_type}', Count: {len(reappeared_tickers)}.")
+                
+                # 4.4. Handle Dividend Changes (Reset Watermark)
+                if dividend_changed_tickers:
+                    reset_watermark_query = sql.SQL("""
+                        UPDATE ingestion.{table}
+                        SET updated_at = %(fallback_time)s
+                        WHERE ticker = %(ticker)s AND data_type = %(data_type)s
+                    """).format(table=sql.Identifier(config.table_watermark_name_postgres))
+                    
+                    cur.executemany(reset_watermark_query, [{'ticker': t, 'data_type': config.data_type, 'fallback_time': fallback_time_str} for t in dividend_changed_tickers])
+                    logger.info(f"Reset watermarks due to dividend changes. Data Type: '{config.data_type}', Count: {len(dividend_changed_tickers)}.")
                 
         logger.info(f"Watermark reconciliation completed successfully. Data Type: '{config.data_type}'.")
         
