@@ -1,0 +1,128 @@
+[0m10:33:12  Running with dbt=1.11.3
+[0m10:33:12  Registered adapter: trino=1.10.1
+[0m10:33:13  [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 2 unused configuration paths:
+- models.elementary.edr.run_results.alert_schema_changes
+- models.transform.bronze
+[0m10:33:13  Found 70 models, 1 analysis, 2 seeds, 2 operations, 2 snapshots, 357 data tests, 6 sources, 1934 macros
+[0m10:33:13  [[33mWARNING[0m]: SSL certificate validation is disabled by default. It is legacy behavior which will be changed in future releases. It is strongly advised to enable `require_certificate_validation` flag or explicitly set `cert` configuration to `True` for security reasons. You may receive an error after that if your SSL setup is incorrect.
+You may opt into the new behavior sooner by setting `flags.require_certificate_validation` to `True` in `dbt_project.yml`.
+Visit https://docs.getdbt.com/reference/global-configs/behavior-changes for more information.
+version: 2
+
+models:
+  - name: obt_web
+    description: ""
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: ""
+
+      - name: company_name
+        data_type: varchar
+        description: ""
+
+      - name: exchange
+        data_type: varchar
+        description: ""
+
+      - name: sector_detail
+        data_type: varchar
+        description: ""
+
+      - name: industry_group
+        data_type: varchar
+        description: ""
+
+      - name: year
+        data_type: bigint
+        description: ""
+
+      - name: quarter
+        data_type: bigint
+        description: ""
+
+      - name: absolute_quarter
+        data_type: bigint
+        description: ""
+
+      - name: current_market_cap
+        data_type: double
+        description: ""
+
+      - name: avg_volume_3m
+        data_type: double
+        description: ""
+
+      - name: current_shares_outstanding
+        data_type: double
+        description: ""
+
+      - name: quarter_market_cap
+        data_type: decimal
+        description: ""
+
+      - name: quarter_shares_outstanding
+        data_type: decimal
+        description: ""
+
+      - name: qmj_profitability
+        data_type: double
+        description: ""
+
+      - name: qmj_growth
+        data_type: double
+        description: ""
+
+      - name: qmj_safety
+        data_type: double
+        description: ""
+
+      - name: qmj_score
+        data_type: double
+        description: ""
+
+      - name: qmj_rank
+        data_type: bigint
+        description: ""
+
+      - name: z_value_historical
+        data_type: double
+        description: ""
+
+      - name: z_momentum_historical
+        data_type: double
+        description: ""
+
+      - name: value_raw_score
+        data_type: decimal
+        description: ""
+
+      - name: momentum_raw_score
+        data_type: decimal
+        description: ""
+
+      - name: value_recent_score
+        data_type: double
+        description: ""
+
+      - name: momentum_recent_score
+        data_type: decimal
+        description: ""
+
+      - name: z_value_recent
+        data_type: double
+        description: ""
+
+      - name: z_momentum_recent
+        data_type: double
+        description: ""
+
+      - name: obt_updated_at
+        data_type: timestamp(6) with time zone
+        description: ""
+
+      - name: obt_invocation_id
+        data_type: varchar
+        description: ""
+

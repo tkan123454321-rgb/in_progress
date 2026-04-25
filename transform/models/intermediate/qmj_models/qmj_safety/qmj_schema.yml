@@ -84,7 +84,7 @@ models:
                 value: 1
 
   - name: int_qmj_safety
-    description: "Intermediate model that joins all safety components and calculates Leverage (LEV) and Earnings Volatility (EVOL) scores."
+    description: "Intermediate model that joins all safety components and calculates Leverage (LEV) and Earnings Volatility (EVOL) scores to integrete into the QMJ safety factor."
     columns:
       - name: status
         data_type: varchar

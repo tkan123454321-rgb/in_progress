@@ -41,9 +41,9 @@ models:
         description: "The reporting financial quarter."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4]
+              quote_values: false
 
       - name: total_assets
         data_type: decimal
@@ -190,6 +190,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 900"
                 error_if: "> 1000"
 
       - name: unqualified_reason
@@ -238,9 +239,9 @@ models:
         description: "The reporting financial quarter."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4]
+              quote_values: false
 
       - name: cfo
         data_type: decimal
@@ -369,6 +370,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 900"
                 error_if: "> 1000"
 
       - name: unqualified_reason
@@ -417,9 +419,9 @@ models:
         description: "The reporting financial quarter."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4]
+              quote_values: false
 
       - name: gross_revenue
         data_type: decimal
@@ -584,6 +586,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 900"
                 error_if: "> 1000"
 
       - name: unqualified_reason

@@ -1,37 +1,59 @@
 {{ config(
     materialized='table',
-    tags=['intermediate', 'value_scoring']
+    tags=['intermediate', 'historical_value']
 ) }}
 
-WITH lagged_data AS (
+{% set audit_cols = get_audit_columns('intermediate') %}
+-- STEP 1: Extract fundamentals and calculate 6-month (2 quarters) lagged Book Equity
+WITH historical_lags AS (
     SELECT 
         ticker,
         year,
         quarter,
         absolute_quarter,
         
-        -- 1. Vốn hóa hiện tại (T)
+        -- Historical Market Cap (T)
         market_cap,
         
-        -- 2. Book Equity chuẩn (T - 6 tháng) - Không cần COALESCE
-        LAG(total_equity - minority_interest - preferred_stock, 2) 
-            OVER (PARTITION BY ticker ORDER BY absolute_quarter) AS book_equity_6m_lag,
+        -- Standard Book Equity (T - 6 months)
+        LAG(total_equity - minority_interest - preferred_stock, 2) OVER w_ticker AS book_equity_6m_lag,
             
-        -- 3. Bắt Gap để check dòng bị lag có chuẩn 2 quý không
-        (absolute_quarter - LAG(absolute_quarter, 2) OVER (PARTITION BY ticker ORDER BY absolute_quarter)) AS gap_6m
+        -- Gap check to ensure the lag is exactly 2 quarters
+        (absolute_quarter - LAG(absolute_quarter, 2) OVER w_ticker) AS gap_6m
         
     FROM {{ ref('int_ttm_metrics') }}
     WHERE ttm_status = 'valid_ttm'
+    WINDOW w_ticker AS (PARTITION BY ticker ORDER BY absolute_quarter)
 ),
 
-calc_value AS (
+-- STEP 2: Calculate the Raw Value Score
+raw_value_calculation AS (
     SELECT 
         *,
-        -- 4. Tính Value Score thô (BE/ME)
+        -- Value Score = Book Equity (t-2) / Market Equity (t)
         (book_equity_6m_lag / NULLIF(market_cap, 0)) AS value_raw_score
-    FROM lagged_data
-)
+    FROM historical_lags
+),
 
+-- STEP 3: Apply Data Quality Rules specific to Value
+applied_dq_rules AS (
+    SELECT 
+        *,
+        NULLIF(
+            CONCAT_WS(' | ',
+                -- Continuity Check: Must have exactly a 2-quarter gap
+                CASE WHEN gap_6m IS NULL OR gap_6m != 2 THEN 'Err: Missing 6-month lag for Book Equity (Gap != 2)' ELSE NULL END,
+                
+                -- Null check for historical book equity
+                CASE WHEN book_equity_6m_lag IS NULL THEN 'Err: Lagged Book Equity is null' ELSE NULL END,
+
+                -- Null check for value_raw_score
+                CASE WHEN value_raw_score IS NULL THEN 'Err: Value Score is null' ELSE NULL END
+            ), 
+        '') AS unqualified_reason
+    FROM raw_value_calculation
+)
+-- STEP 4: Final Selection and Status Resolution
 SELECT 
     ticker,
     year,
@@ -42,17 +64,16 @@ SELECT
     book_equity_6m_lag,
     value_raw_score,
 
-    -- Bắt lỗi bằng Macro
-    {{ check_value_and_momentum_column('value') }} AS unqualified_reason,
+    -- Resolve Final Status
     CASE 
-        WHEN {{ check_value_and_momentum_column('value') }} IS NULL THEN 'qualified'
+        WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
-    END AS status
+    END AS status,
+    unqualified_reason
 
-    -- Audit columns
-    {% set audit_cols = get_audit_columns('intermediate') %}
+    -- Auto-generated audit columns
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
 
-FROM calc_value
+FROM applied_dq_rules

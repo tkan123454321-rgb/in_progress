@@ -1,0 +1,54 @@
+models:
+  - name: int_value_ratio_recent
+    description: "Intermediate model calculating the latest Value score (based on AQR's 'Value and Momentum Everywhere' methodology). It calculates the ratio of the most recently reported Book Equity to the current Market Capitalization. Includes freshness checks to filter out stale data."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if both market data and the most recent fundamentals are fresh (<= 10 days and <= 2 quarters delayed, respectively) and the score is not null."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_value_ratio
+    description: "Intermediate model calculating historical Value scores aligned to quarter-ends (based on AQR's 'Value and Momentum Everywhere' methodology). It calculates the ratio of the Book Equity from 6 months (2 quarters) ago to the Market Capitalization of that historical quarter."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if the 6-month gap is exact and the lagged book equity is not null."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1

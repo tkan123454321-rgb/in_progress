@@ -10,6 +10,7 @@
 
 with raw_source as (
     select * from {{ source('bronze', 'fundamental_quarter') }}
+    
     {% if is_incremental() %}
         where bronze_ingested_time > (
             SELECT COALESCE(MAX(bronze_ingested_time), CAST('1900-01-01 00:00:00 UTC' AS TIMESTAMP WITH TIME ZONE)) 

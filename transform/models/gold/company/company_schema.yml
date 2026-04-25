@@ -1,10 +1,7 @@
-version: 2
-
 models:
   - name: gold_dim_company
-    description: "The master dimension table for listed companies, optimized for Corporate Finance analytics. This Gold layer integrates company profiles with fundamental metrics and applies strict business rules (e.g., minimum liquidity > 10k, market cap > 500B VND, and excluding financial institutions). Data is tagged as 'qualified' for dashboard consumption or 'unqualified' if it violates investment criteria."
+    description: "The master dimension table for listed companies. This Gold layer integrates company profiles with fundamental metrics and applies strict business rules (e.g., minimum liquidity > 10k, market cap > 500B VND). Data is tagged as 'qualified' for dashboard consumption or 'unqualified' if it violates investment criteria."
     
-    # 1. TEST BẢO VỆ MẶT TIỀN (SCHEMA ENFORCEMENT)
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           column_list: [
@@ -20,7 +17,7 @@ models:
         description: "The primary key. The unique stock symbol of the company."
         data_tests:
           - unique
-          - relationships: # Kiểm tra xem ticker này có tồn tại trong bảng gốc không
+          - relationships: 
               to: ref('silver_dim_company')
               field: ticker
 
@@ -55,7 +52,6 @@ models:
         data_type: double
         description: "Number of shares available for public trading."
 
-      # LUẬT 2: VỐN HÓA LỚN HƠN 500 TỶ
       - name: market_cap
         data_type: double
         description: "Total market capitalization (in VND)."
@@ -64,7 +60,6 @@ models:
               min_value: 500000000000
               row_condition: "status = 'qualified'"
 
-      # LUẬT 3: THANH KHOẢN > 10K CỔ PHIẾU/NGÀY
       - name: avg_volume_3m
         data_type: double
         description: "Average daily trading volume over the last 3 months."
@@ -87,9 +82,9 @@ models:
         data_tests:
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set: [true]
+              quote_values: false
               row_condition: "status = 'qualified'"
 
-      # LUẬT 4: MÁC QUALIFIED LÀ KHÔNG ĐƯỢC CÓ LỖI
       - name: status
         data_type: varchar
         description: "The final business status. 'qualified' means the stock meets all investment criteria and DQ rules."
@@ -105,7 +100,6 @@ models:
           - dbt_expectations.expect_column_values_to_be_null:
               row_condition: "status = 'qualified'"
 
-      # KIỂM TRA AUDIT THEO ĐÚNG CHUẨN SILVER
       - name: gold_invocation_id
         data_type: varchar
         description: "Audit column: The unique dbt invocation ID for the Gold layer run."
@@ -124,3 +118,6 @@ models:
               arguments:
                 datepart: day
                 interval: 32
+    
+  - name: ephemeral_qualified_dim_company
+    description: "Filters only 'qualified' company records from the gold layer to feed into the SCD Type 2 snapshot."

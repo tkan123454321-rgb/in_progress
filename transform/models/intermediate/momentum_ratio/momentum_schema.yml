@@ -1,0 +1,54 @@
+models:
+  - name: int_momentum_ratio_recent
+    description: "Intermediate model calculating the latest 12M-1M Momentum score (based on AQR's 'Value and Momentum Everywhere' methodology). It calculates the ratio of the stock price 1 month ago (T-21 days) to the price 1 year ago (T-252 days). Includes freshness checks to filter out stale data."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if the asset has traded within the last 10 days and has a complete 1-year trading history without nulls."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: int_momentum_ratio
+    description: "Intermediate model calculating historical 12M-1M Momentum scores aligned to quarter-ends (based on AQR's 'Value and Momentum Everywhere' methodology). It uses the ratio of the stock price 1 month ago (T-1) to the price 12 months ago (T-12)."
+    columns:
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if the 12-month historical lag gap is exact and prior prices are valid and non-zero."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: int_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the intermediate model was run."
+        data_tests:
+          - not_null
+
+      - name: int_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1

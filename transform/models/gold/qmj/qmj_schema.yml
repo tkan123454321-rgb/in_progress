@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: gold_qmj_z_final
+    description: "The ultimate Gold model calculating the final Quality Minus Junk (QMJ) Z-Score. It aggregates the Z-Scores from the Profitability, Growth, and Safety pillars according to AQR's methodology."
+    data_tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: ["ticker", "absolute_quarter"]
+
+    columns:
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker."
+
+      - name: year
+        data_type: bigint
+        description: "The reporting financial year."
+
+      - name: quarter
+        data_type: bigint
+        description: "The reporting financial quarter."
+
+      - name: absolute_quarter
+        data_type: bigint
+        description: "Continuous quarter timeline (year * 4 + quarter)."
+
+      - name: qmj_profitability_score
+        data_type: double
+        description: "The standardized Z-Score for the Profitability pillar."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: qmj_growth_score
+        data_type: double
+        description: "The standardized Z-Score for the Growth pillar."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: qmj_safety_score
+        data_type: double
+        description: "The standardized Z-Score for the Safety pillar."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: qmj_score
+        data_type: double
+        description: "The final, combined Quality Minus Junk (QMJ) Z-Score."
+        data_tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'qualified'"
+
+      - name: status
+        data_type: varchar
+        description: "Data quality status. Evaluated as 'qualified' if all 3 QMJ pillars are present and valid."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['qualified', 'unqualified']
+
+      - name: unqualified_reason
+        data_type: varchar
+        description: "Reason for disqualification (e.g., missing one of the pillars)."
+
+      - name: gold_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when the Gold model was run."
+        data_tests:
+          - not_null
+
+      - name: gold_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: gold_qmj_z_growth
+    description: "Gold model containing the final aggregated Z-Score for the Growth pillar."
+    columns:
+      - name: gold_updated_at
+        data_type: timestamp(6) with time zone
+        data_tests:
+          - not_null
+
+      - name: gold_invocation_id
+        data_type: varchar
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: gold_qmj_z_profitability
+    description: "Gold model containing the final aggregated Z-Score for the Profitability pillar."
+    columns:
+      - name: gold_updated_at
+        data_type: timestamp(6) with time zone
+        data_tests:
+          - not_null
+
+      - name: gold_invocation_id
+        data_type: varchar
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1
+
+  - name: gold_qmj_z_safety
+    description: "Gold model containing the final aggregated Z-Score for the Safety pillar."
+    columns:
+      - name: gold_updated_at
+        data_type: timestamp(6) with time zone
+        data_tests:
+          - not_null
+
+      - name: gold_invocation_id
+        data_type: varchar
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1

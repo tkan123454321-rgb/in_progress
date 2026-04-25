@@ -1,6 +1,7 @@
 {{ config(
     materialized='table', 
     tags=['intermediate', 'qmj_growth']) }}
+{% set audit_cols = get_audit_columns('intermediate') %}
 
 -- STEP 1: Extract valid TTM metrics and calculate Book Equity & Working Capital
 WITH base_metrics AS (

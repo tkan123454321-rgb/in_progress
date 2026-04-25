@@ -18,9 +18,11 @@ models:
           - dbt_expectations.expect_column_values_to_match_regex:
               arguments:
                 regex: "^[A-Z0-9]{3}$"
+                row_condition: "ticker != 'VNINDEX'"
           - relationships:
               arguments:
                 to: ref('gold_dim_company')
+                where: "ticker != 'VNINDEX'"
                 field: ticker
 
       - name: date
@@ -44,18 +46,18 @@ models:
         description: "The extracted month of the trading date (1-12)."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+              quote_values: false
 
       - name: quarter
         data_type: bigint
         description: "The extracted quarter of the trading date (1-4)."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4]
+              quote_values: false
 
       - name: absolute_month
         data_type: bigint

@@ -1,9 +1,11 @@
 {{ config(
     materialized='table',
-    tags=['gold', 'daily_screener', 'value_and_momentum_z']
+    tags=['gold', 'recent_value_and_momentum_z']
 ) }}
 
--- 1. LẤY NGUYÊN LIỆU
+{% set audit_cols = get_audit_columns('gold') %}
+
+-- STEP 1: Extract qualified recent scores for Value and Momentum
 WITH base_value AS (
     SELECT 
         ticker,
@@ -22,7 +24,7 @@ base_momentum AS (
     WHERE status = 'qualified'
 ),
 
--- 2. HỘI QUÂN RECENT 
+-- STEP 2: Combine metrics (Full Outer Join to retain all valid tickers)
 joined_metrics AS (
     SELECT 
         ticker,
@@ -32,7 +34,8 @@ joined_metrics AS (
     FULL OUTER JOIN base_momentum m USING (ticker)
 ),
 
--- 3. XẾP HẠNG TRÊN TOÀN THỊ TRƯỜNG HIỆN TẠI 
+-- STEP 3: Rank metrics cross-sectionally across the entire current market
+-- Note: No partition clause since this is a live snapshot of the whole market
 ranked_metrics AS (
     SELECT 
         *,
@@ -49,41 +52,52 @@ ranked_metrics AS (
         END AS momentum_rank
     FROM joined_metrics
 ),
-
--- 4. CHỐT Z-SCORE
+-- STEP 4: Standardize ranks into Z-Scores
 z_score_components AS (
     SELECT 
         *,
-        -- Z-Score cho Value
+        -- Z-Score for Live Value
         (value_rank - AVG(value_rank) OVER ()) 
         / NULLIF(STDDEV_SAMP(value_rank) OVER (), 0) AS z_value_recent,
         
-        -- Z-Score cho Momentum
+        -- Z-Score for Live Momentum
         (momentum_rank - AVG(momentum_rank) OVER ()) 
         / NULLIF(STDDEV_SAMP(momentum_rank) OVER (), 0) AS z_momentum_recent
 
     FROM ranked_metrics
+),
+
+-- STEP 5: Apply inline Data Quality Rules
+applied_dq_rules AS (
+    SELECT 
+        *,
+        NULLIF(
+            CONCAT_WS(' | ',
+                CASE WHEN z_value_recent IS NULL THEN 'z_value_recent is null' ELSE NULL END,
+                CASE WHEN z_momentum_recent IS NULL THEN 'z_momentum_recent is null' ELSE NULL END
+             ), 
+        '') AS unqualified_reason
+    FROM z_score_components
 )
 
+-- STEP 6: Final Selection, Status Resolution, and Audit Injection
 SELECT 
     ticker,
     value_recent_score,
     momentum_recent,
     z_value_recent, 
     z_momentum_recent,
-
-    -- Bắt lỗi bằng Macro 
-    {{ check_value_and_momentum_z_score_column('value_momentum_z_recent') }} AS unqualified_reason,
     
+    -- Resolve Final Status
     CASE 
-        WHEN {{ check_value_and_momentum_z_score_column('value_momentum_z_recent') }} IS NULL THEN 'qualified'
+        WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
-    END AS status
+    END AS status,
+    unqualified_reason
 
-    -- Thêm các cột audit
-    {% set audit_cols = get_audit_columns('gold') %}
+    -- Auto-generated audit columns
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
 
-FROM z_score_components
+FROM applied_dq_rules

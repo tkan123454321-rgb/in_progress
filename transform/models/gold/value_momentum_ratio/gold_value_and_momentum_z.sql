@@ -1,12 +1,13 @@
 {{ config(
     materialized='table',
-    tags=['gold', 'value_and_momentum_z']
+    tags=['gold', 'historical_value_and_momentum_z']
 ) }}
 
--- 1. LẤY NGUYÊN LIỆU (Giữ nguyên hoặc lọc qualified tùy bác, ở đây tôi để thoáng để FULL JOIN phát huy tác dụng)
+{% set audit_cols = get_audit_columns('gold') %}
+
+-- STEP 1: Extract qualified historical scores for Value and Momentum
 WITH base_value AS (
     SELECT * FROM {{ ref('int_value_ratio') }}
-    -- Thường thì ở tầng Gold mình chỉ lấy hàng qualified để tính Z-Score cho chuẩn
     WHERE status = 'qualified' 
 ),
 
@@ -15,7 +16,7 @@ base_momentum AS (
     WHERE status = 'qualified'
 ),
 
--- 2. HỘI QUÂN (Dùng FULL OUTER JOIN + USING để code sạch bóng)
+-- STEP 2: Combine metrics cleanly using USING clause
 joined_metrics AS (
     SELECT 
         ticker,
@@ -28,41 +29,59 @@ joined_metrics AS (
     FULL OUTER JOIN base_momentum m USING (ticker, year, quarter, absolute_quarter)
 ),
 
--- 3. XẾP HẠNG "VÔ TRÙNG" (Chỉ Rank những thằng không NULL)
+-- STEP 3: Rank metrics cross-sectionally per quarter
 ranked_metrics AS (
     SELECT 
         *,
-        -- Rank Value: Càng cao (rẻ) càng tốt -> DESC
+        -- Rank Value: Lower score = Lower Rank
         CASE 
             WHEN value_raw_score IS NOT NULL 
-            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY value_raw_score ASC) 
+            THEN RANK() OVER w_qtr_val 
             ELSE NULL 
         END AS value_rank,
         
-        -- Rank Momentum: Càng cao (đà mạnh) càng tốt -> DESC
+        -- Rank Momentum: Lower score = Lower Rank
         CASE 
             WHEN momentum_raw_score IS NOT NULL 
-            THEN RANK() OVER (PARTITION BY absolute_quarter ORDER BY momentum_raw_score ASC) 
+            THEN RANK() OVER w_qtr_mom 
             ELSE NULL 
         END AS momentum_rank
     FROM joined_metrics
+    WINDOW 
+        w_qtr_val AS (PARTITION BY absolute_quarter ORDER BY value_raw_score ASC),
+        w_qtr_mom AS (PARTITION BY absolute_quarter ORDER BY momentum_raw_score ASC)
 ),
 
--- 4. CHỐT Z-SCORE (Hàm aggregate tự động bỏ qua NULL trong Rank)
+-- STEP 4: Standardize ranks into Z-Scores per quarter
 z_score_components AS (
     SELECT 
         *,
-        -- Z-Score cho Value
-        (value_rank - AVG(value_rank) OVER (PARTITION BY absolute_quarter)) 
-        / NULLIF(STDDEV_SAMP(value_rank) OVER (PARTITION BY absolute_quarter), 0) AS z_value,
+        -- Z-Score for Historical Value
+        (value_rank - AVG(value_rank) OVER w_qtr) 
+        / NULLIF(STDDEV_SAMP(value_rank) OVER w_qtr, 0) AS z_value,
         
-        -- Z-Score cho Momentum
-        (momentum_rank - AVG(momentum_rank) OVER (PARTITION BY absolute_quarter)) 
-        / NULLIF(STDDEV_SAMP(momentum_rank) OVER (PARTITION BY absolute_quarter), 0) AS z_momentum
+        -- Z-Score for Historical Momentum
+        (momentum_rank - AVG(momentum_rank) OVER w_qtr) 
+        / NULLIF(STDDEV_SAMP(momentum_rank) OVER w_qtr, 0) AS z_momentum
 
     FROM ranked_metrics
+    WINDOW w_qtr AS (PARTITION BY absolute_quarter)
+),
+
+-- STEP 5: Apply inline Data Quality Rules
+applied_dq_rules AS (
+    SELECT 
+        *,
+        NULLIF(
+            CONCAT_WS(' | ',
+                CASE WHEN z_value IS NULL THEN 'z_value is null' ELSE NULL END,
+                CASE WHEN z_momentum IS NULL THEN 'z_momentum is null' ELSE NULL END
+             ), 
+        '') AS unqualified_reason
+    FROM z_score_components
 )
 
+-- STEP 6: Final Selection, Status Resolution, and Audit Injection
 SELECT 
     ticker,
     year,
@@ -72,21 +91,19 @@ SELECT
     value_raw_score,
     momentum_raw_score,
     
-    -- Hai biến Z-score đã được "vô trùng"
     z_value, 
     z_momentum,
 
-    -- Bắt lỗi bằng Macro (Nhớ check lại macro value_momentum_z đã update chưa nhé bác)
-    {{ check_value_and_momentum_z_score_column('value_momentum_z') }} AS unqualified_reason,
+    -- Resolve Final Status
     CASE 
-        WHEN {{ check_value_and_momentum_z_score_column('value_momentum_z') }} IS NULL THEN 'qualified'
+        WHEN unqualified_reason IS NULL THEN 'qualified'
         ELSE 'unqualified'
-    END AS status
+    END AS status,
+    unqualified_reason
 
-    -- Thêm các cột audit
-    {% set audit_cols = get_audit_columns('gold') %}
+    -- Auto-generated audit columns
     {% for col in audit_cols %}
     , {{ col.expr }} AS {{ col.alias }}
     {% endfor %}
 
-FROM z_score_components
+FROM applied_dq_rules

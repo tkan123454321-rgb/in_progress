@@ -1,6 +1,5 @@
 {{ config(
-    materialized='ephemeral',
-    description="Filters only 'qualified' company records from the gold layer to feed into the SCD Type 2 snapshot."
+    materialized='ephemeral'
 ) }}
 
 SELECT * FROM {{ ref('gold_dim_company') }}

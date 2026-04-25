@@ -1,0 +1,137 @@
+models:
+  - name: obt_web
+    description: "One Big Table (OBT) designed specifically to serve the Streamlit Web Application. This flattened, highly optimized table aggregates all key quantitative factors (QMJ, Value, Momentum) alongside company metadata and liquidity metrics. It is ready for direct UI consumption and fast filtering."
+    data_tests:
+      # Chốt chặn cực gắt: Không bao giờ được phép có 2 dòng cùng mã chứng khoán trong cùng 1 quý
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: ["ticker", "absolute_quarter"]
+
+    columns:
+      # --- A. Company Identification ---
+      - name: ticker
+        data_type: varchar
+        description: "The unique stock symbol/ticker."
+        data_tests:
+          - not_null
+
+      - name: company_name
+        data_type: varchar
+        description: "The full name of the company."
+
+      - name: exchange
+        data_type: varchar
+        description: "The stock exchange where the ticker is listed."
+
+      - name: sector_detail
+        data_type: varchar
+        description: "The specific sector the company operates in."
+
+      - name: industry_group
+        data_type: varchar
+        description: "The broader industry group."
+
+      # --- B. Time Axis ---
+      - name: year
+        data_type: bigint
+        description: "The financial reporting year."
+
+      - name: quarter
+        data_type: bigint
+        description: "The financial reporting quarter."
+
+      - name: absolute_quarter
+        data_type: bigint
+        description: "Continuous quarter timeline for chronological sorting."
+
+      # --- C. Liquidity & Size ---
+      - name: current_market_cap
+        data_type: double
+        description: "Latest available Market Capitalization."
+
+      - name: avg_volume_3m
+        data_type: double
+        description: "3-month average trading volume."
+
+      - name: current_shares_outstanding
+        data_type: double
+        description: "Latest count of outstanding shares."
+
+      - name: quarter_market_cap
+        data_type: decimal
+        description: "Market Capitalization at the end of the specified quarter."
+
+      - name: quarter_shares_outstanding
+        data_type: decimal
+        description: "Shares outstanding at the end of the specified quarter."
+
+      # --- D. Quality (QMJ) Pillar ---
+      - name: qmj_profitability
+        data_type: double
+        description: "Z-Score for the Profitability pillar (Rounded to 3 decimals)."
+
+      - name: qmj_growth
+        data_type: double
+        description: "Z-Score for the Growth pillar (Rounded to 3 decimals)."
+
+      - name: qmj_safety
+        data_type: double
+        description: "Z-Score for the Safety pillar (Rounded to 3 decimals)."
+
+      - name: qmj_score
+        data_type: double
+        description: "Final aggregated Quality Minus Junk Z-Score (Rounded to 3 decimals)."
+
+      - name: qmj_rank
+        data_type: bigint
+        description: "Quarterly ranking based on qmj_score (1 is best). Highly optimized for Top N filtering on the UI."
+
+      # --- E. Value & Momentum Pillar (Historical) ---
+      - name: z_value_historical
+        data_type: double
+        description: "Historical Z-Score for the Value factor."
+
+      - name: z_momentum_historical
+        data_type: double
+        description: "Historical Z-Score for the Momentum factor (12M-1M)."
+
+      - name: value_raw_score
+        data_type: decimal
+        description: "Historical raw Book-to-Market ratio."
+
+      - name: momentum_raw_score
+        data_type: decimal
+        description: "Historical raw Momentum return ratio."
+
+      # --- F. Value & Momentum Pillar (Live/Recent) ---
+      - name: value_recent_score
+        data_type: double
+        description: "Latest 'Live' raw Book-to-Market ratio."
+
+      - name: momentum_recent_score
+        data_type: decimal
+        description: "Latest 'Live' raw Momentum return ratio."
+
+      - name: z_value_recent
+        data_type: double
+        description: "Latest 'Live' Z-Score for the Value factor."
+
+      - name: z_momentum_recent
+        data_type: double
+        description: "Latest 'Live' Z-Score for the Momentum factor."
+
+      # --- G. Audit ---
+      - name: obt_updated_at
+        data_type: timestamp(6) with time zone
+        description: "Audit column: Timestamp indicating when this OBT model was built."
+        data_tests:
+          - not_null
+
+      - name: obt_invocation_id
+        data_type: varchar
+        description: "Audit column: The unique dbt invocation ID."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              arguments:    
+                value: 1

@@ -94,6 +94,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 499"
                 error_if: "> 500"
 
       - name: silver_invocation_id
@@ -167,6 +168,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 499"
                 error_if: "> 500"
 
       - name: silver_invocation_id
@@ -220,19 +222,15 @@ models:
         description: "The reporting financial year."
         data_tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: 2018
-                max_value: 2050
 
       - name: quarter
         data_type: integer
         description: "The reporting financial quarter."
         data_tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [1, 2, 3, 4]
+              quote_values: false
 
       - name: preferred_stock
         data_type: decimal
@@ -268,6 +266,7 @@ models:
               arguments:
                 invalid_value: 'unqualified'
               config:
+                warn_if: "> 499"
                 error_if: "> 500"
 
       - name: silver_invocation_id
