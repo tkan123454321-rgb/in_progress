@@ -62,7 +62,7 @@ services:
     container_name: airflow-apiserver
     command: api-server
     ports:
-      - "8082:8080" # Đổi sang 8082 để tránh đụng port Trino/Spark
+      - "8082:8080" 
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health" ]
       interval: 30s
@@ -88,6 +88,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    env_file:
+      - .env
+
   airflow-dag-processor:
     <<: *airflow-common
     command: dag-processor
@@ -204,8 +207,23 @@ services:
     ports:
       - "9092:9092"
       - "9997:9997"
-    env_file:
-      - .env
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 5
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_HOSTNAME: kafka
     networks:
       - monitoring_net
 
@@ -222,7 +240,7 @@ services:
 
   kafbat-ui:
     container_name: kafbat-ui
-    image: ghcr.io/kafbat/kafka-ui:latest
+    image: ghcr.io/kafbat/kafka-ui:v1.5.0
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -236,7 +254,7 @@ services:
       - kafka
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.1.0-24697775169
     container_name: grafana
     networks:
       - monitoring_net
@@ -250,7 +268,7 @@ services:
       - ./infra_config/config_docker/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - plugins-trino:/var/lib/grafana/plugins/trino
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7.1
     container_name: loki
     networks:
       - monitoring_net
@@ -268,7 +286,7 @@ services:
         condition: service_completed_successfully
 
   minio:
-    image: quay.io/minio/aistor/minio:latest
+    image: quay.io/minio/aistor/minio:RELEASE.2026-04-14T21-32-45Z
     container_name: aistor-server
     networks:
       - monitoring_net
@@ -296,20 +314,6 @@ services:
       /bin/sh -c " echo 'Đang chờ MinIO khởi động...';  until (/usr/bin/mc alias set myminio http://minio:9000 $${MINIO_USER} $${MINIO_PASSWORD});  do
         sleep 1;
       done;   /usr/bin/mc mb --ignore-existing myminio/loki-data;   /usr/bin/mc mb --ignore-existing myminio/loki-ruler;   echo 'hoàn thành tạo bucket';   exit 0; "
-
-  promtail:
-    image: grafana/promtail:latest
-    container_name: promtail
-    restart: unless-stopped
-    ports:
-      - "9080:9080"
-    networks:
-      - monitoring_net
-    volumes:
-      - ./infra_config/config_docker/promtail_config.yaml:/etc/promtail/config.yaml
-      - /var/run/docker.sock:/var/run/docker.sock
-      - promtail_data:/tmp
-    command: -config.file=/etc/promtail/config.yaml -config.expand-env=true
 
   dev-container:
     build: .
@@ -363,14 +367,14 @@ services:
     container_name: nessie_admin_tool
     profiles: [ "tools" ]
     networks:
-      - monitoring_net # Sửa lại tên network cho đúng với hệ thống của ông giáo
+      - monitoring_net 
     depends_on:
       - nessie
     environment:
       <<: *nessie-shared-env
 
   trino:
-    image: trinodb/trino:latest
+    image: trinodb/trino:480
     container_name: trino
     ports:
       - "9090:8080"
@@ -385,7 +389,7 @@ services:
     mem_limit: 6gb
 
   vector:
-    image: timberio/vector:latest-alpine
+    image: timberio/vector:0.55.0-alpine
     container_name: vector
     ports:
       - "5001:5000"
@@ -398,17 +402,7 @@ services:
       - ./infra_config/config_docker/vector_config.yaml:/etc/vector/vector.yaml:ro
       - ./vector_log:/tmp/vector_log
       - vector_data:/var/lib/vector
-  # jupyter:
-  #   build: .
-  #   container_name: jupyter-lab
-  #   command: >
-  #     jupyter lab --ServerApp.ip=0.0.0.0 --ServerApp.port=8888 --ServerApp.root_dir=/app --ServerApp.open_browser=False --ServerApp.allow_root=True  --ServerApp.token=''  --PasswordIdentityProvider.password_required=False --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=10000000000 --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "8888:8888"
-  #   networks:
-  #     - monitoring_net
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   db_data:

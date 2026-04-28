@@ -10,7 +10,8 @@ WITH validation AS (
 )
 
 SELECT
-    -- Nhân 10000 trước rồi mới chia. Ép về INTEGER cho dbt nó vui!
+    -- Multiply by 10,000 first to get basis points (bps), then divide. 
+    -- Cast to INTEGER to align with dbt's threshold evaluation logic.
     CAST((null_count * 10000) / NULLIF(total_count, 0) AS INTEGER) AS failure_bps
 FROM validation
 

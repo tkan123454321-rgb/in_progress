@@ -2,16 +2,29 @@
 macros:
   - name: test_invalid_rate
     description: >
-      Bài test tự chế để kiểm tra tỷ lệ rác (ví dụ: status = 'unqualified').
-      Nó sẽ đếm số dòng rác chia cho tổng số dòng. 
-      Nên kết hợp với config `warn_if` và `error_if` để làm cầu dao tự động.
+      Custom test to monitor the proportion of invalid records (e.g., checking if status = 'unqualified').
+      It calculates the ratio of invalid rows to total rows in basis points (bps).
+      Designed to be used with `warn_if` and `error_if` configurations to act as an automated data quality circuit breaker.
     arguments:
       - name: model
         type: string
-        description: "Bảng cần test (dbt tự truyền vào)"
+        description: "The target model to be tested (passed automatically by dbt)."
       - name: column_name
         type: string
-        description: "Cột cần test (ví dụ: status)"
+        description: "The column to evaluate (e.g., status)."
       - name: invalid_value
         type: string
-        description: "Giá trị bị coi là rác (ví dụ: 'unqualified')"
+        description: "The specific string value that represents an invalid state (e.g., 'unqualified')."
+
+  - name: test_null_rate
+    description: >
+      Custom test to monitor the proportion of NULL values in a specific column.
+      It calculates the ratio of NULL rows to total rows in basis points (bps).
+      Ideal for enforcing data completeness thresholds using `warn_if` and `error_if`.
+    arguments:
+      - name: model
+        type: string
+        description: "The target model to be tested (passed automatically by dbt)."
+      - name: column_name
+        type: string
+        description: "The column to evaluate for missing (NULL) values."

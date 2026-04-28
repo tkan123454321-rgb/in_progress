@@ -1,11 +1,9 @@
 import json
 from logging import getLogger, LoggerAdapter, Formatter, StreamHandler, Logger
 import logging
-import os
 import sys
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, Literal
-from unittest import result
 import logging_loki
 from queue import Queue
 

@@ -172,3 +172,7 @@ with client._get_trino_connection().cursor() as cur:
     tickers =  {row[0] for row in result}
 print(tickers)
 # %%
+from common.core.logger_config import setup_logger
+logger = setup_logger(component="ingest")
+logger.info("This is an info message.")
+# %%
