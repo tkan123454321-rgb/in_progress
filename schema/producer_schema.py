@@ -582,7 +582,7 @@ class Dividend(BaseMetadata):
                   pl.col("source"),
                   pl.col("url"),
                   pl.col("created_at_ts").str.to_datetime(time_unit="us", time_zone="UTC"),
-                  pl.col("message_processed_time").str.to_datetime(time_unit="us", time_zone="UTC"),
+                  pl.col("message_processed_time"),
                   pl.lit(datetime.now(ZoneInfo("UTC"))).alias("bronze_ingested_time")
               ])
         )

@@ -26,3 +26,4 @@ ipykernel==7.2.0
 fastavro==1.12.1
 Cython==3.2.4
 trino==0.336.0
+

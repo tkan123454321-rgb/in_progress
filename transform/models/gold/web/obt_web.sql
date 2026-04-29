@@ -80,16 +80,16 @@ silver_quarter AS (
 super_obt AS (
     SELECT 
         -- A. Company Identification
-        q.ticker,
+        ticker,
         c.company_name,
         c.exchange,
         c.sector_detail,
         c.industry_group,
 
         -- B. Time Axis
-        q.year,
-        q.quarter,
-        q.absolute_quarter,
+        year,
+        quarter,
+        absolute_quarter,
 
         -- C. Liquidity & Size (Current & Quarterly)
         c.current_market_cap,

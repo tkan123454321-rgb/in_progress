@@ -3,10 +3,12 @@ from cosmos import DbtTaskGroup, RenderConfig, LoadMode
 from cosmos.constants import SourceRenderingBehavior
 from datetime import datetime
 from orchestration.dags.common.cosmos_config import profile_config, project_config, execution_config
-from schema.producer_schema import Fundamental_1, Fundamental_2, Dividend, HistoricalQuotes, VNINDEXHistoricalQuotes
+from schema.producer_schema import Fundamental_1, Fundamental_2
 from ingestion.ingest_main import ingest_main
 from load.load_main import load_main
-
+from orchestration.dags.task_groups import dividend_processing_group, historical_quotes_task_group, quarter_financial_reports_group
+from orchestration.dags.export_tasks import csv_frontend_serving_task
+#-------------------------------------------------------------------------------------------------------------
 @dag(
     dag_id="gold_dim_company_dag",
     dag_display_name="Pipeline: Gold Dim Company & Fundamentals",
@@ -89,7 +91,7 @@ def create_gold_dim_company():
 my_dag = create_gold_dim_company()
 
 
-
+#-------------------------------------------------------------------------------------------------------------
 
 @dag(
     dag_id="historical_quotes_dag",
@@ -113,72 +115,9 @@ def run_weekly():
     3. Final Transformation (QMJ): Runs the dbt models (starting from staging) to calculate metrics and update the final One-Big-Table (`obt_web`), which directly serves the end-users on the Streamlit app.
     """
     
-    @task(task_display_name="ingest dividend events")
-    def ingest_dividend_events():
-        """
-        **Phase: Ingest** - Dividend Events
-        Generates Kafka payloads containing metadata to fetch recent dividend events from the source API.
-        """
-        ingest_main(model_cls=Dividend)
-    task_1 = ingest_dividend_events()
+    dividend_group = dividend_processing_group()
     
-    @task(task_display_name="load dividend events")
-    def load_dividend_events():
-        """
-        **Phase: Load** - Dividend Events
-        Consumes Kafka payloads, fetches actual dividend data, and loads it into the Lakehouse.
-        """
-        load_main(model_cls=Dividend)
-    task_2 = load_dividend_events()
-    
-    dbt_transform_dividend = DbtTaskGroup(
-        group_id="dbt_dividend_transformation",
-        project_config=project_config,
-        profile_config=profile_config,
-        execution_config=execution_config,
-        render_config=RenderConfig(
-                             select=["+dividend_snapshot"],
-                             source_pruning=True,
-                             source_rendering_behavior=SourceRenderingBehavior.WITH_TESTS_OR_FRESHNESS, 
-                             load_method=LoadMode.DBT_LS),
-        operator_args={"fail_fast": True},
-    )
-    
-    @task(task_display_name="ingest historical quotes")
-    def ingest_historical_quotes():
-        """
-        **Phase: Ingest** - Historical Quotes
-        Generates Kafka payloads to fetch stock prices. Uses the dividend snapshot to trigger full historical pulls for stocks requiring price adjustments.
-        """
-        ingest_main(model_cls=HistoricalQuotes)
-    task_3 = ingest_historical_quotes()
-    
-    @task(task_display_name="load historical quotes")
-    def load_historical_quotes():
-        """
-        **Phase: Load** - Historical Quotes
-        Consumes payloads to fetch and load stock price data into the Lakehouse.
-        """
-        load_main(model_cls=HistoricalQuotes)
-    task_4 = load_historical_quotes()
-    
-    @task(task_display_name="ingest VNINDEX historical quotes")
-    def ingest_vnindex_historical_quotes():
-        """
-        **Phase: Ingest** - VNINDEX Quotes
-        Generates Kafka payloads to fetch the general market index (VNINDEX) prices.
-        """
-        ingest_main(model_cls=VNINDEXHistoricalQuotes)
-    task_5 = ingest_vnindex_historical_quotes() 
-    
-    @task(task_display_name="load VNINDEX historical quotes")
-    def load_vnindex_historical_quotes():
-        """
-        **Phase: Load** - VNINDEX Quotes
-        Consumes payloads to fetch and load VNINDEX price data into the Lakehouse.
-        """
-        load_main(model_cls=VNINDEXHistoricalQuotes)
-    task_6 = load_vnindex_historical_quotes()
+    historical_quotes_group = historical_quotes_task_group()
     
     dbt_transform_qmj_model = DbtTaskGroup(
         group_id="dbt_qmj_model_transformation",
@@ -190,10 +129,59 @@ def run_weekly():
                              source_pruning=True,
                              source_rendering_behavior=SourceRenderingBehavior.WITH_TESTS_OR_FRESHNESS, 
                              load_method=LoadMode.DBT_LS),
-        operator_args={"fail_fast": True},
+        operator_args={"fail_fast": True}
     )
     
-    # Nối dây luồng chính
-    task_1 >> task_2 >> dbt_transform_dividend >> task_3 >> task_4 >> task_5 >> task_6 >> dbt_transform_qmj_model  # type: ignore
+    frontend_serving_task = csv_frontend_serving_task()
+    
+    dividend_group >> historical_quotes_group >> dbt_transform_qmj_model >> frontend_serving_task  # type: ignore
     
 my_qmj_dag = run_weekly()
+
+#-------------------------------------------------------------------------------------------------------------
+
+@dag(
+    dag_id="financial_quarter_reports_dag",
+    dag_display_name="Pipeline: Financial Quarter Dag",
+    schedule=None,
+    start_date=datetime(2024, 1, 1),
+    catchup=False,
+    tags=["quarterly"],
+    default_args={"retries": 0},
+    is_paused_upon_creation=False
+)
+def quarterly_dag(): 
+    """
+    Pipeline: Quarterly Financial Reports
+    
+    This DAG is triggered manually on-demand (typically every quarter) to fetch and process quarterly financial statements and fundamental data.
+    
+    Workflow Steps:
+    1. Ingestion & Load: Fetches fresh quarterly data including the Income Statement, Balance Sheet, Indirect Cash Flow, and Quarterly Fundamentals, then loads them into the Lakehouse.
+    2. Transformation (dbt): Runs the dbt models for the quarterly financial data to clean, transform, and integrate the raw reports.
+    3. Frontend Serving: Exports the updated One-Big-Table to a local CSV file, which serves as the data source for the Streamlit web application.
+    """
+    
+    financial_quarter_group = quarter_financial_reports_group()
+    
+    dbt_transform_financial_quarter = DbtTaskGroup(
+        group_id="dbt_financial_quarter_transformation",
+        project_config=project_config,
+        profile_config=profile_config,
+        execution_config=execution_config,
+        render_config=RenderConfig(
+                             select=["tag:quarter+"],
+                             source_pruning=True,
+                             source_rendering_behavior=SourceRenderingBehavior.WITH_TESTS_OR_FRESHNESS, 
+                             load_method=LoadMode.DBT_LS),
+        operator_args={"fail_fast": True}
+    )
+    
+    frontend_serving_task = csv_frontend_serving_task()
+    
+    financial_quarter_group >> dbt_transform_financial_quarter >> frontend_serving_task  # type: ignore
+    
+    
+    
+my_financial_quarter_dag = quarterly_dag()
+    

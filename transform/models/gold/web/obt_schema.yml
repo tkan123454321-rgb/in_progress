@@ -121,13 +121,13 @@ models:
         description: "Latest 'Live' Z-Score for the Momentum factor."
 
       # --- G. Audit ---
-      - name: obt_updated_at
+      - name: gold_updated_at
         data_type: timestamp(6) with time zone
         description: "Audit column: Timestamp indicating when this OBT model was built."
         data_tests:
           - not_null
 
-      - name: obt_invocation_id
+      - name: gold_invocation_id
         data_type: varchar
         description: "Audit column: The unique dbt invocation ID."
         data_tests:

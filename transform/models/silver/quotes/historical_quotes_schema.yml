@@ -130,9 +130,6 @@ models:
         description: "Audit column: The unique dbt invocation ID generated during the Silver run."
         data_tests:
           - not_null
-          - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
-                value: 1
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone

@@ -1,4 +1,7 @@
 FROM apache/airflow:3.2.0
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends git 
+USER airflow
 ADD requirements_ingest.txt .
 RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" -r requirements_ingest.txt
 ADD requirements_dbt.txt .

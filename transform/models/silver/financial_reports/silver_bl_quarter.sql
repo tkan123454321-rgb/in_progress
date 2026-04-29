@@ -1,7 +1,7 @@
 {{ config(
     materialized='incremental',
     on_schema_change='sync_all_columns',
-    tags=['silver', 'balance_sheet_quarter'], 
+    tags=['silver', 'balance_sheet_quarter', 'quarter'], 
     unique_key=['ticker', 'year', 'quarter'],
     incremental_strategy='merge'
 ) }}

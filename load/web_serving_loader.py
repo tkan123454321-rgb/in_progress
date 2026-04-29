@@ -137,10 +137,6 @@ class WebServingLoader:
             raise e
                        
     def _create_optimal_indexes(self, pg_cur):
-        """
-        Hardcode 100% cho bảng web.web_obt_temp.
-        Không tự đặt tên Index để tránh lỗi trùng lặp khi Swap bảng.
-        """
         logger.info("Constructing analytical indexes on the temporary table.")
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("ticker")')
         pg_cur.execute('CREATE INDEX ON web.web_obt_temp ("year", "quarter")')

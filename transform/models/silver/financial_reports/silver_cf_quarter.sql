@@ -1,7 +1,7 @@
 {{ config(
     materialized='incremental',
     on_schema_change='sync_all_columns',
-    tags=['silver', 'cash_flow_indirect_quarter'], 
+    tags=['silver', 'cash_flow_indirect_quarter', 'quarter'], 
     unique_key=['ticker', 'year', 'quarter'],
     incremental_strategy='merge'
 ) }}

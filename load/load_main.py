@@ -67,7 +67,7 @@ def _load_main_message(config: BaseMetadata, mode: Literal["run_first", "run_ret
                         logger.info(f"Successfully loaded batch of {BATCH_SIZE} records to Lakehouse. Committing offsets.")
                         consumer._flush_and_commit(buffer)
         except Exception as e:
-            logger.critical(f"🔥 Lỗi nghiêm trọng toàn cục: {e}", exc_info=True)
+            logger.critical(f"critical failures: {e}", exc_info=True)
             raise e
         except KeyboardInterrupt:
             # Graceful shutdown on manual interrupt
