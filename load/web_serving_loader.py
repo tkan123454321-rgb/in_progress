@@ -168,6 +168,7 @@ class WebServingLoader:
             
         except Exception as e:
             logger.error(f"Failed to export web data. Error: {e}", exc_info=True)
+            raise e
                 
                  
                     

@@ -287,7 +287,7 @@ class MetadataManager:
         disappeared_tickers = db_tickers - gold_tickers
         reappeared_tickers = (gold_tickers & db_tickers) & inactive_db_tickers
         if config.data_type == 'historical_quotes': 
-                dividend_changed_tickers = self._get_dividend_changed_tickers()
+                dividend_changed_tickers = self._get_dividend_changed_tickers() & gold_tickers
         
         # If everything matches perfectly, we can exit early and save database trips
         if not any([new_tickers, disappeared_tickers, reappeared_tickers]):
