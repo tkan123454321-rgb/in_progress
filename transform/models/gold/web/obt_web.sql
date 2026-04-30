@@ -118,7 +118,7 @@ super_obt AS (
 
     FROM gold_qmj q
     LEFT JOIN gold_val_mom vm USING (ticker, year, quarter, absolute_quarter)
-    LEFT JOIN gold_company c USING (ticker)
+    INNER JOIN gold_company c USING (ticker)
     LEFT JOIN silver_quarter qi USING (ticker, year, quarter)
     LEFT JOIN gold_val_mom_recent rvm USING (ticker)
 )
