@@ -8,6 +8,7 @@ from ingestion.ingest_main import ingest_main
 from load.load_main import load_main
 from orchestration.dags.task_groups import dividend_processing_group, historical_quotes_task_group, quarter_financial_reports_group
 from orchestration.dags.export_tasks import csv_frontend_serving_task
+from airflow.sdk import get_current_context
 #-------------------------------------------------------------------------------------------------------------
 @dag(
     dag_id="gold_dim_company_dag",
@@ -39,7 +40,9 @@ def create_gold_dim_company():
         
         Acts as the payload generator. It checks PostgreSQL tracking tables and watermarks to identify tickers that need processing today. It then generates JSON payloads containing fetch metadata (URLs, batch ID, timestamps) and publishes them to a Kafka topic.
         """
-        ingest_main(model_cls=Fundamental_1)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=Fundamental_1, batch_id=run_id) # type: ignore
     task_1 = ingest_fundamental_data_1()
     
     @task(task_display_name="ingest fundamental data 2")
@@ -49,7 +52,9 @@ def create_gold_dim_company():
         
         Acts as the payload generator. It checks PostgreSQL tracking tables and watermarks to identify tickers that need processing today. It then generates JSON payloads containing fetch metadata (URLs, batch ID, timestamps) and publishes them to a Kafka topic.
         """
-        ingest_main(model_cls=Fundamental_2)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=Fundamental_2, batch_id=run_id) # type: ignore
     task_2 = ingest_fundamental_data_2()
     
     @task(task_display_name="load fundamental data 1")

@@ -7,9 +7,6 @@ from botocore.config import Config
 from typing import ClassVar
 from common.core.logger_config import setup_logger
 import sys
-from confluent_kafka.admin import AdminClient, NewTopic # pyright: ignore[reportPrivateImportUsage]
-from pyiceberg.exceptions import NoSuchTableError
-from typing import Sequence, Generator, Literal
 
 logger = setup_logger(component="infrastructure")
 

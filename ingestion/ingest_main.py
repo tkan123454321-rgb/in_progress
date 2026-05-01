@@ -10,7 +10,7 @@ from common.infrastructure.metadata_manager import MetadataManager
 logger = setup_logger(component="ingest")
 type GeneratorFunc[T] = Callable[[T, Iterable[str]], Iterable[tuple[str, bytes]]]
 
-def ingest_main[T: BaseMetadata](model_cls: type[T]) -> None:
+def ingest_main[T: BaseMetadata](model_cls: type[T], batch_id: str|None) -> None:
     """
     The main orchestrator for the daily data ingestion pipeline.
     
@@ -18,7 +18,10 @@ def ingest_main[T: BaseMetadata](model_cls: type[T]) -> None:
     determining which ones need processing, generating claim-check messages, 
     publishing them to Kafka, and recording the state in Postgres.
     """
-    BATCH_ID = str(uuid.uuid4())
+    if not batch_id:
+        BATCH_ID = str(uuid.uuid4())
+    else:
+        BATCH_ID = batch_id
     logger.info(f"Starting ingestion pipeline. Assigned Batch ID: '{BATCH_ID}'.")
     
     # Instantiate the specific configuratio data model

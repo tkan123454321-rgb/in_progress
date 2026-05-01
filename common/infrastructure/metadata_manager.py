@@ -1,13 +1,13 @@
 from __future__ import annotations
 from common.core.logger_config import setup_logger
 from common.clients.postgres_client import PostgresClient
-from common.clients.lakehouse_client import LakeHouseClient, NoSuchTableError
+from common.clients.lakehouse_client import LakeHouseClient
+from pyiceberg.exceptions import NoSuchTableError
 from typing import Literal, TYPE_CHECKING
 from datetime import datetime, date
 import polars as pl
 import psycopg
 from psycopg import sql
-from psycopg.rows import dict_row, DictRow
 from typing import ClassVar, Generator, Sequence
 from contextlib import contextmanager
 import trino.dbapi

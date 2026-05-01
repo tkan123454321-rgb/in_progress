@@ -12,22 +12,29 @@
 
 -- STEP 1: DEDUPLICATE BRONZE DATA
 -- Retrieve the latest record for each ticker, year, quarter, and indicator_id based on ingestion time.
-WITH deduped_data AS (
+WITH watermark AS (
+    SELECT 
+        COALESCE(MAX(silver_updated_at), CAST('1900-01-01 00:00:00 UTC' AS TIMESTAMP WITH TIME ZONE)) as max_time
+    FROM {{ this }}
+),
+
+new_data AS (
+    SELECT *
+    FROM {{ source('bronze', 'financial_reports_quarter') }}
+    WHERE year >= 2018 
+      AND data_type IN ('cash_flow_indirect_quarter')
+    {% if is_incremental() %}
+      AND bronze_ingested_time > (SELECT max_time FROM watermark)
+    {% endif %}
+),
+
+deduped_data AS (
     SELECT *,
             ROW_NUMBER() OVER (
                 PARTITION BY ticker, year, quarter, indicator_id 
                 ORDER BY bronze_ingested_time DESC 
             ) as rn
-        FROM {{ source('bronze', 'financial_reports_quarter') }}
-        WHERE year >= 2018 
-          AND data_type IN ('cash_flow_indirect_quarter')
-    {% if is_incremental() %}
-        AND bronze_ingested_time > (
-            SELECT COALESCE(MAX(bronze_ingested_time), CAST('1900-01-01 00:00:00 UTC' AS TIMESTAMP WITH TIME ZONE)) 
-            FROM {{ this }}
-        )
-    {% endif %}
-    
+    FROM new_data
 ),
 -- STEP 2: PIVOT INDICATORS
 -- Transform the data from long format (rows) to wide format (columns).
@@ -35,10 +42,10 @@ pivoted_data AS (
     SELECT
         ticker,
         year,
-        quarter,
+        quarter
         
     {% for ind in indicators %}
-        MAX(CASE WHEN indicator_id = {{ ind.id }} THEN CAST(value AS {{ ind.type }}) END) AS {{ ind.alias }},
+       ,MAX(CASE WHEN indicator_id = {{ ind.id }} THEN CAST(value AS {{ ind.type }}) END) AS {{ ind.alias }}
     {% endfor %}
 
     FROM deduped_data

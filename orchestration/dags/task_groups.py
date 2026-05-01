@@ -3,7 +3,16 @@ from cosmos import DbtTaskGroup, RenderConfig, LoadMode
 from cosmos.constants import SourceRenderingBehavior
 from datetime import datetime
 from orchestration.dags.common.cosmos_config import profile_config, project_config, execution_config
-from schema.producer_schema import Dividend, HistoricalQuotes, VNINDEXHistoricalQuotes, FinancialReportsQuarterBalanceSheet, FinancialReportsQuarterIncomeStatement, FinancialReportsQuarterCashFlowIndirect, FundamentalQuarter
+from schema.producer_schema import (
+    Dividend, 
+    HistoricalQuotes, 
+    VNINDEXHistoricalQuotes, 
+    FinancialReportsQuarterBalanceSheet, 
+    FinancialReportsQuarterIncomeStatement, 
+    FinancialReportsQuarterCashFlowIndirect, 
+    FundamentalQuarter
+)
+from airflow.sdk import get_current_context
 from ingestion.ingest_main import ingest_main
 from load.load_main import load_main
 
@@ -18,7 +27,9 @@ def dividend_processing_group():
     """
     @task(task_display_name="ingest dividend events")
     def ingest_dividend_events():
-        ingest_main(model_cls=Dividend)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=Dividend, batch_id=run_id) # type: ignore
     
     @task(task_display_name="load dividend events")
     def load_dividend_events():
@@ -51,7 +62,9 @@ def historical_quotes_task_group():
     """
     @task(task_display_name="ingest historical quotes")
     def ingest_historical_quotes():
-        ingest_main(model_cls=HistoricalQuotes)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=HistoricalQuotes, batch_id=run_id) # type: ignore
     
     @task(task_display_name="load historical quotes")
     def load_historical_quotes():
@@ -59,14 +72,19 @@ def historical_quotes_task_group():
     
     @task(task_display_name="ingest VNINDEX historical quotes")
     def ingest_vnindex_historical_quotes():
-        ingest_main(model_cls=VNINDEXHistoricalQuotes)
-        
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=VNINDEXHistoricalQuotes, batch_id=run_id) # type: ignore
+
     @task(task_display_name="load VNINDEX historical quotes")
     def load_vnindex_historical_quotes():
         load_main(model_cls=VNINDEXHistoricalQuotes)
     
-    ingest_historical_quotes() >> load_historical_quotes() >> ingest_vnindex_historical_quotes() >> load_vnindex_historical_quotes()# type: ignore
-
+    (ingest_historical_quotes() >> 
+     load_historical_quotes() >> 
+     ingest_vnindex_historical_quotes() >> 
+     load_vnindex_historical_quotes()
+    ) # type: ignore
 
 
 @task_group(
@@ -79,7 +97,9 @@ def quarter_financial_reports_group():
     """
     @task(task_display_name="ingest quarter balance sheet")
     def ingest_quarter_balance_sheet():
-        ingest_main(model_cls=FinancialReportsQuarterBalanceSheet)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=FinancialReportsQuarterBalanceSheet, batch_id=run_id) # type: ignore
     
     @task(task_display_name="load quarter balance sheet")
     def load_quarter_balance_sheet():
@@ -87,7 +107,9 @@ def quarter_financial_reports_group():
     
     @task(task_display_name="ingest quarter income statement")
     def ingest_quarter_income_statement():
-        ingest_main(model_cls=FinancialReportsQuarterIncomeStatement)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=FinancialReportsQuarterIncomeStatement, batch_id=run_id) # type: ignore
     
     @task(task_display_name="load quarter income statement")
     def load_quarter_income_statement():
@@ -95,7 +117,9 @@ def quarter_financial_reports_group():
     
     @task(task_display_name="ingest quarter cash flow indirect")
     def ingest_quarter_cash_flow_indirect():
-        ingest_main(model_cls=FinancialReportsQuarterCashFlowIndirect)
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=FinancialReportsQuarterCashFlowIndirect, batch_id=run_id) # type: ignore
     
     @task(task_display_name="load quarter cash flow indirect")
     def load_quarter_cash_flow_indirect():
@@ -103,13 +127,21 @@ def quarter_financial_reports_group():
     
     @task(task_display_name="ingest quarter fundamental")
     def ingest_quarter_fundamental():
-        ingest_main(model_cls=FundamentalQuarter)   
+        context = get_current_context()
+        run_id : str = context['run_id']  # type: ignore
+        ingest_main(model_cls=FundamentalQuarter, batch_id=run_id) # type: ignore   
     
     @task(task_display_name="load quarter fundamental")
     def load_quarter_fundamental():
         load_main(model_cls=FundamentalQuarter)
     
-    ingest_quarter_balance_sheet() >> load_quarter_balance_sheet() >> ingest_quarter_income_statement() >> load_quarter_income_statement() >> ingest_quarter_cash_flow_indirect() >> load_quarter_cash_flow_indirect() >> ingest_quarter_fundamental() >> load_quarter_fundamental() # type: ignore
+    (ingest_quarter_balance_sheet() >> 
+     load_quarter_balance_sheet() >> 
+     ingest_quarter_income_statement() >> 
+     load_quarter_income_statement() >> 
+     ingest_quarter_cash_flow_indirect() >> 
+     load_quarter_cash_flow_indirect() >> 
+     ingest_quarter_fundamental() >> 
+     load_quarter_fundamental() # type: ignore
+    )
         
-        
-    

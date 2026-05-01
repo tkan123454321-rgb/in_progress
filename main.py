@@ -1,16 +1,14 @@
 # %%
-import math
-import os
-import typing
-from urllib import request
-
-from dotenv import load_dotenv
-from pathlib import Path
-import re
-import yaml # type: ignore
-from ingestion.generate_data_metadata import KafkaMetadataHistoricalQuotes, _generate_metadata_financial_reports, _generate_metadata_fundamental
-from schema.producer_schema import KafkaMetadataCashFlowIndirect, KafkaMetadataFundamental, KafkaMetadataIncomeStatement
-from utils.logger_config import setup_logger
+import test
+class macro:
+    arg = None
+    @classmethod
+    def __getattr__(cls, name):
+        arg = test
+        return getattr(arg, name)
+    
+test_thu = macro.arg
+print(test_thu)
 
 # %%
 from ingestion.ingest_main import ingest_main
@@ -147,32 +145,26 @@ print(df)
 # %%
 
 # %%
-from common.clients.api_client import _get_session
-with _get_session() as session:
-    response = session.get("https://restv2.fireant.vn/symbols/SHB/dividends?count=9")
-    print(response.json())
-# %%
-from common.clients.lakehouse_client import LakeHouseClient
-client = LakeHouseClient()
+from airflow.sdk import dag, task
+from datetime import datetime
+import os
+from airflow.providers.docker.operators.docker import DockerOperator # type: ignore
 
-query = """
-            SELECT DISTINCT ticker
-            FROM snapshots.dividend_snapshot
-            WHERE 
-                (
-                    dbt_valid_from >= CURRENT_DATE - INTERVAL '1' DAY
-                    OR 
-                    dbt_valid_to >= CURRENT_DATE - INTERVAL '1' DAY
-                )
-                AND (cash_dividend > 0 OR stock_dividend > 0)
-        """
-with client._get_trino_connection().cursor() as cur:
-    cur.execute(query)
-    result = cur.fetchall()
-    tickers =  {row[0] for row in result}
-print(tickers)
+DOCKER_NETWORK = "my_de_project_monitoring_net"
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER")
+MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
+
+jdbc_args = [
+        "--jdbc-url", "jdbc:postgresql://postgres:5432/platform_db?currentSchema=nessie_gc",
+        "--jdbc-user", POSTGRES_USER,
+        "--jdbc-password", POSTGRES_PASSWORD
+    ]
+
+command=["create-sql-schema"] + jdbc_args + ["--jdbc-schema", "DROP_AND_CREATE"]
+print(command)
+
 # %%
-from common.core.logger_config import setup_logger
-logger = setup_logger(component="ingest")
-logger.info("This is an info message.")
+
 # %%

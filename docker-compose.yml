@@ -27,6 +27,8 @@ x-airflow-common: &airflow-common
     PYTHONPATH: /opt/airflow/app
     MINIO_USER: ${MINIO_USER}
     MINIO_PASSWORD: ${MINIO_PASSWORD}
+    AIRFLOW_CONN_PLATFORM_DB: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
   volumes:
     - ./orchestration/dags:/opt/airflow/dags:ro
     - ./orchestration/logs:/opt/airflow/logs
@@ -35,6 +37,7 @@ x-airflow-common: &airflow-common
     - ./transform:/opt/airflow/transform
     - .:/opt/airflow/app:ro
     - ./web_ui:/opt/airflow/app/web_ui:rw
+    - /var/run/docker.sock:/var/run/docker.sock:ro
   user: "${AIRFLOW_UID:-50000}:0"
   networks:
     - monitoring_net

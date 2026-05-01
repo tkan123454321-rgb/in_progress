@@ -13,7 +13,9 @@ profile_config = ProfileConfig(
 )
 
 project_config = ProjectConfig(dbt_project_path=DBT_PROJECT_PATH,
-                               install_dbt_deps=False)
+                               install_dbt_deps=False,
+                               dbt_vars={"airflow_run_id": "{{ run_id }}"}
+                               )
 
 execution_config = ExecutionConfig(dbt_executable_path=DBT_EXECUTABLE_PATH,
                                    execution_mode=ExecutionMode.LOCAL,

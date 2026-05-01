@@ -4,7 +4,9 @@ pytz==2025.2
 
 psycopg[binary]==3.3.3
 connectorx==0.4.5
+apache-airflow-providers-postgres==6.6.3
 apache-airflow-providers-trino==6.5.2
+apache-airflow-providers-docker==4.5.5
 apache-airflow-task-sdk==1.2.0
 astronomer-cosmos==1.14.0
 
