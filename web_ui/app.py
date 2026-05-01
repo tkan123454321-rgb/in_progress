@@ -316,7 +316,7 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
 # ==========================================
 def main():
     st.set_page_config(page_title="QMJ Dashboard", layout="wide")
-    st.title("Demo Dữ liệu QMJ")
+    st.title("Demo Dữ liệu QMJ - 1 số cồ phiếu chưa phát hành dữ liệu quý mới nhất cho q1 2026, hãy chọn q4/2025")
     st.header("Bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
 
     # 1. Lấy dữ liệu gốc
