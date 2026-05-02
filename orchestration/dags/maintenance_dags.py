@@ -152,43 +152,41 @@ def system_maintenance():
     
 maintenance_dag = system_maintenance()
 
+#-------------------------------------------------------------------------------------------------------------
+
+AIRFLOW_LOG_DIR = "/opt/airflow/logs"
+DAYS_TO_KEEP = 3
+
 @dag(
     dag_id="system_cleanup_airflow_logs",
     dag_display_name="Maintenance: Airflow Log Cleanup",
-    schedule="0 0 * * *",  # Runs daily at midnight
+    schedule=None,  
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["maintenance", "daily"],
     default_args={"retries": 1}
 )
 def airflow_log_cleanup():
-     """
+    """
     Maintenance Pipeline: Airflow Log Cleanup
     
     This DAG performs routine garbage collection on Airflow's internal log directory to free up disk space and prevent storage overload.
-    
-    Workflow Steps:
-    1. Delete Old Files: Finds and removes all log files that are older than the specified threshold (14 days).
-    2. Remove Empty Directories: Scans the log directory and deletes any empty folders left behind after the file deletion.
     """
-    AIRFLOW_LOG_DIR = "/opt/airflow/logs"
-    DAYS_TO_KEEP = 14  # Configurable threshold for log retention
     
-    @task(task_display_name="purge old logs airflow")
-    def purge_old_logs():
-        purge_old_logs = BashOperator(
-            task_id="purge_old_logs",
-            bash_command=f"""
-                echo "Starting Airflow log cleanup. Target: older than {DAYS_TO_KEEP} days."
-                
-                # Step 1: Find and delete all files (-type f) older than {DAYS_TO_KEEP} days (-mtime +{DAYS_TO_KEEP})
-                find {AIRFLOW_LOG_DIR} -type f -mtime +{DAYS_TO_KEEP} -delete
-                echo "Old log files deleted."
-                
-                # Step 2: Find and delete all empty directories (-type d -empty)
-                find {AIRFLOW_LOG_DIR} -type d -empty -delete
-                echo "Empty directories deleted."
-                
-                echo "Cleanup completed successfully!"
-            """
-        )
+    @task.bash(task_display_name="purge old logs airflow")
+    def purge_old_logs() -> str:  
+        return f"""
+            echo "Starting Airflow log cleanup. Target: older than {DAYS_TO_KEEP} days."
+            
+            # Step 1: Find and delete all files (-type f) older than {DAYS_TO_KEEP} days (-mtime +{DAYS_TO_KEEP})
+            find {AIRFLOW_LOG_DIR} -type f -mtime +{DAYS_TO_KEEP} -delete
+            echo "Old log files deleted."
+            
+            # Step 2: Find and delete all empty directories (-type d -empty)
+            find {AIRFLOW_LOG_DIR} -type d -empty -delete
+            echo "Empty directories deleted."
+            
+            echo "Cleanup completed successfully!"
+        """
+    purge_old_logs()
+airflow_log_cleanup()

@@ -284,7 +284,7 @@ class LakehouseMaintenance:
         logger.info(f"Beginning compaction for {len(tasks)} pending tables.")
 
         with self.trino_conn.cursor() as trino_cur:
-            logger.info(f"🚀 Bắt đầu optimize {len(tasks)} bảng...")
+            logger.info(f"Starting optimization for {len(tasks)} tables...")
             for task in tasks:
                 try:
                     # STEP 2: Execute Trino Compaction
