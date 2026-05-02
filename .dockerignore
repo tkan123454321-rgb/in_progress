@@ -10,16 +10,6 @@ Dockerfile
 
 config_docker/
 .gitignore
-
-
-# File notebook chạy test
-
-# Script backup chạy tay bên ngoài
-backup_db.sh
-# File cấu hình cron chạy máy local
-crontab.txt
-# File license không cần thiết
 minio.license
 
-# --- 5. Bí mật (QUAN TRỌNG) ---
 .env
