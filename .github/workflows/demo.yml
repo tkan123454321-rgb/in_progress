@@ -13,7 +13,7 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       
-      - name: Check out repository code
+      - : Check out repository code
         uses: actions/checkout@v4
         with:
           # LỖI 3: Truyền tham số tào lao mà action checkout không hề có.

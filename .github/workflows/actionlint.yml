@@ -28,5 +28,5 @@ jobs:
         with:
           # Uses the default GitHub token to allow Reviewdog to comment errors directly on the PR
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-check
+          reporter: github-pr-review
           level: error
