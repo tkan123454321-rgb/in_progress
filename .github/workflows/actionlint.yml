@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false # Disable token persistence for security
 
       - name: Run actionlint to validate workflow files
         uses: reviewdog/action-actionlint@5eaffa19a1991ecc52b11eddcdd57760d1ac7e3d # v1.72
