@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read 
+      pull-requests: write
       
     steps:
       - name: Checkout repository code
@@ -30,4 +31,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: error
-          fail_on_error: true
+          fail_level: error
