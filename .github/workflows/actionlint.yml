@@ -6,7 +6,7 @@ name: Validate workflow files
 
 on:
   push:
-    branches: [ main, test ]
+    branches: [ main ]
     # ONLY trigger this workflow if files inside the .github/workflows directory are modified.
     paths: [ ".github/workflows/**" ]
   pull_request:
