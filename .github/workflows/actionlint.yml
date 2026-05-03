@@ -6,7 +6,7 @@ name: Validate workflow files
 
 on:
   push:
-    branches: [ main, test ]
+    branches: [ main ]
     # ONLY trigger this workflow if files inside the .github/workflows directory are modified.
     paths: [ ".github/workflows/**" ]
   pull_request:
@@ -18,15 +18,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read 
+      pull-requests: write
       
     steps:
       - name: Checkout repository code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false # Disable token persistence for security
 
       - name: Run actionlint to validate workflow files
         uses: reviewdog/action-actionlint@5eaffa19a1991ecc52b11eddcdd57760d1ac7e3d # v1.72
         with:
           # Uses the default GitHub token to allow Reviewdog to comment errors directly on the PR
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-check
+          reporter: github-pr-review
           level: error
+          fail_level: error
