@@ -10,7 +10,7 @@ sources:
           freshness:
             warn_after: {count: 35, period: day}
             error_after: {count: 60, period: day}
-      
+
       - name: fundamental_2
         description: "Exchange listing status and trading classification data, used to categorize companies by stock exchanges (HOSE, HNX, UPCOM)."
         config:
@@ -18,7 +18,7 @@ sources:
           freshness:
             warn_after: {count: 35, period: day}
             error_after: {count: 60, period: day}
-      
+
       - name: financial_reports_quarter
         description: "Quarterly financial statements (Income Statement, Balance Sheet, Cash Flow) of listed companies. Stored in an Entity-Attribute-Value (EAV) format."
         config:
@@ -42,7 +42,7 @@ sources:
           freshness:
             warn_after: {count: 30, period: day}
             error_after: {count: 60, period: day}
-    
+
       - name: dividend_year
         description: "Annual corporate dividend data (including cash and stock dividends) for listed companies. This data is critical for tracking corporate actions, calculating dividend yields, and triggering retroactive adjustments for historical stock prices."
         config:
@@ -50,7 +50,3 @@ sources:
           freshness:
             warn_after: {count: 365, period: day}
             error_after: {count: 400, period: day}
-
-     
-      
-

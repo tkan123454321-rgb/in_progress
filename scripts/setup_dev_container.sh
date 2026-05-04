@@ -1,6 +1,6 @@
 #!/bin/bash
 # Exit immediately if a command exits with a non-zero status
-set -e 
+set -e
 
 # Ensure all shell scripts have execution permissions
 find . -type f -name "*.sh" -exec chmod +x {} +
@@ -23,6 +23,10 @@ INGEST_VENV=".venv_ingest"
 if [ ! -d "$INGEST_VENV" ]; then
     echo "[INFO] Creating Virtual Environment for Ingest..."
     python3 -m venv $INGEST_VENV
+
+    echo "[INFO] Upgrading pip to the latest version..."
+    $INGEST_VENV/bin/pip install -U pip
+
     echo "[INFO] Installing Ingest & Dev dependencies..."
     $INGEST_VENV/bin/pip install -e ".[ingest,dev]"
     echo "[SUCCESS] Ingest environment ready."
@@ -35,6 +39,10 @@ DBT_VENV=".venv_dbt"
 if [ ! -d "$DBT_VENV" ]; then
     echo "[INFO] Creating Virtual Environment for dbt..."
     python3 -m venv $DBT_VENV
+
+    echo "[INFO] Upgrading pip to the latest version..."
+    $DBT_VENV/bin/pip install -U pip
+
     echo "[INFO] Installing dbt dependencies..."
     $DBT_VENV/bin/pip install -e ".[dbt]"
     echo "[SUCCESS] dbt environment ready."
@@ -49,7 +57,12 @@ dbt deps
 dbt clean || true
 deactivate
 
-# --- 4. User Utilities & Shortcuts ---
+# --- 4. Install Pre-commit Hooks ---
+echo "[INFO] Installing pre-commit hooks into .git..."
+$INGEST_VENV/bin/pre-commit install
+echo "[SUCCESS] Git hooks ready! Pre-commit will run on 'git commit'."
+
+# --- 5. User Utilities & Shortcuts ---
 echo "[INFO] Configuring shell aliases..."
 
 # Use absolute paths ($PWD) to ensure aliases work from anywhere

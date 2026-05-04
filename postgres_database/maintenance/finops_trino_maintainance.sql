@@ -1,1 +1,2 @@
-SELECT partman.run_maintenance();
+select partman.run_maintenance()
+;

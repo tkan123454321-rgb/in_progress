@@ -26,7 +26,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: int_z_score
@@ -53,7 +53,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: int_qmj_beta_final
@@ -80,7 +80,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: int_qmj_safety
@@ -107,7 +107,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: int_qmj_scoring_safety
@@ -134,10 +134,10 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
   # ==========================================
-  # 2. MATERIALIZED: EPHEMERAL 
+  # 2. MATERIALIZED: EPHEMERAL
   # ==========================================
   - name: int_qmj_beta_vol
     description: "(Ephemeral) Calculates daily log returns and 1-year rolling volatilities for stocks and the market."

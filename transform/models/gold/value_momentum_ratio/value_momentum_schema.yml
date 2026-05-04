@@ -72,13 +72,13 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
 
   - name: gold_value_and_momentum_z_recent
     description: "Gold model calculating the latest 'Live' cross-sectional Z-Scores for Value and Momentum across the current market snapshot."
-  
+
     columns:
       - name: ticker
         data_type: varchar
@@ -131,5 +131,5 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1

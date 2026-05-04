@@ -1,45 +1,36 @@
-{{ config(
-    materialized='table',
-    tags=['silver', 'fundamental']
-) }}
+{{ config(materialized="table", tags=["silver", "fundamental"]) }}
 
-{% set fields = get_fundamental_columns('fundamental_1') %}
-{% set audit_cols = get_audit_columns('silver') %}
+{% set fields = get_fundamental_columns("fundamental_1") %}
+{% set audit_cols = get_audit_columns("silver") %}
 
-with deduped_data as (
-    SELECT 
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY ticker 
-            ORDER BY bronze_ingested_time DESC ) as rn
-    FROM {{ ref('staging_fundamental_1') }} ),
+with
+    deduped_data as (
+        select
+            *,
+            ROW_NUMBER() over (
+                partition by ticker order by bronze_ingested_time DESC
+            ) as rn
+        from {{ ref("staging_fundamental_1") }}
+    ),
 
-applied_dq_rules AS (
-    SELECT 
-        *,
-        {{ check_fundamental_columns('fundamental_1') }} AS unqualified_reason
+    applied_dq_rules as (
+        select *, {{ check_fundamental_columns("fundamental_1") }} as unqualified_reason
 
-    FROM deduped_data  
-    WHERE rn = 1
-)
+        from deduped_data
+        where rn = 1
+    )
 
-SELECT 
+select
     ticker,
-    {% for field in fields %}
-    {{ field.alias }},
-    {% endfor %}
+    {% for field in fields %} {{ field.alias }}, {% endfor %}
 
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status,
     unqualified_reason,
-    
+
     {% for col in audit_cols %}
-    {{ col.expr }} AS {{ col.alias }}{% if not loop.last %},{% endif %}
+        {{ col.expr }} as {{ col.alias }}{% if not loop.last %},{% endif %}
     {% endfor %}
-    
-FROM applied_dq_rules
 
-
-
+from applied_dq_rules

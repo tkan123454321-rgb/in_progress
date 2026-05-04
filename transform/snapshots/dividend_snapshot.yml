@@ -1,15 +1,15 @@
 snapshots:
   - name: dividend_snapshot
-    relation: ref('ephemeral_qualified_dividend') 
-    
+    relation: ref('ephemeral_qualified_dividend')
+
     description: "SCD Type 2 snapshot to track historical changes in annual dividend data."
-    
+
     config:
       strategy: check
-      unique_key: 
+      unique_key:
         - ticker
         - year
-      check_cols: 
+      check_cols:
         - cash_dividend
         - stock_dividend
       hard_deletes: invalidate

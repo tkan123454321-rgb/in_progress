@@ -3,17 +3,23 @@
     {% set indicators = get_dividend_columns() %}
 
     NULLIF(
-        CONCAT_WS(' | ',
+        CONCAT_WS(
+            ' | ',
 
-            --AUTO-CHECK FOR NON-NEGATIVE VALUES (MUST BE POSITIVE)
+            -- AUTO-CHECK FOR NON-NEGATIVE VALUES (MUST BE POSITIVE)
             {% for ind in indicators %}
                 {% if ind.must_be_positive %}
-            CASE WHEN COALESCE({{ ind.alias }}, 0) < 0 THEN '{{ ind.alias }} cannot be negative' ELSE NULL END,
+                    case
+                        when COALESCE({{ ind.alias }}, 0) < 0
+                        then '{{ ind.alias }} cannot be negative'
+                        else NULL
+                    end,
                 {% endif %}
             {% endfor %}
-            
-            NULL   
-        ), 
-    '')
+
+            NULL
+        ),
+        ''
+    )
 
 {% endmacro %}

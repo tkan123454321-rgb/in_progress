@@ -18,10 +18,10 @@ datasources:
       Schema: elementary
   - name: Postgres
     type: postgres
-    url: postgres:5432 
+    url: postgres:5432
     user: ${POSTGRES_USER}
     secureJsonData:
-      password: ${POSTGRES_PASSWORD} 
+      password: ${POSTGRES_PASSWORD}
     jsonData:
       database: ops_db
       sslmode: 'disable'
@@ -29,5 +29,5 @@ datasources:
       maxIdleConns: 100
       maxIdleConnsAuto: true
       connMaxLifetime: 14400
-      postgresVersion: 1500 
+      postgresVersion: 1500
       timescaledb: false

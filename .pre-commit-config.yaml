@@ -1,0 +1,103 @@
+default_language_version:
+  python: python3.12
+
+exclude: >
+  (?x)^(
+    \.venv.*|
+    .*log.*/.*|
+    transform/dbt_packages/.*|
+    transform/target/.*|
+    .*\.csv|
+    .*\.parquet
+  )$
+repos:
+  - repo: local
+    hooks:
+      - id: check-python-version
+        name: Đảm bảo chạy đúng Python >= 3.12
+        language: python
+        pass_filenames: false
+        always_run: true
+        entry: python
+        args:
+          - -c
+          - |
+              import sys
+              required_major = 3
+              required_minor = 12
+              current_major, current_minor = sys.version_info[:2]
+              if (current_major, current_minor) < (required_major, required_minor):
+                  print(
+                      f"ERROR: Python {current_major}.{current_minor} is too old "
+                      f"(requires ≥ {required_major}.{required_minor})."
+                  )
+                  raise SystemExit(1)
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
+    hooks:
+      # --- File Size & OS Compatibility ---
+      - id: check-added-large-files
+        # Prevent giant files from being committed.
+        args: ['--maxkb=1000']
+
+      - id: check-case-conflict
+        # Check for files with names that would conflict on a case-insensitive filesystem like MacOS HFS+ or Windows FAT.
+
+      - id: mixed-line-ending
+        # Replaces or checks mixed line ending.
+        # Forces LF (Linux standard).
+        args: ['--fix=lf']
+
+      - id: pretty-format-json
+        args: ["--autofix"]
+
+      # --- Syntax Verification ---
+      - id: check-yaml
+        args: ['--unsafe']
+
+      - id: check-toml
+
+      # --- Security & Credentials ---
+      - id: detect-private-key
+        # Checks for the existence of private keys.
+
+      - id: detect-aws-credentials
+        # Checks for the existence of AWS secrets that you have set up with the AWS CLI.
+        # Prevents leaking cloud credentials. We allow missing credentials if none are found.
+        args: ["--allow-missing-credentials"]
+
+      # --- Code Formatting & Cleanup ---
+      - id: check-merge-conflict
+        # Check for files that contain merge conflict strings.
+
+      - id: trailing-whitespace
+        # Trims whitespace but protects the double-space linebreaks in Markdown files.
+        args: [--markdown-linebreak-ext=md]
+
+      - id: end-of-file-fixer
+        # Makes sure files end in a newline and only a newline.
+        # POSIX standard requirement for smooth file processing in bash/git.
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 6fec9b7edb08fd9989088709d864a7826dc74e80 # v0.15.12
+    hooks:
+      - id: ruff-check
+        args: [ --fix ]
+        types_or: [ python, pyi, pyproject ]
+
+      - id: ruff-format
+        types_or: [ python, pyi, jupyter ]
+
+
+
+  - repo: https://github.com/tconbeer/sqlfmt
+    rev: 025849271310439be52b1f5cbe5f03eae74a7cbb # v0.29.0
+    hooks:
+      - id: sqlfmt
+        additional_dependencies: ["shandy-sqlfmt[jinjafmt]"]
+        args: ["--dialect", "clickhouse"]
+        exclude: |
+          (?x)^(
+            postgres_database/init_postgres_db/.*
+          )$

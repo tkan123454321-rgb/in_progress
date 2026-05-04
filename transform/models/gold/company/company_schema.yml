@@ -1,7 +1,7 @@
 models:
   - name: gold_dim_company
     description: "The master dimension table for listed companies. This Gold layer integrates company profiles with fundamental metrics and applies strict business rules (e.g., minimum liquidity > 10k, market cap > 500B VND). Data is tagged as 'qualified' for dashboard consumption or 'unqualified' if it violates investment criteria."
-    
+
     data_tests:
       - dbt_expectations.expect_table_columns_to_contain_set:
           column_list: [
@@ -17,7 +17,7 @@ models:
         description: "The primary key. The unique stock symbol of the company."
         data_tests:
           - unique
-          - relationships: 
+          - relationships:
               to: ref('silver_dim_company')
               field: ticker
 
@@ -106,7 +106,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
       - name: gold_updated_at
@@ -118,6 +118,6 @@ models:
               arguments:
                 datepart: day
                 interval: 32
-    
+
   - name: ephemeral_qualified_dim_company
     description: "Filters only 'qualified' company records from the gold layer to feed into the SCD Type 2 snapshot."

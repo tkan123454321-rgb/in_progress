@@ -13,10 +13,10 @@ docs-paths: ["docs"]
 clean-targets: [target, logs, .user.yml]
 
 models:
-  transform:          
+  transform:
     +materialized: table
     bronze:
-      +schema: bronze    
+      +schema: bronze
     staging:
       +schema: staging
       +views_enabled: false
@@ -54,8 +54,8 @@ models:
         elementary_test_results:
           +properties:
             partitioning: ARRAY['day(detected_at)']
-            
-      
+
+
       alerts:
         alerts_dbt_models:
           +materialized: table
@@ -89,9 +89,9 @@ data_tests:
     +store_failures: false
     +limit: 1000
     +schema: test_results
-    
-    
-    
+
+
+
 
 flags:
   +require_certificate_validation: True
@@ -106,8 +106,8 @@ vars:
       period: day
       count: 10
     exclude_detection_period_from_training: true # exclude the detection period from training data, preventing from overlapping data quality issues with training data
-    detection_delay: 
-      period: day 
+    detection_delay:
+      period: day
       count: 1
     # debug_logs: true # for elementary debugs only
 

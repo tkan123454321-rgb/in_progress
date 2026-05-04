@@ -7,7 +7,7 @@ models:
             column_list: ["silver_invocation_id", "silver_updated_at"]
       - dbt_expectations.expect_compound_columns_to_be_unique:
           arguments:
-            column_list: ["ticker", "date"] 
+            column_list: ["ticker", "date"]
 
     columns:
       - name: ticker

@@ -1,34 +1,34 @@
 {
-    "name": "ETL Dev Environment",
-    "dockerComposeFile": [
-        "./docker-compose.yml"
-    ],
-    "service": "dev-container",
-    "workspaceFolder": "/app",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.python",
-                "ms-python.debugpy",
-                "njpwerner.autodocstring",
-                "GitHub.copilot",
-                "ms-python.vscode-pylance",
-                "ms-toolsai.jupyter",
-                "mtxr.sqltools",
-                "regadas.sqltools-trino-driver",
-                "innoverio.vscode-dbt-power-user",
-                "mtxr.sqltools-driver-pg",
-                "tamasfe.even-better-toml"
-            ]
-        }
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-        "ghcr.io/devcontainers/features/git:1": {}
-    },
-    "postCreateCommand": "bash ./scripts/setup_dev_container.sh",
-    "remoteEnv": {
-        "COMPOSE_PROJECT_NAME": "my_de_project"
-    },
-    "remoteUser": "root"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "njpwerner.autodocstring",
+        "GitHub.copilot",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "mtxr.sqltools",
+        "regadas.sqltools-trino-driver",
+        "innoverio.vscode-dbt-power-user",
+        "mtxr.sqltools-driver-pg",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  },
+  "dockerComposeFile": [
+    "./docker-compose.yml"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "name": "ETL Dev Environment",
+  "postCreateCommand": "bash ./scripts/setup_dev_container.sh",
+  "remoteEnv": {
+    "COMPOSE_PROJECT_NAME": "my_de_project"
+  },
+  "remoteUser": "root",
+  "service": "dev-container",
+  "workspaceFolder": "/app"
 }

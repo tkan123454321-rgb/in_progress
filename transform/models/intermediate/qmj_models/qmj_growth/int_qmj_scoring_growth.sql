@@ -1,87 +1,108 @@
-{{ config(
-    materialized='table',
-    tags=['intermediate', 'qmj_growth']
-) }}
+{{ config(materialized="table", tags=["intermediate", "qmj_growth"]) }}
 
-{% set audit_cols = get_audit_columns('intermediate') %}
+{% set audit_cols = get_audit_columns("intermediate") %}
 
 -- STEP 1: Extract qualified raw growth metrics
-WITH base_metrics AS (
-    SELECT * FROM {{ ref('int_qmj_growth') }}
-    WHERE status = 'qualified'
-),
+with
+    base_metrics as (
+        select * from {{ ref("int_qmj_growth") }} where status = 'qualified'
+    ),
 
--- STEP 2: Rank each growth component cross-sectionally per quarter
-ranked_growth AS (
-    SELECT 
-        ticker,
-        year,
-        quarter,
-        absolute_quarter,
-        
-        -- Ranks (Ascending: Lower metric = Lower rank)
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY delta_gpoa ASC) AS delta_gpoa_rank,
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY delta_roe ASC) AS delta_roe_rank,
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY delta_roa ASC) AS delta_roa_rank,
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY delta_cfoa ASC) AS delta_cfoa_rank,
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY delta_gmar ASC) AS delta_gmar_rank
+    -- STEP 2: Rank each growth component cross-sectionally per quarter
+    ranked_growth as (
+        select
+            ticker,
+            year,
+            quarter,
+            absolute_quarter,
 
-    FROM base_metrics
-),
+            -- Ranks (Ascending: Lower metric = Lower rank)
+            RANK() over (
+                partition by absolute_quarter order by delta_gpoa ASC
+            ) as delta_gpoa_rank,
+            RANK() over (
+                partition by absolute_quarter order by delta_roe ASC
+            ) as delta_roe_rank,
+            RANK() over (
+                partition by absolute_quarter order by delta_roa ASC
+            ) as delta_roa_rank,
+            RANK() over (
+                partition by absolute_quarter order by delta_cfoa ASC
+            ) as delta_cfoa_rank,
+            RANK() over (
+                partition by absolute_quarter order by delta_gmar ASC
+            ) as delta_gmar_rank
 
--- STEP 3: Standardize ranks into Z-Scores (Mean = 0, StdDev = 1)
-z_growth_components AS (
-    SELECT 
-        *,
-        (delta_gpoa_rank - AVG(delta_gpoa_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(delta_gpoa_rank) OVER w_qtr, 0) AS z_delta_gpoa,
-        (delta_roe_rank - AVG(delta_roe_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(delta_roe_rank) OVER w_qtr, 0) AS z_delta_roe,
-        (delta_roa_rank - AVG(delta_roa_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(delta_roa_rank) OVER w_qtr, 0) AS z_delta_roa,
-        (delta_cfoa_rank - AVG(delta_cfoa_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(delta_cfoa_rank) OVER w_qtr, 0) AS z_delta_cfoa,
-        (delta_gmar_rank - AVG(delta_gmar_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(delta_gmar_rank) OVER w_qtr, 0) AS z_delta_gmar
-    FROM ranked_growth
-    WINDOW w_qtr AS (PARTITION BY absolute_quarter)
-),
+        from base_metrics
+    ),
 
--- STEP 4: Apply Data Quality Rules to ensure all Z-Scores are calculated
-applied_dq_rules AS (
-    SELECT 
-        *,
-        NULLIF(
-            CONCAT_WS(' | ',
-                CASE WHEN z_delta_gpoa IS NULL THEN 'z_delta_gpoa is null' ELSE NULL END,
-                CASE WHEN z_delta_roe IS NULL THEN 'z_delta_roe is null' ELSE NULL END,
-                CASE WHEN z_delta_roa IS NULL THEN 'z_delta_roa is null' ELSE NULL END,
-                CASE WHEN z_delta_cfoa IS NULL THEN 'z_delta_cfoa is null' ELSE NULL END,
-                CASE WHEN z_delta_gmar IS NULL THEN 'z_delta_gmar is null' ELSE NULL END
-             ), 
-        '') AS unqualified_reason
-    FROM z_growth_components
-)
+    -- STEP 3: Standardize ranks into Z-Scores (Mean = 0, StdDev = 1)
+    z_growth_components as (
+        select
+            *,
+            (delta_gpoa_rank - AVG(delta_gpoa_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(delta_gpoa_rank) over w_qtr, 0) as z_delta_gpoa,
+            (delta_roe_rank - AVG(delta_roe_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(delta_roe_rank) over w_qtr, 0) as z_delta_roe,
+            (delta_roa_rank - AVG(delta_roa_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(delta_roa_rank) over w_qtr, 0) as z_delta_roa,
+            (delta_cfoa_rank - AVG(delta_cfoa_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(delta_cfoa_rank) over w_qtr, 0) as z_delta_cfoa,
+            (delta_gmar_rank - AVG(delta_gmar_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(delta_gmar_rank) over w_qtr, 0) as z_delta_gmar
+        from ranked_growth
+        window w_qtr as (partition by absolute_quarter)
+    ),
+
+    -- STEP 4: Apply Data Quality Rules to ensure all Z-Scores are calculated
+    applied_dq_rules as (
+        select
+            *,
+            NULLIF(
+                CONCAT_WS(
+                    ' | ',
+                    case
+                        when z_delta_gpoa is NULL then 'z_delta_gpoa is null' else NULL
+                    end,
+                    case
+                        when z_delta_roe is NULL then 'z_delta_roe is null' else NULL
+                    end,
+                    case
+                        when z_delta_roa is NULL then 'z_delta_roa is null' else NULL
+                    end,
+                    case
+                        when z_delta_cfoa is NULL then 'z_delta_cfoa is null' else NULL
+                    end,
+                    case
+                        when z_delta_gmar is NULL then 'z_delta_gmar is null' else NULL
+                    end
+                ),
+                ''
+            ) as unqualified_reason
+        from z_growth_components
+    )
 
 -- STEP 5: Final Selection, Status Resolution, and Audit Injection
-SELECT 
+select
     ticker,
     year,
     quarter,
     absolute_quarter,
-    
-    -- Output the 5 standardized Z-Scores
-    z_delta_gpoa, 
-    z_delta_roe, 
-    z_delta_roa, 
-    z_delta_cfoa, 
-    z_delta_gmar,
-    
-    -- Resolve Final Status
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
-    unqualified_reason
-    
-    -- Auto-generated audit columns
-    {% for col in audit_cols %}
-    , {{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
 
-FROM applied_dq_rules
+    -- Output the 5 standardized Z-Scores
+    z_delta_gpoa,
+    z_delta_roe,
+    z_delta_roa,
+    z_delta_cfoa,
+    z_delta_gmar,
+
+    -- Resolve Final Status
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status,
+    unqualified_reason
+
+    -- Auto-generated audit columns
+    {% for col in audit_cols %}, {{ col.expr }} as {{ col.alias }} {% endfor %}
+
+from applied_dq_rules

@@ -1,4 +1,4 @@
-transform: 
+transform:
   target: dev
   outputs:
     dev:
@@ -14,10 +14,3 @@ transform:
 
       session_properties:
         join_distribution_type: BROADCAST
-
-      
-      
-            
-
-
-          

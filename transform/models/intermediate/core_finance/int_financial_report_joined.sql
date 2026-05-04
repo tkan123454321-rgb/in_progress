@@ -1,115 +1,111 @@
-{{ config(materialized='ephemeral',
-    tags=['intermediate', 'financial_report_joined']
-) }}
+{{ config(materialized="ephemeral", tags=["intermediate", "financial_report_joined"]) }}
 
-{% set audit_cols = get_audit_columns('intermediate') %}
+{% set audit_cols = get_audit_columns("intermediate") %}
 
 
--- STEP 1: Extract qualified data from silver layers 
-WITH income_statement AS (
-    SELECT *, 1 AS has_is 
-    FROM {{ ref('silver_ic_quarter') }}
-    WHERE status = 'qualified'
-),
+-- STEP 1: Extract qualified data from silver layers
+with
+    income_statement as (
+        select *, 1 as has_is
+        from {{ ref("silver_ic_quarter") }}
+        where status = 'qualified'
+    ),
 
-balance_sheet AS (
-    SELECT *, 1 AS has_bs 
-    FROM {{ ref('silver_bl_quarter') }}
-    WHERE status = 'qualified'
-),
+    balance_sheet as (
+        select *, 1 as has_bs
+        from {{ ref("silver_bl_quarter") }}
+        where status = 'qualified'
+    ),
 
-cash_flow AS (
-    SELECT *, 1 AS has_cf 
-    FROM {{ ref('silver_cf_quarter') }}
-    WHERE status = 'qualified'
-),
+    cash_flow as (
+        select *, 1 as has_cf
+        from {{ ref("silver_cf_quarter") }}
+        where status = 'qualified'
+    ),
 
-fundamental AS (
-    SELECT *, 1 AS has_fund 
-    FROM {{ ref('silver_fundamental_quarter') }}
-    WHERE status = 'qualified'
-),
+    fundamental as (
+        select *, 1 as has_fund
+        from {{ ref("silver_fundamental_quarter") }}
+        where status = 'qualified'
+    ),
 
--- STEP 2: Combine all financial statements using FULL OUTER JOIN
-joined_data AS (
-    SELECT 
-        ticker,
-        year,
-        quarter,
-        
-        -- Income Statement metrics
-        is_stmt.gross_revenue,
-        is_stmt.net_revenue,
-        is_stmt.cogs,
-        is_stmt.gross_profit,
-        is_stmt.interest_expense,
-        is_stmt.profit_before_tax,
-        is_stmt.net_income,
-        is_stmt.net_income_parent,
+    -- STEP 2: Combine all financial statements using FULL OUTER JOIN
+    joined_data as (
+        select
+            ticker,
+            year,
+            quarter,
 
-        -- Balance Sheet metrics
-        bs.total_assets,
-        bs.total_equity,
-        bs.current_assets,
-        bs.current_liabilities,
-        bs.cash_and_equivalents,
-        bs.income_taxes_payable,
-        bs.minority_interest,
-        bs.total_liabilities,
-        bs.short_term_debt,
-        bs.long_term_debt,
-        bs.retained_earnings,
+            -- Income Statement metrics
+            is_stmt.gross_revenue,
+            is_stmt.net_revenue,
+            is_stmt.cogs,
+            is_stmt.gross_profit,
+            is_stmt.interest_expense,
+            is_stmt.profit_before_tax,
+            is_stmt.net_income,
+            is_stmt.net_income_parent,
 
-        -- Cash Flow metrics
-        cf.cfo,
-        cf.depreciation,
-        cf.capex,
+            -- Balance Sheet metrics
+            bs.total_assets,
+            bs.total_equity,
+            bs.current_assets,
+            bs.current_liabilities,
+            bs.cash_and_equivalents,
+            bs.income_taxes_payable,
+            bs.minority_interest,
+            bs.total_liabilities,
+            bs.short_term_debt,
+            bs.long_term_debt,
+            bs.retained_earnings,
 
-        -- Fundamental metrics
-        fund.market_cap,
-        fund.shares_outstanding,
-        fund.preferred_stock,
+            -- Cash Flow metrics
+            cf.cfo,
+            cf.depreciation,
+            cf.capex,
 
-        -- Presence flags for Data Quality checks
-        is_stmt.has_is,
-        bs.has_bs,
-        cf.has_cf,
-        fund.has_fund
+            -- Fundamental metrics
+            fund.market_cap,
+            fund.shares_outstanding,
+            fund.preferred_stock,
 
-        -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
-        {% set audit_cols = get_audit_columns('intermediate') %}
-        {% for col in audit_cols %}
-        , {{ col.expr }} AS {{ col.alias }}
-        {% endfor %}
+            -- Presence flags for Data Quality checks
+            is_stmt.has_is,
+            bs.has_bs,
+            cf.has_cf,
+            fund.has_fund
 
-    FROM income_statement is_stmt
-    FULL OUTER JOIN balance_sheet bs 
-        USING (ticker, year, quarter)
-    FULL OUTER JOIN cash_flow cf 
-        USING (ticker, year, quarter)
-    FULL OUTER JOIN fundamental fund 
-        USING (ticker, year, quarter)
-),
+            -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
+            {% set audit_cols = get_audit_columns("intermediate") %}
+            {% for col in audit_cols %}, {{ col.expr }} as {{ col.alias }} {% endfor %}
 
--- STEP 3: Evaluate completeness and generate Data Quality reasons
-applied_dq_rules AS (
-    SELECT 
-        *,
-        NULLIF(
-            CONCAT_WS(' | ',
-                CASE WHEN has_is IS NULL THEN 'missing_income_statement' ELSE NULL END,
-                CASE WHEN has_bs IS NULL THEN 'missing_balance_sheet' ELSE NULL END,
-                CASE WHEN has_cf IS NULL THEN 'missing_cash_flow' ELSE NULL END,
-                CASE WHEN has_fund IS NULL THEN 'missing_fundamental' ELSE NULL END
-            ), 
-        '') AS unqualified_reason
-    FROM joined_data
-)
+        from income_statement is_stmt
+        full outer join balance_sheet bs using (ticker, year, quarter)
+        full outer join cash_flow cf using (ticker, year, quarter)
+        full outer join fundamental fund using (ticker, year, quarter)
+    ),
 
-
+    -- STEP 3: Evaluate completeness and generate Data Quality reasons
+    applied_dq_rules as (
+        select
+            *,
+            NULLIF(
+                CONCAT_WS(
+                    ' | ',
+                    case
+                        when has_is is NULL then 'missing_income_statement' else NULL
+                    end,
+                    case when has_bs is NULL then 'missing_balance_sheet' else NULL end,
+                    case when has_cf is NULL then 'missing_cash_flow' else NULL end,
+                    case when has_fund is NULL then 'missing_fundamental' else NULL end
+                ),
+                ''
+            ) as unqualified_reason
+        from joined_data
+    )
 
 -- STEP 4: Finalize the model, define status, and inject audit columns
-SELECT 
+select
     -- Select all business columns (excluding temporary presence flags like has_is)
     ticker,
     year,
@@ -142,14 +138,10 @@ SELECT
 
     unqualified_reason,
 
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status
 
-    
-    {% for col in audit_cols %}
-    , {{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
+    {% for col in audit_cols %}, {{ col.expr }} as {{ col.alias }} {% endfor %}
 
-FROM applied_dq_rules
+from applied_dq_rules
