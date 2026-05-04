@@ -38,6 +38,24 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Generate .env file for Docker
+        run: |
+          cat <<EOF > .env
+          # === NHÓM 1: MẬT KHẨU BẢO MẬT (Kéo từ GitHub Secrets) ===
+          AIRFLOW_DB_CONN=${{ secrets.AIRFLOW_DB_CONN }}
+          AIRFLOW_ADMIN_PASSWORD=${{ secrets.AIRFLOW_ADMIN_PASSWORD }}
+          FERNET_KEY=${{ secrets.FERNET_KEY }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          MINIO_PASSWORD=${{ secrets.MINIO_PASSWORD }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          AIRFLOW_ADMIN_USER=tkan
+          AIRFLOW_UID=50000
+          MINIO_ROOT_USER=tkan
+          MINIO_USER=tkan
+          POSTGRES_USER=tkan
+          POSTGRES_DB=platform_db
+          EOF
+
       - name: Spin up Ephemeral Lakehouse Stack
         run: docker compose up -d minio postgres nessie trino
 
