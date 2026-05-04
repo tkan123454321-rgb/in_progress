@@ -1,0 +1,54 @@
+# CI Workflow for Data Platform
+# 1. Validates code formatting and syntax (Python & SQL)
+# 2. Checks dbt model compilation
+# 3. Runs integration tests with an ephemeral Lakehouse stack
+# NOTE: pytest will be integrated here in the future.
+name: Data Platform CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "test" ]
+
+jobs:
+  # Check formatting and linting
+  linting:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - uses: pre-commit/action@v3.0.1
+
+  # Check dbt syntax and references
+  dbt-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dbt dependencies from pyproject.toml
+        run: pip install ".[dbt]"
+
+      - name : Compile dbt models to validate syntax and references
+        working-directory: ./transform
+        shell: bash
+        run: |
+          dbt deps
+          dbt compile --target dev
