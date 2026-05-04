@@ -84,8 +84,7 @@ jobs:
         shell: bash
         run: |
           dbt deps
-          dbt run-operation setup_ci
-          dbt compile --target dev
+          dbt parse
 
       - name: Cleanup
         if: always()

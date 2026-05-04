@@ -16,7 +16,7 @@ with
             LAG(date, 21) over w_ticker as date_t_21,
 
             -- Price and Date from 1 year ago (~252 trading days)
-            LAG(price_basic, 252) over w_ticker as price_t_252
+            LAG(price_basic, 252) over w_ticker as price_t_252,
             LAG(date, 252) over w_ticker as date_t_252
 
         from {{ ref("silver_historical_quotes") }}
