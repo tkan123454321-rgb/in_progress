@@ -78,7 +78,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: gold_qmj_z_growth
@@ -94,7 +94,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: gold_qmj_z_profitability
@@ -110,7 +110,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
   - name: gold_qmj_z_safety
@@ -126,5 +126,5 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1

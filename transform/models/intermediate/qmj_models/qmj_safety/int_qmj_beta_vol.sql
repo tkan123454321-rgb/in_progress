@@ -1,86 +1,93 @@
-{{ config(
-    materialized='ephemeral',
-    tags=['intermediate', 'qmj_beta_vol']
-) }}
+{{ config(materialized="ephemeral", tags=["intermediate", "qmj_beta_vol"]) }}
 
 
 -- STEP 1: Extract qualified daily stock prices
-WITH silver_stock AS (
-    SELECT 
-        date, 
-        ticker, 
-        price_close, 
-        price_basic
-    FROM {{ ref('silver_historical_quotes') }}
-    WHERE status = 'qualified' 
-        AND ticker != 'VNINDEX'
-),
+with
+    silver_stock as (
+        select date, ticker, price_close, price_basic
+        from {{ ref("silver_historical_quotes") }}
+        where status = 'qualified' and ticker != 'VNINDEX'
+    ),
 
--- STEP 2: Extract qualified daily market index (VNINDEX) prices
-silver_vnindex AS (
-    SELECT 
-        date, 
-        price_close, 
-        price_basic
-    FROM {{ ref('silver_historical_quotes') }}
-    WHERE status = 'qualified' AND ticker = 'VNINDEX'
-),
+    -- STEP 2: Extract qualified daily market index (VNINDEX) prices
+    silver_vnindex as (
+        select date, price_close, price_basic
+        from {{ ref("silver_historical_quotes") }}
+        where status = 'qualified' and ticker = 'VNINDEX'
+    ),
 
--- STEP 3: Calculate daily logarithmic returns for both stock and market
-joined_daily_returns AS (
-    SELECT 
-        s.date,
-        s.ticker,
+    -- STEP 3: Calculate daily logarithmic returns for both stock and market
+    joined_daily_returns as (
+        select
+            s.date,
+            s.ticker,
 
-        LN(s.price_close / NULLIF(s.price_basic, 0)) AS stock_ret,
-        LN(m.price_close / NULLIF(m.price_basic, 0)) AS mkt_ret
+            LN(s.price_close / NULLIF(s.price_basic, 0)) as stock_ret,
+            LN(m.price_close / NULLIF(m.price_basic, 0)) as mkt_ret
 
-    FROM silver_stock s
-    JOIN silver_vnindex m 
-        ON s.date = m.date
-),
+        from silver_stock s
+        join silver_vnindex m on s.date = m.date
+    ),
 
--- STEP 4: Calculate 1-year rolling volatilities (252 trading days)
-rolling_volatilities AS (
-    SELECT 
-        date,
-        ticker,
-        stock_ret,
-        mkt_ret,
-        STDDEV_SAMP(stock_ret) OVER w_1y AS vol_stock_1y,
-        STDDEV_SAMP(mkt_ret) OVER w_1y AS vol_mkt_1y,
-        COUNT(stock_ret) OVER w_1y AS count_trading_days
-    FROM joined_daily_returns
-    WINDOW w_1y AS (
-        PARTITION BY ticker 
-        ORDER BY date 
-        ROWS BETWEEN 251 PRECEDING AND CURRENT ROW 
+    -- STEP 4: Calculate 1-year rolling volatilities (252 trading days)
+    rolling_volatilities as (
+        select
+            date,
+            ticker,
+            stock_ret,
+            mkt_ret,
+            STDDEV_SAMP(stock_ret) over w_1y as vol_stock_1y,
+            STDDEV_SAMP(mkt_ret) over w_1y as vol_mkt_1y,
+            COUNT(stock_ret) over w_1y as count_trading_days
+        from joined_daily_returns
+        window
+            w_1y as (
+                partition by ticker
+                order by date
+                rows between 251 PRECEDING and CURRENT ROW
+            )
+    ),
+
+    -- STEP 5: Apply Data Quality Rules for volatility calculations
+    applied_dq_rules as (
+        select
+            *,
+            NULLIF(
+                CONCAT_WS(
+                    ' | ',
+                    -- 1. Check if Log Return calculation resulted in NULL due to
+                    -- division by zero
+                    case
+                        when stock_ret is NULL
+                        then 'stock_ret (log return) is null'
+                        else NULL
+                    end,
+                    case
+                        when mkt_ret is NULL
+                        then 'mkt_ret (market log return) is null'
+                        else NULL
+                    end,
+
+                    -- 2. Apply AQR's rule: Minimum of 120 trading days required
+                    case
+                        when count_trading_days < 120
+                        then 'Err: Not enough trading days (<120)'
+                        else NULL
+                    end,
+
+                    -- 3. Check final Standard Deviation results
+                    case
+                        when vol_stock_1y is NULL then 'vol_stock_1y is null' else NULL
+                    end,
+                    case when vol_mkt_1y is NULL then 'vol_mkt_1y is null' else NULL end
+                ),
+                ''
+            ) as unqualified_reason
+        from rolling_volatilities
     )
-),
-
--- STEP 5: Apply Data Quality Rules for volatility calculations
-applied_dq_rules AS (
-    SELECT 
-        *,
-        NULLIF(
-            CONCAT_WS(' | ',
-                -- 1. Check if Log Return calculation resulted in NULL due to division by zero
-                CASE WHEN stock_ret IS NULL THEN 'stock_ret (log return) is null' ELSE NULL END,
-                CASE WHEN mkt_ret IS NULL THEN 'mkt_ret (market log return) is null' ELSE NULL END,
-                
-                -- 2. Apply AQR's rule: Minimum of 120 trading days required
-                CASE WHEN count_trading_days < 120 THEN 'Err: Not enough trading days (<120)' ELSE NULL END,
-                
-                -- 3. Check final Standard Deviation results
-                CASE WHEN vol_stock_1y IS NULL THEN 'vol_stock_1y is null' ELSE NULL END,
-                CASE WHEN vol_mkt_1y IS NULL THEN 'vol_mkt_1y is null' ELSE NULL END
-            ), 
-        '') AS unqualified_reason
-    FROM rolling_volatilities
-)
 
 -- STEP 6: Finalize ephemeral model with status
-SELECT 
+select
     date,
     ticker,
     stock_ret,
@@ -89,9 +96,8 @@ SELECT
     vol_mkt_1y,
     count_trading_days,
     unqualified_reason,
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status
-    -- Note: Audit columns are omitted as this is an ephemeral model
-FROM applied_dq_rules
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status
+-- Note: Audit columns are omitted as this is an ephemeral model
+from applied_dq_rules

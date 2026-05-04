@@ -103,7 +103,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
       - name: silver_updated_at
@@ -177,7 +177,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
       - name: silver_updated_at
@@ -191,7 +191,7 @@ models:
                 interval: 32
 
   # ==========================================
-  # 3. SILVER FUNDAMENTAL QUARTER 
+  # 3. SILVER FUNDAMENTAL QUARTER
   # ==========================================
   - name: silver_fundamental_quarter
     description: "Cleaned and validated quarterly fundamental data. This layer applies data quality rules, ensuring accurate year/quarter combinations and deduplication before passing metrics (like preferred stock and market cap) to the Gold layer."

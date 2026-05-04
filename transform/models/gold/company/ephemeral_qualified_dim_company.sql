@@ -1,6 +1,5 @@
-{{ config(
-    materialized='ephemeral'
-) }}
+{{ config(materialized="ephemeral") }}
 
-SELECT * FROM {{ ref('gold_dim_company') }}
-WHERE status = 'qualified'
+select *
+from {{ ref("gold_dim_company") }}
+where status = 'qualified'

@@ -5,7 +5,7 @@ models:
       - dbt_expectations.expect_table_columns_to_contain_set:
           arguments:
             column_list: ["staging_invocation_id", "staged_at", "bronze_ingested_time"]
-            
+
     columns:
       - name: ticker
         data_type: varchar

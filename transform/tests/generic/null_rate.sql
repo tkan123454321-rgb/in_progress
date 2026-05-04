@@ -1,18 +1,19 @@
 {% test null_rate(model, column_name) %}
 
-{{ config(fail_calc = 'max(failure_bps)') }}
+    {{ config(fail_calc="max(failure_bps)") }}
 
-WITH validation AS (
-    SELECT
-        COUNT(CASE WHEN {{ column_name }} IS NULL THEN 1 END) AS null_count,
-        COUNT(*) AS total_count
-    FROM {{ model }}
-)
+    with
+        validation as (
+            select
+                COUNT(case when {{ column_name }} is NULL then 1 end) as null_count,
+                COUNT(*) as total_count
+            from {{ model }}
+        )
 
-SELECT
-    -- Multiply by 10,000 first to get basis points (bps), then divide. 
-    -- Cast to INTEGER to align with dbt's threshold evaluation logic.
-    CAST((null_count * 10000) / NULLIF(total_count, 0) AS INTEGER) AS failure_bps
-FROM validation
+    select
+        -- Multiply by 10,000 first to get basis points (bps), then divide.
+        -- Cast to INTEGER to align with dbt's threshold evaluation logic.
+        CAST((null_count * 10000) / NULLIF(total_count, 0) as INTEGER) as failure_bps
+    from validation
 
 {% endtest %}

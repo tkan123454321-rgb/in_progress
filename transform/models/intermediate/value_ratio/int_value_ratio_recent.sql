@@ -1,87 +1,110 @@
-{{ config(
-    materialized='table',
-    tags=['intermediate', 'recent_value']
-) }}
+{{ config(materialized="table", tags=["intermediate", "recent_value"]) }}
 
-{% set audit_cols = get_audit_columns('intermediate') %}
+{% set audit_cols = get_audit_columns("intermediate") %}
 
 -- STEP 1: Extract current market capitalization and freshness from Gold layer
-WITH gold_market_cap AS (
-    SELECT 
-        ticker,
-        market_cap,
-        gold_updated_at,
-        DATE_DIFF('day', CAST(gold_updated_at AS DATE), CURRENT_DATE) AS days_since_update
-    FROM {{ ref('gold_dim_company') }}
-    WHERE ticker != 'VNINDEX'
-),
+with
+    gold_market_cap as (
+        select
+            ticker,
+            market_cap,
+            gold_updated_at,
+            DATE_DIFF(
+                'day', CAST(gold_updated_at as DATE), CURRENT_DATE
+            ) as days_since_update
+        from {{ ref("gold_dim_company") }}
+        where ticker != 'VNINDEX'
+    ),
 
--- STEP 2: Extract the most recent fundamental metrics (Book Equity) per ticker
-latest_fundamentals AS (
-    SELECT 
-        ticker,
-        year AS report_year,
-        quarter AS report_quarter,
-        absolute_quarter AS latest_absolute_quarter,
-        
-        -- Core Book Equity
-        (total_equity - minority_interest - preferred_stock) AS latest_book_equity,
-        
-        ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY absolute_quarter DESC) as rn_q
-        
-    FROM {{ ref('int_ttm_metrics') }} 
-    WHERE ttm_status = 'valid_ttm'
-),
+    -- STEP 2: Extract the most recent fundamental metrics (Book Equity) per ticker
+    latest_fundamentals as (
+        select
+            ticker,
+            year as report_year,
+            quarter as report_quarter,
+            absolute_quarter as latest_absolute_quarter,
 
--- STEP 3: Combine market data with fundamentals and calculate reporting delays
-live_value_calculation AS (
-    SELECT 
-        c.ticker,
-        c.gold_updated_at AS last_market_cap_update,
-        c.days_since_update,
-        c.market_cap,
-        
-        f.report_year,
-        f.report_quarter,
-        f.latest_absolute_quarter,
-        f.latest_book_equity,
+            -- Core Book Equity
+            (total_equity - minority_interest - preferred_stock) as latest_book_equity,
 
-        -- Calculate current absolute quarter based on system date
-        (EXTRACT(YEAR FROM CURRENT_DATE) * 4 + EXTRACT(QUARTER FROM CURRENT_DATE)) AS current_absolute_quarter,
-        
-        -- Calculate delay in quarters
-        ((EXTRACT(YEAR FROM CURRENT_DATE) * 4 + EXTRACT(QUARTER FROM CURRENT_DATE)) - f.latest_absolute_quarter) AS quarters_delayed,
+            ROW_NUMBER() over (
+                partition by ticker order by absolute_quarter DESC
+            ) as rn_q
 
-        -- Value Score (Book Equity / Market Cap)
-        (f.latest_book_equity / NULLIF(c.market_cap, 0)) AS value_recent_score
+        from {{ ref("int_ttm_metrics") }}
+        where ttm_status = 'valid_ttm'
+    ),
 
-    FROM gold_market_cap c
-    INNER JOIN latest_fundamentals f 
-        ON c.ticker = f.ticker 
-        AND f.rn_q = 1
-),
+    -- STEP 3: Combine market data with fundamentals and calculate reporting delays
+    live_value_calculation as (
+        select
+            c.ticker,
+            c.gold_updated_at as last_market_cap_update,
+            c.days_since_update,
+            c.market_cap,
 
--- STEP 4: Apply inline Data Quality Rules specific to Recent Value
-applied_dq_rules AS (
-    SELECT 
-        *,
-        NULLIF(
-            CONCAT_WS(' | ',
-                -- 1. Freshness filter for Market Cap (> 10 days = unqualified)
-                CASE WHEN days_since_update > 10 THEN 'Err: Stale Data in gold_dim_company (> 10 days)' ELSE NULL END,
-                
-                -- 2. Freshness filter for Fundamentals (> 2 quarters delayed = unqualified)
-                CASE WHEN quarters_delayed > 2 THEN 'Err: Stale Fundamental Data (Delayed > 2 Quarters)' ELSE NULL END,
-                
-                -- 3. Validation for calculated score
-                CASE WHEN value_recent_score IS NULL THEN 'Err: Invalid Value Recent Score' ELSE NULL END
-            ), 
-        '') AS unqualified_reason
-    FROM live_value_calculation
-)
+            f.report_year,
+            f.report_quarter,
+            f.latest_absolute_quarter,
+            f.latest_book_equity,
+
+            -- Calculate current absolute quarter based on system date
+            (
+                EXTRACT(YEAR from CURRENT_DATE) * 4 + EXTRACT(QUARTER from CURRENT_DATE)
+            ) as current_absolute_quarter,
+
+            -- Calculate delay in quarters
+            (
+                (
+                    EXTRACT(YEAR from CURRENT_DATE) * 4
+                    + EXTRACT(QUARTER from CURRENT_DATE)
+                )
+                - f.latest_absolute_quarter
+            ) as quarters_delayed,
+
+            -- Value Score (Book Equity / Market Cap)
+            (f.latest_book_equity / NULLIF(c.market_cap, 0)) as value_recent_score
+
+        from gold_market_cap c
+        inner join latest_fundamentals f on c.ticker = f.ticker and f.rn_q = 1
+    ),
+
+    -- STEP 4: Apply inline Data Quality Rules specific to Recent Value
+    applied_dq_rules as (
+        select
+            *,
+            NULLIF(
+                CONCAT_WS(
+                    ' | ',
+                    -- 1. Freshness filter for Market Cap (> 10 days = unqualified)
+                    case
+                        when days_since_update > 10
+                        then 'Err: Stale Data in gold_dim_company (> 10 days)'
+                        else NULL
+                    end,
+
+                    -- 2. Freshness filter for Fundamentals (> 2 quarters delayed =
+                    -- unqualified)
+                    case
+                        when quarters_delayed > 2
+                        then 'Err: Stale Fundamental Data (Delayed > 2 Quarters)'
+                        else NULL
+                    end,
+
+                    -- 3. Validation for calculated score
+                    case
+                        when value_recent_score is NULL
+                        then 'Err: Invalid Value Recent Score'
+                        else NULL
+                    end
+                ),
+                ''
+            ) as unqualified_reason
+        from live_value_calculation
+    )
 
 -- STEP 5: Final Selection and Status Resolution
-SELECT 
+select
     ticker,
     last_market_cap_update,
     days_since_update,
@@ -95,15 +118,12 @@ SELECT
     value_recent_score,
 
     -- Resolve Final Status
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status,
     unqualified_reason
 
     -- Auto-generated audit columns
-    {% for col in audit_cols %}
-    , {{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
+    {% for col in audit_cols %}, {{ col.expr }} as {{ col.alias }} {% endfor %}
 
-FROM applied_dq_rules
+from applied_dq_rules

@@ -48,7 +48,7 @@ models:
       - name: total_assets
         data_type: decimal
         description: "Total assets owned by the company."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: total_capital
@@ -60,103 +60,103 @@ models:
       - name: current_assets
         data_type: decimal
         description: "Short-term assets expected to be converted into cash within one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: long_term_assets
         data_type: decimal
         description: "Assets not intended to be turned into cash within one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: total_liabilities
         data_type: decimal
         description: "Total financial obligations or debts."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: total_equity
         data_type: decimal
         description: "Total shareholders' equity."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: current_liabilities
         data_type: decimal
         description: "Short-term financial obligations due within one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: long_term_liabilities
         data_type: decimal
         description: "Financial obligations due after more than one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: cash_and_equivalents
         data_type: decimal
         description: "Total cash and highly liquid assets."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: income_taxes_payable
         data_type: decimal
         description: "Amount of income tax owed to the government."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: minority_interest
         data_type: decimal
         description: "Portion of a subsidiary corporation's stock that is not owned by the parent corporation."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: retained_earnings
         data_type: decimal
         description: "Cumulative net earnings or profit retained by the company."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: fixed_assets
         data_type: decimal
         description: "Long-term tangible pieces of property or equipment."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: short_term_receivables
         data_type: decimal
         description: "Amounts owed to the company by its customers, due within a year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: short_term_debt
         data_type: decimal
         description: "Short-term borrowings due within one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: current_portion_lt_debt
         data_type: decimal
         description: "Portion of long-term debt that is due within the current year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: repo_transactions
         data_type: decimal
         description: "Repurchase agreements (common in banking/financial sectors)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: long_term_debt
         data_type: decimal
         description: "Loans and financial obligations lasting over one year."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: convertible_bonds
         data_type: decimal
         description: "Fixed-income corporate debt security that yields interest payments, but can be converted into a predetermined number of common stock."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: silver_updated_at
@@ -243,43 +243,43 @@ models:
       - name: cfo
         data_type: decimal
         description: "Cash Flow from Operating activities."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: cfi
         data_type: decimal
         description: "Cash Flow from Investing activities."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: cff
         data_type: decimal
         description: "Cash Flow from Financing activities."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: net_cash_flow
         data_type: decimal
         description: "Net increase or decrease in cash and cash equivalents."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: depreciation
         data_type: decimal
         description: "Depreciation and amortization expense added back to net income."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: capex
         data_type: decimal
         description: "Capital Expenditures (cash spent to acquire or maintain fixed assets)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: profit_before_tax_cf
         data_type: decimal
         description: "Profit before tax adjusted for cash flow purposes."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: delta_receivables
@@ -291,55 +291,55 @@ models:
       - name: delta_inventory
         data_type: decimal
         description: "Changes in inventory levels."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: delta_payables
         data_type: decimal
         description: "Changes in accounts payable."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: borrowings_received
         data_type: decimal
         description: "Cash inflows from issuing debt or borrowing."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: debt_repaid
         data_type: decimal
         description: "Cash outflows for the repayment of debt principal."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: dividends_paid
         data_type: decimal
         description: "Cash dividends paid out to shareholders."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: beginning_cash
         data_type: decimal
         description: "Cash balance at the beginning of the reporting period."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: exchange_rate_effect
         data_type: decimal
         description: "Impact of foreign exchange rate changes on cash balances."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: ending_cash
         data_type: decimal
         description: "Cash balance at the end of the reporting period."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone
         description: "Audit column: Timestamp indicating when the record was validated in the Silver layer."
-        data_tests: 
+        data_tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
               arguments:
@@ -372,7 +372,7 @@ models:
         description: "A comma-separated list of DQ violations."
 
   # ====================================================================================
-  # 3. INCOME STATEMENT 
+  # 3. INCOME STATEMENT
   # ====================================================================================
   - name: silver_ic_quarter
     description: "Cleaned and validated quarterly Income Statement data. Details the company's revenues, expenses, and profitability metrics over the quarter."
@@ -426,31 +426,31 @@ models:
       - name: revenue_deduction
         data_type: decimal
         description: "Deductions from revenue (e.g., sales returns, allowances, discounts)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: net_revenue
         data_type: decimal
         description: "Gross revenue minus revenue deductions."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: cogs
         data_type: decimal
         description: "Cost of Goods Sold (direct costs attributable to the production of goods)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: gross_profit
         data_type: decimal
         description: "Net revenue minus COGS."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: financial_income
         data_type: decimal
         description: "Income generated from financial activities (e.g., interest income, dividends)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: financial_expense
@@ -468,7 +468,7 @@ models:
       - name: affiliate_profit
         data_type: decimal
         description: "Share of profit or loss from joint ventures and associates."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: selling_expense
@@ -480,79 +480,79 @@ models:
       - name: admin_expense
         data_type: decimal
         description: "General and administrative expenses."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: operating_profit
         data_type: decimal
         description: "Profit realized from a business's operations, excluding tax and interest."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: other_income
         data_type: decimal
         description: "Income from secondary operations or extraordinary items."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: other_expense
         data_type: decimal
         description: "Expenses from secondary operations or extraordinary items."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: other_profit
         data_type: decimal
         description: "Net other income (Other Income - Other Expense)."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: profit_before_tax
         data_type: decimal
         description: "Total profit before income taxes are deducted."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: current_tax
         data_type: decimal
         description: "Current corporate income tax expense."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: deferred_tax
         data_type: decimal
         description: "Deferred corporate income tax expense/benefit."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: income_tax_expense
         data_type: decimal
         description: "Total income tax expense."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: net_income
         data_type: decimal
         description: "Total net income or profit after taxes."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: minority_interest
         data_type: decimal
         description: "Net income attributable to non-controlling interests."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: net_income_parent
         data_type: decimal
         description: "Net income attributable to the shareholders of the parent company."
-        data_tests: 
+        data_tests:
           - not_null
 
       - name: silver_updated_at
         data_type: timestamp(6) with time zone
         description: "Audit column: Timestamp indicating when the record was validated in the Silver layer."
-        data_tests: 
+        data_tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
               arguments:

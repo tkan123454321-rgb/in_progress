@@ -53,7 +53,7 @@ models:
         description: "Audit column: Timestamp indicating when the intermediate model was run."
         data_tests:
           - not_null
-          
+
 
       - name: int_invocation_id
         data_type: varchar
@@ -61,7 +61,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_distinct_count_to_equal:
-              arguments:    
+              arguments:
                 value: 1
 
 
@@ -71,7 +71,7 @@ models:
       - name: unqualified_reason
         data_type: varchar
         description: "A pipe-separated list of missing statement types (e.g., 'missing_cash_flow | missing_fundamental'). Null if all reports are present."
-      
+
       - name: status
         data_type: varchar
         description: "Data completeness status. Evaluated as 'qualified' if no reports are missing, otherwise 'unqualified'."

@@ -1,94 +1,105 @@
-{{ config(
-    materialized='table',
-    tags=['intermediate', 'qmj_scoring_safety']
-) }}
+{{ config(materialized="table", tags=["intermediate", "qmj_scoring_safety"]) }}
 
-{% set audit_cols = get_audit_columns('intermediate') %}
+{% set audit_cols = get_audit_columns("intermediate") %}
 
 -- STEP 1: Extract qualified raw safety metrics from the ephemeral layer
-WITH base_metrics AS (
-    SELECT * FROM {{ ref('int_qmj_safety') }}
-    WHERE status = 'qualified'
-),
+with
+    base_metrics as (
+        select * from {{ ref("int_qmj_safety") }} where status = 'qualified'
+    ),
 
--- STEP 2: Rank each component cross-sectionally per quarter
-ranked_safety AS (
-    SELECT 
-        ticker,
-        year,
-        quarter,
-        absolute_quarter,
-        
-        -- 1. BAB (Betting Against Beta)
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY bab_score ASC) AS bab_rank,
-        
-        -- 2. LEV (Leverage)
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY lev_score ASC) AS lev_rank,
-        
-        -- 3. Ohlson O-Score
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY ohlson_o_score ASC) AS o_rank,
-        
-        -- 4. Altman Z-Score
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY altman_z_score ASC) AS z_rank,
-        
-        -- 5. EVOL (Earnings Volatility)
-        RANK() OVER (PARTITION BY absolute_quarter ORDER BY evol_score ASC) AS evol_rank
+    -- STEP 2: Rank each component cross-sectionally per quarter
+    ranked_safety as (
+        select
+            ticker,
+            year,
+            quarter,
+            absolute_quarter,
 
-    FROM base_metrics
-),
--- STEP 3: Standardize ranks into Z-Scores
-z_safety_components AS (
-    SELECT 
-        *,
-        (bab_rank - AVG(bab_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(bab_rank) OVER w_qtr, 0) AS z_bab,
-        (lev_rank - AVG(lev_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(lev_rank) OVER w_qtr, 0) AS z_lev,
-        (o_rank - AVG(o_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(o_rank) OVER w_qtr, 0) AS z_o,
-        (z_rank - AVG(z_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(z_rank) OVER w_qtr, 0) AS z_z,
-        (evol_rank - AVG(evol_rank) OVER w_qtr) / NULLIF(STDDEV_SAMP(evol_rank) OVER w_qtr, 0) AS z_evol
-    FROM ranked_safety
-    WINDOW w_qtr AS (PARTITION BY absolute_quarter)
-),
+            -- 1. BAB (Betting Against Beta)
+            RANK() over (
+                partition by absolute_quarter order by bab_score ASC
+            ) as bab_rank,
 
--- STEP 4: Apply Data Quality Rules to ensure all Z-Scores are calculated
-applied_dq_rules AS (
-    SELECT 
-        *,
-        NULLIF(
-            CONCAT_WS(' | ',
-                CASE WHEN z_bab IS NULL THEN 'z_bab is null' ELSE NULL END,
-                CASE WHEN z_lev IS NULL THEN 'z_lev is null' ELSE NULL END,
-                CASE WHEN z_o IS NULL THEN 'z_o is null' ELSE NULL END,
-                CASE WHEN z_z IS NULL THEN 'z_z is null' ELSE NULL END,
-                CASE WHEN z_evol IS NULL THEN 'z_evol is null' ELSE NULL END
-             ), 
-        '') AS unqualified_reason
-    FROM z_safety_components
-)
+            -- 2. LEV (Leverage)
+            RANK() over (
+                partition by absolute_quarter order by lev_score ASC
+            ) as lev_rank,
+
+            -- 3. Ohlson O-Score
+            RANK() over (
+                partition by absolute_quarter order by ohlson_o_score ASC
+            ) as o_rank,
+
+            -- 4. Altman Z-Score
+            RANK() over (
+                partition by absolute_quarter order by altman_z_score ASC
+            ) as z_rank,
+
+            -- 5. EVOL (Earnings Volatility)
+            RANK() over (
+                partition by absolute_quarter order by evol_score ASC
+            ) as evol_rank
+
+        from base_metrics
+    ),
+    -- STEP 3: Standardize ranks into Z-Scores
+    z_safety_components as (
+        select
+            *,
+            (bab_rank - AVG(bab_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(bab_rank) over w_qtr, 0) as z_bab,
+            (lev_rank - AVG(lev_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(lev_rank) over w_qtr, 0) as z_lev,
+            (o_rank - AVG(o_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(o_rank) over w_qtr, 0) as z_o,
+            (z_rank - AVG(z_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(z_rank) over w_qtr, 0) as z_z,
+            (evol_rank - AVG(evol_rank) over w_qtr)
+            / NULLIF(STDDEV_SAMP(evol_rank) over w_qtr, 0) as z_evol
+        from ranked_safety
+        window w_qtr as (partition by absolute_quarter)
+    ),
+
+    -- STEP 4: Apply Data Quality Rules to ensure all Z-Scores are calculated
+    applied_dq_rules as (
+        select
+            *,
+            NULLIF(
+                CONCAT_WS(
+                    ' | ',
+                    case when z_bab is NULL then 'z_bab is null' else NULL end,
+                    case when z_lev is NULL then 'z_lev is null' else NULL end,
+                    case when z_o is NULL then 'z_o is null' else NULL end,
+                    case when z_z is NULL then 'z_z is null' else NULL end,
+                    case when z_evol is NULL then 'z_evol is null' else NULL end
+                ),
+                ''
+            ) as unqualified_reason
+        from z_safety_components
+    )
 
 -- STEP 5: Final Selection, Status Resolution, and Audit Injection
-SELECT 
+select
     ticker,
     year,
     quarter,
     absolute_quarter,
-    
+
     -- Output the 5 standardized Z-Scores
-    z_bab, 
-    z_lev, 
-    z_o, 
-    z_z, 
+    z_bab,
+    z_lev,
+    z_o,
+    z_z,
     z_evol,
 
     -- Resolve Final Status
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status,
     unqualified_reason
 
     -- Auto-generated audit columns
-    {% for col in audit_cols %}
-    , {{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
+    {% for col in audit_cols %}, {{ col.expr }} as {{ col.alias }} {% endfor %}
 
-FROM applied_dq_rules
+from applied_dq_rules

@@ -1,29 +1,26 @@
-{{ config(
-    materialized='table',
-    tags=['silver', 'dim_company']
-) }}
-{% set audit_cols = get_audit_columns('silver') %}
+{{ config(materialized="table", tags=["silver", "dim_company"]) }}
+{% set audit_cols = get_audit_columns("silver") %}
 
-WITH deduped_data AS (
-    SELECT *,
-        ROW_NUMBER() OVER (
-            PARTITION BY ticker
-            ORDER BY company_name ASC,
-                industry_group ASC,
-                sector_detail ASC
-        ) as rn
-    FROM {{ ref('bronze_dim_company') }}
-    WHERE ticker IS NOT NULL
-        AND regexp_like(ticker, '^[A-Z0-9]{3}$')
-        AND company_type IS NOT NULL
-)
-SELECT ticker,
-    COALESCE(company_name, 'Unknown Company') AS company_name,
-    COALESCE(industry_group, 'Unclassified') AS industry_group,
-    COALESCE(sector_detail, 'Unclassified') AS sector_detail,
+with
+    deduped_data as (
+        select
+            *,
+            ROW_NUMBER() over (
+                partition by ticker
+                order by company_name ASC, industry_group ASC, sector_detail ASC
+            ) as rn
+        from {{ ref("bronze_dim_company") }}
+        where
+            ticker is not NULL
+            and regexp_like(ticker, '^[A-Z0-9]{3}$')
+            and company_type is not NULL
+    )
+select
+    ticker,
+    COALESCE(company_name, 'Unknown Company') as company_name,
+    COALESCE(industry_group, 'Unclassified') as industry_group,
+    COALESCE(sector_detail, 'Unclassified') as sector_detail,
     company_type
-    {% for col in audit_cols %}
-    ,{{ col.expr }} AS {{ col.alias }}
-    {% endfor %}
-FROM deduped_data
-WHERE rn = 1
+    {% for col in audit_cols %},{{ col.expr }} as {{ col.alias }} {% endfor %}
+from deduped_data
+where rn = 1

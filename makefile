@@ -17,12 +17,12 @@ yaml:
 	@# Usage: make yaml m=<model_name>
 	@# 1. Create temp directory if it doesn't exist
 	@mkdir -p $(TEMP_DIR)
-	
+
 	@# 2. Get current timestamp
 	$(eval TIMESTAMP := $(shell date '+%Y%m%d_%H%M%S'))
-	
+
 	@echo "⏳ Generating YAML for model '$(m)'..."
-	
+
 	@# 3. Run dbt macro and save to file
 	@dbt run-operation generate_model_yaml --args '{"model_names": ["$(m)"]}' > $(TEMP_DIR)/$(TIMESTAMP)_$(m).yml
 

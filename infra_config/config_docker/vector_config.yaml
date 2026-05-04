@@ -4,7 +4,7 @@ sources:
     address: "0.0.0.0:5000"
     decoding:
       codec: json
-  
+
   docker_logs:
     type: docker_logs
     exclude_containers: ["vector"]
@@ -17,7 +17,7 @@ transforms:
     source: |-
       if !exists(.statistics) {
             abort
-        } 
+        }
 
       new_event = {}
 
@@ -30,14 +30,14 @@ transforms:
       new_event.query_state = to_string(.metadata.queryState) ?? "UNKNOWN"
       new_event.created_at = to_string(.createTime) ?? "1970-01-01T00:00:00Z"
 
-      
+
       # query text process
       raw_query = to_string(.metadata.query) ?? ""
       query_no_comment = replace(raw_query, r'/\*[\s\S]*?\*/', "")
       query_one_line = replace(query_no_comment, r'\s+', " ")
       new_event.query_text = strip_whitespace(query_one_line)
 
-      
+
 
       # finops metrics
       new_event.cpu_time_s = to_float(.statistics.cpuTime) ?? 0.0
@@ -46,30 +46,30 @@ transforms:
       new_event.scanned_bytes = to_int(.statistics.physicalInputBytes) ?? 0
       new_event.peak_memory_bytes = to_int(.statistics.peakUserMemoryBytes) ?? 0
       . = new_event
-      
+
 sinks:
   # debug_only:
   #   type: file
-  #   inputs: 
-  #     - trino_processed   
+  #   inputs:
+  #     - trino_processed
   #   path: /tmp/vector_log/trino_RAW_DATA_%Y-%m-%d_%H-%M-%S.json
   #   encoding:
   #     codec: json
 
   postgres_finops_output:
     type: postgres
-    inputs: 
+    inputs:
       - trino_processed
     endpoint: "postgresql://tkan:Tkan2005@postgres:5432/ops_db"
     table: "finops.trino_finops_logs"
     batch:
-      max_events: 500      
-      timeout_secs: 5      
+      max_events: 500
+      timeout_secs: 5
     buffer:
-      type: disk           
-      max_size: 1073741824 
+      type: disk
+      max_size: 1073741824
       when_full: block
-  
+
   loki:
     type: loki
     inputs:
@@ -79,9 +79,8 @@ sinks:
     encoding:
       codec: json
     buffer:
-      type: disk           
-      max_size: 1073741824 
+      type: disk
+      max_size: 1073741824
       when_full: block
     labels:
       container_name: "{{ container_name }}"
-

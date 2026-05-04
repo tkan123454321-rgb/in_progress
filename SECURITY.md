@@ -12,6 +12,6 @@ Instead, I would highly appreciate it if you could use the **Private Vulnerabili
 2. Click the **Report a vulnerability** button.
 3. Fill in the details.
 
-Alternatively, you can contact me directly via the email listed on my GitHub profile. I view every security concern as a valuable learning opportunity and will address it promptly. 
+Alternatively, you can contact me directly via the email listed on my GitHub profile. I view every security concern as a valuable learning opportunity and will address it promptly.
 
 Thank you for helping me improve!

@@ -1,60 +1,64 @@
-{{ config(
-    materialized='incremental',
-    on_schema_change='sync_all_columns',
-    tags=['silver', 'historical_quotes'], 
-    incremental_strategy='merge',
-    unique_key=['ticker', 'date']
-) }}
+{{
+    config(
+        materialized="incremental",
+        on_schema_change="sync_all_columns",
+        tags=["silver", "historical_quotes"],
+        incremental_strategy="merge",
+        unique_key=["ticker", "date"],
+    )
+}}
 
-{% set indicators = get_financial_reports_column('historical_quotes') %}
-{% set audit_cols = get_audit_columns('silver') %}
+{% set indicators = get_financial_reports_column("historical_quotes") %}
+{% set audit_cols = get_audit_columns("silver") %}
 
-WITH deduped_data AS (
-    SELECT 
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY ticker, date 
-            ORDER BY bronze_ingested_time DESC
-        ) as rn
-    FROM {{ ref('staging_historical_quotes') }} 
+with
+    deduped_data as (
+        select
+            *,
+            ROW_NUMBER() over (
+                partition by ticker, date order by bronze_ingested_time DESC
+            ) as rn
+        from {{ ref("staging_historical_quotes") }}
 
-    {% if is_incremental() %}
-      WHERE staged_at > (
-          SELECT COALESCE(MAX(staged_at), CAST('1900-01-01 00:00:00 UTC' AS TIMESTAMP WITH TIME ZONE)) 
-          FROM {{ this }}
-      )
-    {% endif %}
-),
+        {% if is_incremental() %}
+            where
+                staged_at > (
+                    select
+                        COALESCE(
+                            MAX(staged_at),
+                            CAST('1900-01-01 00:00:00 UTC' as TIMESTAMP with TIME ZONE)
+                        )
+                    from {{ this }}
+                )
+        {% endif %}
+    ),
 
-applied_dq_rules AS (
-    SELECT *,
-        {{ check_financial_reports('historical_quotes') }} AS unqualified_reason
-    FROM deduped_data
-    WHERE rn = 1
-)
+    applied_dq_rules as (
+        select
+            *, {{ check_financial_reports("historical_quotes") }} as unqualified_reason
+        from deduped_data
+        where rn = 1
+    )
 
-SELECT 
+select
     ticker,
     date,
-    EXTRACT(YEAR FROM date) AS year,
-    EXTRACT(MONTH FROM date) AS month,
-    EXTRACT(QUARTER FROM date) AS quarter,
-    (EXTRACT(YEAR FROM date) * 12 + EXTRACT(MONTH FROM date)) AS absolute_month,
-    (EXTRACT(YEAR FROM date) * 4 + EXTRACT(QUARTER FROM date)) AS absolute_quarter,
-    
+    EXTRACT(YEAR from date) as year,
+    EXTRACT(MONTH from date) as month,
+    EXTRACT(QUARTER from date) as quarter,
+    (EXTRACT(YEAR from date) * 12 + EXTRACT(MONTH from date)) as absolute_month,
+    (EXTRACT(YEAR from date) * 4 + EXTRACT(QUARTER from date)) as absolute_quarter,
+
     {% for ind in indicators %}
-        COALESCE({{ ind.alias }}, 0) AS {{ ind.alias }},
+        COALESCE({{ ind.alias }}, 0) as {{ ind.alias }},
     {% endfor %}
 
-    {% for col in audit_cols %}
-    {{ col.expr }} AS {{ col.alias }},
-    {% endfor %}
-    
-    CASE 
-        WHEN unqualified_reason IS NULL THEN 'qualified'
-        ELSE 'unqualified'
-    END AS status,
+    {% for col in audit_cols %} {{ col.expr }} as {{ col.alias }}, {% endfor %}
+
+    case
+        when unqualified_reason is NULL then 'qualified' else 'unqualified'
+    end as status,
 
     unqualified_reason
 
-FROM applied_dq_rules
+from applied_dq_rules
