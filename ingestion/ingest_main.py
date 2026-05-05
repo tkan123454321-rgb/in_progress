@@ -65,7 +65,7 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], batch_id: str | None) -> No
             # STEP 5: Generate and Publish Messages
             # We iterate through the generator which yields payloads for each ticker.
             for ticker, metadata_items in config._generate_kafka_message(
-                ticker_list=missing_tickers,
+                ticker_list=missing_tickers,  # type: ignore
                 metadata_manager=metadata_manager,
                 batch_id=BATCH_ID,
             ):  # type: ignore

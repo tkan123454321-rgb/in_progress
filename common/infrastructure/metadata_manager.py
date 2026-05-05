@@ -292,8 +292,10 @@ class MetadataManager:
 
             db_tickers = {row["ticker"] for row in db_data}  # type: ignore
             inactive_db_tickers = {
-                row["ticker"] for row in db_data if row["ticker_status"] == "inactive"
-            }  # type: ignore
+                row["ticker"]
+                for row in db_data
+                if row["ticker_status"] == "inactive"  # type: ignore
+            }
             dividend_changed_tickers = (
                 set()
             )  # Initialize an empty set for dividend changed tickers
