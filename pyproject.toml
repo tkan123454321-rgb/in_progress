@@ -50,7 +50,6 @@ dbt = [
 ]
 dev = [
     "ruff",
-    "pytest",
     "sqlfmt==0.0.3",
     "ipykernel==7.2.0",
     "pre-commit==4.6.0"

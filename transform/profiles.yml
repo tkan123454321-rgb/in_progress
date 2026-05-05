@@ -5,8 +5,8 @@ transform:
       type: trino
       method: none
       user: admin
-      host: trino
-      port: 8080
+      host: "{{ env_var('DBT_HOST', 'trino') }}"
+      port: "{{ env_var('DBT_PORT', 8080) | int }}"
       catalog: lakehouse_main
       schema: bronze
       threads: 4

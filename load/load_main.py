@@ -54,7 +54,9 @@ def _load_main_message(
 
                 try:  # STEP 3: Process the message and fetch actual data from the API
                     formatted_msg = consumer._process_single_message(
-                        s, raw_record, transform_callable=config.transform_message
+                        s,
+                        raw_record,
+                        transform_callable=config.transform_message,  # type: ignore
                     )  # type: ignore
                     if formatted_msg:
                         buffer.append(formatted_msg)

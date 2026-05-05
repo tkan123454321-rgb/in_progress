@@ -110,8 +110,8 @@ class WebServingLoader:
                     # 2.1. Build temporary table
                     pg_cur.execute("DROP TABLE IF EXISTS web.web_obt_temp")
                     pg_cur.execute(
-                        f"CREATE TABLE web.web_obt_temp ({final_sql_columns})"
-                    )  # type: ignore
+                        f"CREATE TABLE web.web_obt_temp ({final_sql_columns})"  # type: ignore
+                    )
                     # 2.2. Bulk insert via COPY (High-performance loading)
                     logger.info(f"Executing bulk COPY for {len(rows)} records.")
                     copy_query = (

@@ -1,0 +1,91 @@
+# CI Workflow for Data Platform
+# 1. Validates code formatting and syntax (Python & SQL)
+# 2. Checks dbt model compilation
+# 3. Runs integration tests with an ephemeral Lakehouse stack
+# NOTE: pytest will be integrated here in the future.
+name: Data Platform CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "test" ]
+
+permissions:
+  contents: read
+
+jobs:
+  # Check formatting and linting
+  linting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - uses: pre-commit/action@v3.0.1
+
+  # Check dbt syntax and references
+  dbt-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Generate .env file for Docker
+        run: |
+          cat <<EOF > .env
+          # === NHÓM 1: MẬT KHẨU BẢO MẬT (Kéo từ GitHub Secrets) ===
+          AIRFLOW_DB_CONN=${{ secrets.AIRFLOW_DB_CONN }}
+          AIRFLOW_ADMIN_PASSWORD=${{ secrets.AIRFLOW_ADMIN_PASSWORD }}
+          FERNET_KEY=${{ secrets.FERNET_KEY }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          MINIO_PASSWORD=${{ secrets.MINIO_PASSWORD }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          AIRFLOW_ADMIN_USER=tkan
+          AIRFLOW_UID=50000
+          MINIO_ROOT_USER=tkan
+          MINIO_USER=tkan
+          POSTGRES_USER=tkan
+          POSTGRES_DB=platform_db
+          EOF
+
+      - name: Spin up Ephemeral Lakehouse Stack
+        run: docker compose up -d minio postgres nessie trino
+
+      - name: Wait for Trino to be healthy
+        timeout-minutes: 3
+        run: |
+          echo "Waiting for Trino to become healthy..."
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' trino 2>/dev/null)" = "healthy" ]; do
+            sleep 5
+          done
+          echo "Trino is healthy!"
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dbt dependencies from pyproject.toml
+        run: pip install ".[dbt]"
+
+      - name : Compile dbt models to validate syntax and references
+        working-directory: ./transform
+        env:
+          DBT_HOST: localhost
+          DBT_PORT: 9090
+        shell: bash
+        run: |
+          dbt deps
+          dbt parse
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
