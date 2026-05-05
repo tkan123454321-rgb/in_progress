@@ -1,0 +1,19 @@
+macros:
+  - name: get_dividend_columns
+    description: >
+      This macro defines the schema and business rules for dividend data.
+      It is mainly used in the staging layer to parse raw JSON fields into distinct columns.
+      It returns a list of dictionaries containing mapping info (json_key, alias, type) and data quality flags (is_mandatory, must_be_positive).
+    config:
+      docs:
+        show: true
+
+  - name: check_dividend_columns
+    description: >
+      This macro performs inline data quality checks directly within the silver layer.
+      It acts as a gatekeeper to prevent dirty data from propagating to downstream models.
+      It loops through the rules defined in `get_dividend_columns()` and dynamically generates a SQL CASE statement to flag validation errors (e.g., catching negative values).
+      It returns a concatenated string of error messages, or NULL if the row is perfectly clean.
+    config:
+      docs:
+        show: true

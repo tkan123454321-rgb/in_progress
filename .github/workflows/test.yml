@@ -41,7 +41,6 @@ jobs:
       - name: Generate .env file for Docker
         run: |
           cat <<EOF > .env
-          # === NHÓM 1: MẬT KHẨU BẢO MẬT (Kéo từ GitHub Secrets) ===
           AIRFLOW_DB_CONN=${{ secrets.AIRFLOW_DB_CONN }}
           AIRFLOW_ADMIN_PASSWORD=${{ secrets.AIRFLOW_ADMIN_PASSWORD }}
           FERNET_KEY=${{ secrets.FERNET_KEY }}
@@ -89,3 +88,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v
+          # TODO: Future enhancement - Implement dbt State Deferral (Slim CI) using manifest.json.
+          # For now, we use `dbt parse` instead of `compile` to validate Jinja syntax, YAML configs,
+          # and DAG integrity. This prevents "TABLE/SCHEMA_NOT_FOUND" errors

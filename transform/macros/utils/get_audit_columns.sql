@@ -83,7 +83,7 @@
     {% else %}
         {{
             exceptions.raise_compiler_error(
-                "Tên layer_name không hợp lệ! Hãy chọn 'staging', 'silver', hoặc 'gold'."
+                "layer's name is invalid! Please choose 'staging', 'silver', or 'gold'."
             )
         }}
     {% endif %}

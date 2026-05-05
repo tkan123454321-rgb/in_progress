@@ -20,14 +20,14 @@ with
 select
     TRIM(UPPER(ticker)) as ticker,
 
-    -- 1. Bóc tách JSON
+    -- 1. JSON parsing
     {% for field in fields %}
         TRY_CAST(
             json_extract_scalar(data, '$.{{ field.json_key }}') as {{ field.type }}
         ) as {{ field.alias }},
     {% endfor %}
 
-    -- 2. Đẻ cột Audit
+    -- 2. Audit columns
     {% for col in audit_cols %}
         {{ col.expr }} as {{ col.alias }}{% if not loop.last %},{% endif %}
     {% endfor %}

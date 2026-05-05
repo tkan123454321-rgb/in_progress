@@ -1,0 +1,33 @@
+macros:
+  - name: get_fundamental_columns
+    description: >
+      This macro defines the metadata for various fundamental data models.
+      It returns a list of dictionaries containing the mapping for each fundamental indicator,
+      including its JSON key, alias, data type, mandatory status, and specific business validation rules
+      (e.g., must_be_positive). This macro acts as the "Source of Truth" for fundamental data schemas
+      across Staging and Silver layers.
+    arguments:
+      - name: fundamental_type
+        type: string
+        description: >
+          The specific type of fundamental data to retrieve metadata for.
+          Supported values: 'fundamental_1', 'fundamental_2', 'fundamental_quarter'.
+
+  - name: check_fundamental_columns
+    description: >
+      A data quality validation macro that performs targeted validation for fundamental data based on its type.
+      It executes varying rules depending on the dataset:
+      1. Mandatory & Sign Checks: Ensures required fields are not NULL and validates that specific metrics are non-negative.
+      2. Categorical Validation: Specifically for 'fundamental_2', it verifies valid stock exchanges ('UPCOM', 'HSX', 'HOSE', 'HNX') and active listing status.
+      3. Custom Business Logic: Specifically for 'fundamental_quarter', it enforces rules such as Market Cap strictly greater than zero.
+
+      It returns a concatenated string of error messages ('flagging' the errors) or NULL if the row is valid.
+    arguments:
+      - name: fundamental_type
+        type: string
+        description: "The specific fundamental type to validate (must match a key in get_fundamental_columns)."
+    config:
+      docs:
+        show: true
+      meta:
+        owner: data_engineering_team

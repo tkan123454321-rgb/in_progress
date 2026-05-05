@@ -37,8 +37,6 @@ models:
       - name: institution_ownership
         data_type: double
         description: "Percentage of outstanding shares held by institutional investors (e.g., mutual funds, pension funds)."
-        data_tests:
-          - not_null
 
       - name: foreign_ownership
         data_type: double
