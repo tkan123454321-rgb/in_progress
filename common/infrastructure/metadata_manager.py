@@ -318,12 +318,12 @@ class MetadataManager:
         # STEP 4: Apply the calculated updates in a single database transaction
         with self.pg_conn.transaction():
             with self.pg_conn.cursor() as cur:
+                fallback_year = get_fallback_year()
+                fallback_time_str = f"{fallback_year}-01-01 00:00:00+00"
                 # 4.1. Handle New Tickers
                 # If they are new, we set their 'updated_at' to a fallback date (the return from get_fallback_year())
                 # so the pipeline knows to fetch their full historical data.
                 if new_tickers:
-                    fallback_year = get_fallback_year()
-                    fallback_time_str = f"{fallback_year}-01-01 00:00:00+00"
                     insert_query = sql.SQL("""
                         INSERT INTO ingestion.{table}
                         (ticker, data_type, ticker_status, updated_at)
