@@ -12,8 +12,12 @@ loki-data/
 *.json
 *.avro
 *.license
+!minio_example.license
 transform/dbt_packages/
 transform/target/
 !transform/dashboard/*.json
 !.devcontainer.json
 !.devcontainer-lock.json
+trino_etc/catalog/lakehouse_dev.properties
+trino_etc/catalog/lakehouse_main.properties
+trino_etc/catalog/ops_db.properties

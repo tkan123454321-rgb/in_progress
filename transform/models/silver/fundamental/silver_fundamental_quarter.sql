@@ -11,26 +11,34 @@
 {% set indicators = get_fundamental_columns("fundamental_quarter") %}
 {% set audit_cols = get_audit_columns("silver") %}
 
+-- STEP 1: DEDUPLICATE STAGING DATA
+-- Retrieve the latest record for each ticker, year, and quarter based
+-- on ingestion time.
 with
+    watermark as (
+        select
+            COALESCE(
+                MAX(silver_updated_at),
+                CAST('1900-01-01 00:00:00 UTC' as TIMESTAMP with TIME ZONE)
+            ) as max_time
+        from {{ this }}
+    ),
+
+    new_data as (
+        select *
+        from {{ ref("staging_fundamental_quarter") }}
+        {% if is_incremental() %}
+            where staged_at > (select max_time from watermark)
+        {% endif %}
+    ),
+
     deduped_data as (
         select
             *,
             ROW_NUMBER() over (
                 partition by ticker, year, quarter order by bronze_ingested_time DESC
             ) as rn
-        from {{ ref("staging_fundamental_quarter") }}
-
-        {% if is_incremental() %}
-            where
-                staged_at > (
-                    select
-                        COALESCE(
-                            MAX(staged_at),
-                            CAST('1900-01-01 00:00:00 UTC' as TIMESTAMP with TIME ZONE)
-                        )
-                    from {{ this }}
-                )
-        {% endif %}
+        from new_data
     ),
 
     applied_dq_rules as (

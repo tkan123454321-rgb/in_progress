@@ -1,0 +1,34 @@
+macros:
+  - name: get_financial_reports_column
+    description: >
+      this macro defines the metadata for various financial reports.
+      It returns a list of dictionaries containing the mapping for each financial indicator,
+      including its ID, alias, data type, mandatory status, and business validation rules
+      (e.g., must_be_positive). This macro acts as the "Source of Truth" for report schemas
+      across Staging and Silver layers.
+    arguments:
+      - name: report_type
+        type: string
+        description: >
+          The type of report to retrieve metadata for.
+          Supported values: 'income_statement', 'balance_sheet', 'cash_flow_indirect', 'historical_quotes'.
+
+  - name: check_financial_reports
+    description: >
+      A data quality validation macro that performs multi-layered validation for financial data.
+      It executes three types of checks:
+      1. Mandatory Checks: Ensures required fields are not NULL.
+      2. Sign Checks: Validates that specific metrics (like Revenue) are non-negative.
+      3. Mathematical checks: Verifies core accounting equations (e.g., Total Assets = Total Liabilities + Total Equity)
+         with a 1% tolerance threshold for rounding differences.
+
+      It returns a concatenated string of error messages ('flagging' the errors) or NULL if the row is valid.
+    arguments:
+      - name: report_type
+        type: string
+        description: "The specific report type to validate (must match a key in get_financial_reports_column)."
+    config:
+      docs:
+        show: true
+      meta:
+        owner: data_engineering_team

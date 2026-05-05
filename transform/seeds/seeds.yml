@@ -1,0 +1,53 @@
+seeds:
+  - name: bronze_dim_company
+    description: >
+      A master list of companies listed on the three Vietnamese stock exchanges (HOSE, HNX, and UPCOM).
+      This foundational data is sourced from an external API using the `vnstock` library.
+      It acts as the primary dimension table for all company metadata across the Data Lakehouse.
+    config:
+      docs:
+        show: true
+        node_color: "#1E88E5"
+    columns:
+      - name: ticker
+        description: "The unique stock symbol identifying the company (e.g., FPT, VCB)."
+        data_tests:
+          - unique
+          - not_null
+      - name: company_name
+        description: "The full registered legal name of the company."
+      - name: industry_group
+        description: "The broad industry classification the company belongs to (e.g., Real Estate, Banking)."
+      - name: sector_detail
+        description: "The specific sub-sector or niche the company operates within."
+      - name: company_type
+        description: "An abbreviation indicating the type of entity (e.g., 'CT' for standard corporation, 'NH' for Bank)."
+
+  - name: macro_risk_free_rate
+    description: >
+      A static lookup table containing quarterly macroeconomic indicators.
+      It tracks the risk-free rate and the Consumer Price Index (CPI) over time.
+      These metrics are essential inputs for financial modeling.
+    config:
+      docs:
+        show: true
+        node_color: "#43A047"
+    columns:
+      - name: year
+        description: "The calendar year."
+        data_tests:
+          - not_null
+      - name: quarter
+        description: "The calendar quarter (1 to 4)."
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: absolute_quarter
+        description: "A continuous, sequential identifier for the quarter (e.g., 8081, 8082). This is highly useful for time-series math and calculating period offsets."
+        data_tests:
+          - unique
+          - not_null
+      - name: risk_free_rate
+        description: "The risk-free interest rate (in percentage) for the given quarter, typically based on government bond yields."
+      - name: cpi_index
+        description: "The Consumer Price Index (CPI), representing the inflation level for that quarter."

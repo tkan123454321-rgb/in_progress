@@ -21,13 +21,13 @@
     {% else %}
         {{
             exceptions.raise_compiler_error(
-                "🛑 LỖI DỮ LIỆU: Bảng nguồn "
+                "ERROR: The source table "
                 ~ source_name
                 ~ "."
                 ~ table_name
-                ~ " hiện đang trống hoặc cột '"
+                ~ " is empty or the column '"
                 ~ column_name
-                ~ "' không có dữ liệu."
+                ~ "' is empty."
             )
         }}
     {% endif %}

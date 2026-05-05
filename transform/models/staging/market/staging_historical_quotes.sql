@@ -11,20 +11,23 @@
 {% set audit_cols = get_audit_columns("staging") %}
 
 with
+    {% if is_incremental() %}
+        watermark as (
+            select
+                COALESCE(
+                    MAX(bronze_ingested_time),
+                    CAST('1900-01-01 00:00:00 UTC' as TIMESTAMP with TIME ZONE)
+                ) as max_time
+            from {{ this }}
+        ),
+    {% endif %}
+
     raw_source as (
         select *
         from {{ source("bronze", "historical_quotes") }}
         {% if is_incremental() %}
             where
-                bronze_ingested_time > (
-                    select
-                        COALESCE(
-                            MAX(bronze_ingested_time),
-                            CAST('1900-01-01 00:00:00 UTC' as TIMESTAMP with TIME ZONE)
-                        )
-                    from {{ this }}
-                )
-                and year >= 2018
+                bronze_ingested_time > (select max_time from watermark) and year >= 2018
         {% endif %}
     )
 select

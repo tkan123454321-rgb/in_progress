@@ -37,12 +37,12 @@ CREATE TABLE IF NOT EXISTS finops.trino_finops_logs (
 CREATE INDEX IF NOT EXISTS idx_finops_user_app
 ON finops.trino_finops_logs (user_name, source_app);
 
--- Partial Index cho các query lỗi (siêu nhẹ)
+-- Partial Index
 CREATE INDEX IF NOT EXISTS idx_finops_non_finished_queries
 ON finops.trino_finops_logs (query_id)
 WHERE query_state != 'FINISHED';
 
--- Index sắp xếp CPU để tìm thằng ngốn tiền nhất
+-- Index for CPU time desc
 CREATE INDEX IF NOT EXISTS idx_finops_cpu_time_desc
 ON finops.trino_finops_logs (cpu_time_s DESC NULLS LAST);
 
@@ -51,13 +51,12 @@ ON finops.trino_finops_logs (cpu_time_s DESC NULLS LAST);
 
 ------------Job_ingestion------------------------------------------------------------------------------------------------- (Partition theo start_time)
 CREATE TABLE IF NOT EXISTS ingestion.ingestion_kafka_state (
-    batch_id VARCHAR(50),         -- Mã của mẻ chạy (UUID)
-    data_type VARCHAR(50),        -- Loại dữ liệu (VD: balance_sheet)
-    ticker VARCHAR(20),           -- Mã chứng khoán (VD: DSE, VCB)
-    created_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- Thời gian nạp thành công
+    batch_id VARCHAR(50),
+    data_type VARCHAR(50),
+    ticker VARCHAR(20),
+    created_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
-    -- Thiết lập Khóa chính kép (Composite Primary Key)
-    -- Giúp đảm bảo mỗi mã chứng khoán ứng với 1 loại dữ liệu chỉ có 1 bản ghi tồn tại
+    -- Composite Primary Key
     PRIMARY KEY (ticker, data_type)
 );
 
@@ -69,11 +68,10 @@ CREATE TABLE IF NOT EXISTS ingestion.ingestion_watermark (
     PRIMARY KEY (ticker, data_type)
 );
 
--- thiết lập Part_man ------------------------------------------------------------------------------------------------
+-- part_man setup ------------------------------------------------------------------------------------------------
 
 DO $$
 BEGIN
-    -- Sửa lại đúng tên bảng finops.trino_finops_logs
     IF NOT EXISTS (SELECT 1 FROM partman.part_config WHERE parent_table = 'finops.trino_finops_logs') THEN
         PERFORM partman.create_parent(
             p_parent_table := 'finops.trino_finops_logs',
@@ -86,7 +84,7 @@ BEGIN
 
         UPDATE partman.part_config
         SET retention = '60 days',
-            retention_keep_table = false, -- false nghĩa là DROP luôn bảng thay vì tách ra
+            retention_keep_table = false,
             retention_keep_index = false,
             infinite_time_partitions = true
         WHERE parent_table = 'finops.trino_finops_logs';

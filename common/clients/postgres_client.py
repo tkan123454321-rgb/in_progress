@@ -33,8 +33,10 @@ class PostgresClient:
         conn_str = self._build_conn_str(db_name=db_name)
         try:
             conn = psycopg.connect(
-                conninfo=conn_str, autocommit=True, row_factory=dict_row
-            )  # type: ignore
+                conninfo=conn_str,
+                autocommit=True,
+                row_factory=dict_row,  # type: ignore
+            )
             return conn
         except psycopg.Error as e:
             logger.critical(
