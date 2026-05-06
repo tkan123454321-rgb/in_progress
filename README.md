@@ -20,3 +20,16 @@ This platform was built to solve that exact pain point. By automating the data e
 *   **3. "Is it time to act?" (Solved by Momentum Score):**
     *   **The Pain:** Buying a great, undervalued stock, but waiting years for the price to move because the broader market is ignoring it.
     *   **The Solution:** The Momentum score **TRACKS THE TREND**. As the final overlay, it shows you exactly which of those high-quality, attractively priced stocks are attracting cash flow *right now*, helping you optimize your entry timing.
+
+## ⚠️ Limitations: The Irreplaceable Human Element
+
+While this platform successfully automates data collection and screening, it is a **tool to help make decisions, not a replacement for human experts**.
+
+Here is what this platform *cannot* replace:
+
+*   **Data Imperfections:** Automated systems rely on raw data, which can sometimes have reporting errors or missing numbers. The screened list is just step one, not the final answer.
+*   **Deep Fundamental Analysis:** The system calculates past and present numbers perfectly, but it cannot predict the future. We still absolutely need **Financial Analysts** to dig deep into a company's real-world business model, competitive advantages, and true future potential.
+*   **Strategic Portfolio Management:** A list of good stocks doesn't automatically create a safe portfolio. We still need **Investment Strategists** to set the big-picture goals, and **Portfolio Managers** to build a balanced portfolio, manage daily risks, and track long-term growth.
+*   **Asset Diversification:** This platform focuses only on stocks. A solid investment plan needs diversification across other asset classes like bonds, real estate, or commodities.
+
+> *No matter how smart the machine gets, it cannot replace finance professionals. Technology just takes away the manual, repetitive work. This gives human analysts more time and energy to focus on what they do best: thinking, planning, and making real strategies.*
