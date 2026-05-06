@@ -126,6 +126,6 @@ select
     unqualified_reason
 
     -- Audit Columns
-    , CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4c6d9271-375a-4d96-926e-49714c96b216' as int_invocation_id 
+    , CAST(from_iso8601_timestamp('2026-05-06T08:55:22.931753+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '273468de-8a49-4a91-9bc2-2aabb801915e' as int_invocation_id 
 
 from applied_dq_rules

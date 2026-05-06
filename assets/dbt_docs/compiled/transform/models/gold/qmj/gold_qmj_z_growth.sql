@@ -47,7 +47,7 @@ select
     / NULLIF(STDDEV_SAMP(final_rank) over w_qtr, 0) as qmj_growth_score
 
     -- Auto-generated audit columns for the Gold layer
-    , CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as gold_updated_at , '4c6d9271-375a-4d96-926e-49714c96b216' as gold_invocation_id 
+    , CAST(from_iso8601_timestamp('2026-05-06T08:55:22.931753+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as gold_updated_at , '273468de-8a49-4a91-9bc2-2aabb801915e' as gold_invocation_id 
 
 from final_ranking
 window w_qtr as (partition by absolute_quarter)
