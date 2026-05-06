@@ -8,6 +8,7 @@ exclude: >
     transform/dbt_packages/.*|
     transform/target/.*|
     .*\.csv|
+    assets/.*|
     .*\.parquet
   )$
 repos:
