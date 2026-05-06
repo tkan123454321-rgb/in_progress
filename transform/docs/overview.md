@@ -3,6 +3,12 @@
 
 This documentation outlines the data pipeline architecture, which is organized into four distinct layers: Staging, Silver, Intermediate, and Gold. The architecture is designed to enforce data quality, traceability, and performance.
 
+### How to view my Data Lineage
+
+1. Look at the **bottom right corner** of this screen.
+2. Click the blue circular button (**View lineage graph**).
+3. Select **'transform'** to expand and view all my dbt models.
+
 ---
 
 ## 1. Staging Layer (Raw & Standardized)

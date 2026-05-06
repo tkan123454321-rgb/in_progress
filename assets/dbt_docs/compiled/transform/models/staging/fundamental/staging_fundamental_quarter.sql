@@ -47,8 +47,8 @@ select
     
         bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh' as bronze_ingested_time,
     
-        CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as staged_at,
+        CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as staged_at,
     
-        'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as staging_invocation_id
+        '4c6d9271-375a-4d96-926e-49714c96b216' as staging_invocation_id
     
 from raw_source

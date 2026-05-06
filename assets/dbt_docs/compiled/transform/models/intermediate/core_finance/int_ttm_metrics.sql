@@ -86,7 +86,7 @@ with
 
             -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
             
-            , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
+            , CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4c6d9271-375a-4d96-926e-49714c96b216' as int_invocation_id 
 
         from income_statement is_stmt
         full outer join balance_sheet bs using (ticker, year, quarter)
@@ -152,7 +152,7 @@ select
         when unqualified_reason is NULL then 'qualified' else 'unqualified'
     end as status
 
-    , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
+    , CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4c6d9271-375a-4d96-926e-49714c96b216' as int_invocation_id 
 
 from applied_dq_rules
 ), base_financials as (
@@ -278,7 +278,7 @@ select
     d.ttm_status
 
     -- Auto-generated audit columns
-    , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
+    , CAST(from_iso8601_timestamp('2026-05-06T08:53:01.583492+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4c6d9271-375a-4d96-926e-49714c96b216' as int_invocation_id 
 
 from applied_dq_rules d
 left join macro_data m on d.absolute_quarter = m.absolute_quarter
