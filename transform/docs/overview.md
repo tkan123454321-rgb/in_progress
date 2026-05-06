@@ -7,7 +7,7 @@ This documentation outlines the data pipeline architecture, which is organized i
 
 1. Look at the **bottom right corner** of this screen.
 2. Click the blue circular button (**View lineage graph**).
-3. Select **'transform'** to expand and view all my dbt models.
+3. IN **'packages: All Selected'**, Select **'transform'** to expand and view all my dbt models.
 
 ---
 

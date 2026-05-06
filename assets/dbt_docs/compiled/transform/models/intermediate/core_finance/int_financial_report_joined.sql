@@ -80,7 +80,7 @@ with
 
             -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
             
-            , CAST(from_iso8601_timestamp('2026-05-06T08:55:22.931753+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '273468de-8a49-4a91-9bc2-2aabb801915e' as int_invocation_id 
+            , CAST(from_iso8601_timestamp('2026-05-06T08:58:52.723406+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4ff423e7-7675-4eec-a090-58bdf9560b12' as int_invocation_id 
 
         from income_statement is_stmt
         full outer join balance_sheet bs using (ticker, year, quarter)
@@ -146,6 +146,6 @@ select
         when unqualified_reason is NULL then 'qualified' else 'unqualified'
     end as status
 
-    , CAST(from_iso8601_timestamp('2026-05-06T08:55:22.931753+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '273468de-8a49-4a91-9bc2-2aabb801915e' as int_invocation_id 
+    , CAST(from_iso8601_timestamp('2026-05-06T08:58:52.723406+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , '4ff423e7-7675-4eec-a090-58bdf9560b12' as int_invocation_id 
 
 from applied_dq_rules

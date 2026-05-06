@@ -21,6 +21,6 @@ select
     COALESCE(industry_group, 'Unclassified') as industry_group,
     COALESCE(sector_detail, 'Unclassified') as sector_detail,
     company_type
-    ,CAST(from_iso8601_timestamp('2026-05-06T08:55:22.931753+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at ,'273468de-8a49-4a91-9bc2-2aabb801915e' as silver_invocation_id 
+    ,CAST(from_iso8601_timestamp('2026-05-06T08:58:52.723406+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at ,'4ff423e7-7675-4eec-a090-58bdf9560b12' as silver_invocation_id 
 from deduped_data
 where rn = 1
