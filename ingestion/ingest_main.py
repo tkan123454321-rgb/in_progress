@@ -97,3 +97,4 @@ def ingest_main[T: BaseMetadata](model_cls: type[T], batch_id: str | None) -> No
         logger.critical(
             f"Critical failure in ingestion pipeline. Error: {e}", exc_info=True
         )
+        raise e
