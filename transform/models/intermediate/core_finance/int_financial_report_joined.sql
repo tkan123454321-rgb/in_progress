@@ -2,9 +2,12 @@
 
 {% set audit_cols = get_audit_columns("intermediate") %}
 
-
--- STEP 1: Extract qualified data from silver layers
+-- STEP 0: select valid companies from the dimension table
 with
+    valid_companies as (
+        select ticker from {{ ref("gold_dim_company") }} where status = 'qualified'
+    ),
+    -- STEP 1: Extract qualified data from silver layers
     income_statement as (
         select *, 1 as has_is
         from {{ ref("silver_ic_quarter") }}
@@ -83,6 +86,7 @@ with
         full outer join balance_sheet bs using (ticker, year, quarter)
         full outer join cash_flow cf using (ticker, year, quarter)
         full outer join fundamental fund using (ticker, year, quarter)
+        inner join valid_companies using (ticker)
     ),
 
     -- STEP 3: Evaluate completeness and generate Data Quality reasons
