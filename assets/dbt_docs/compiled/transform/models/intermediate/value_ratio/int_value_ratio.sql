@@ -1,3 +1,6 @@
+
+
+
 -- STEP 1: Extract fundamentals and calculate 6-month (2 quarters) lagged Book Equity
 with
     historical_lags as (
@@ -78,12 +81,9 @@ select
     case
         when unqualified_reason is NULL then 'qualified' else 'unqualified'
     end as status,
-    unqualified_reason,
+    unqualified_reason
+
     -- Auto-generated audit columns
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at,
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as int_invocation_id
+    , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
 
 from applied_dq_rules

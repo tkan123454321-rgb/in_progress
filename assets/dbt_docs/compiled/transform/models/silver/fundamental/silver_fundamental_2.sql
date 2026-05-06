@@ -1,3 +1,8 @@
+
+
+
+
+
 with
     deduped_data as (
         select
@@ -9,41 +14,50 @@ with
     ),
 
     applied_dq_rules as (
-        select
-            *,
+        select *, 
 
-            NULLIF(
-                CONCAT_WS(
-                    ' | ',
-                    -- 1. Rule: Check for valid stock exchanges
-                    case
-                        when UPPER(exchange) not in ('UPCOM', 'HSX', 'HOSE', 'HNX')
-                        then 'invalid_exchange'
-                        else NULL
-                    end,
+    
 
-                    -- 2. Rule: Check listing status (Must be actively listed)
-                    case
-                        when is_listing = FALSE then 'delisted_or_inactive' else NULL
-                    end,
+    
+        NULLIF(
+            CONCAT_WS(
+                ' | ',
+                -- 1. Rule: Check for valid stock exchanges
+                case
+                    when UPPER(exchange) not in ('UPCOM', 'HSX', 'HOSE', 'HNX')
+                    then 'invalid_exchange'
+                    else NULL
+                end,
 
-                    -- 3. Check for NULLs in mandatory columns
-                    case
-                        when exchange is NULL
-                        then 'exchange is mandatory but null'
-                        else NULL
-                    end,
+                -- 2. Rule: Check listing status (Must be actively listed)
+                case when is_listing = FALSE then 'delisted_or_inactive' else NULL end,
 
-                    case
-                        when is_listing is NULL
-                        then 'is_listing is mandatory but null'
-                        else NULL
-                    end,
+                -- 3. Check for NULLs in mandatory columns
+                
+                    
+                        case
+                            when exchange is NULL
+                            then 'exchange is mandatory but null'
+                            else NULL
+                        end,
+                    
+                
+                    
+                        case
+                            when is_listing is NULL
+                            then 'is_listing is mandatory but null'
+                            else NULL
+                        end,
+                    
+                
 
-                    NULL  -- Trick to prevent trailing pipe errors
-                ),
-                ''
-            ) as unqualified_reason
+                NULL  -- Trick to prevent trailing pipe errors
+            ),
+            ''
+        )
+    
+
+ as unqualified_reason
 
         from deduped_data
         where rn = 1
@@ -51,8 +65,7 @@ with
 
 select
     ticker,
-    exchange,
-    is_listing,
+     exchange,  is_listing, 
 
     unqualified_reason,
 
@@ -60,11 +73,10 @@ select
         when unqualified_reason is NULL then 'qualified' else 'unqualified'
     end as status,
 
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at,
-
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as silver_invocation_id
+    
+        CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at,
+    
+        'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as silver_invocation_id
+    
 
 from applied_dq_rules

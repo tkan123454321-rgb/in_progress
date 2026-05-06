@@ -34,36 +34,40 @@ select
     row_number() over (
         partition by run_results.unique_id order by run_results.generated_at desc
     ) as model_invocation_reverse_index,
-
+    
     case
-        when
-            first_value(invocation_id) over (
-                partition by
-                    date_trunc('day', cast(run_results.generated_at as timestamp(6)))
-                order by run_results.generated_at asc
-                rows between unbounded preceding and unbounded following
-            )
-            = invocation_id
-        then true
+        when first_value(invocation_id) over (partition by 
+    date_trunc(
+        'day',
+        cast(run_results.generated_at as  timestamp(6) )
+    )
+ order by run_results.generated_at asc rows between unbounded preceding and unbounded following) = invocation_id
+        then 
+     true 
 
-        else false
+        else 
+     false
 
-    end as is_the_first_invocation_of_the_day,
+    end
 
+    as is_the_first_invocation_of_the_day,
+    
     case
-        when
-            last_value(invocation_id) over (
-                partition by
-                    date_trunc('day', cast(run_results.generated_at as timestamp(6)))
-                order by run_results.generated_at asc
-                rows between unbounded preceding and unbounded following
-            )
-            = invocation_id
-        then true
+        when last_value(invocation_id) over (partition by 
+    date_trunc(
+        'day',
+        cast(run_results.generated_at as  timestamp(6) )
+    )
+ order by run_results.generated_at asc rows between unbounded preceding and unbounded following) = invocation_id
+        then 
+     true 
 
-        else false
+        else 
+     false
 
-    end as is_the_last_invocation_of_the_day
+    end
+
+    as is_the_last_invocation_of_the_day
 
 from dbt_run_results run_results
 join dbt_models models on run_results.unique_id = models.unique_id

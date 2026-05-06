@@ -1,3 +1,6 @@
+
+
+
 -- STEP 1: Extract qualified daily stock prices
 with
     silver_stock as (

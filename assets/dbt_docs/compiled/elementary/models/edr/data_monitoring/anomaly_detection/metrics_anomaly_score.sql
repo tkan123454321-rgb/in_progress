@@ -1,7 +1,7 @@
+
+
 with
-    data_monitoring_metrics as (
-        select * from "lakehouse_main"."elementary"."data_monitoring_metrics"
-    ),
+    data_monitoring_metrics as (select * from "lakehouse_main"."elementary"."data_monitoring_metrics"),
 
     time_window_aggregation as (
 
@@ -70,7 +70,9 @@ with
                 then null  -- Single value case - no historical context for anomaly detection
                 when training_stddev = 0
                 then 0  -- Stationary data case - valid, all values are identical
-                else (metric_value - training_avg) / (training_stddev)
+                else
+                    (metric_value - training_avg)
+                    / (training_stddev)
             end as anomaly_score
         from time_window_aggregation
 
@@ -99,18 +101,20 @@ with
         where
             metric_value is not null
             and training_avg is not null
-            and bucket_end >= date_add(
-                'day',
-                cast(-7 as integer),
-                coalesce(
-                    try_cast(date_trunc('day', current_timestamp(6)) as timestamp(6)),
-                    cast(
-                        from_iso8601_timestamp(
-                            cast(date_trunc('day', current_timestamp(6)) as varchar)
-                        ) as timestamp(6)
-                    )
-                )
-            )
+            and bucket_end
+            >= 
+    date_add(
+        'day',
+        cast(-7 as integer),
+        coalesce(
+        try_cast(date_trunc('day', current_timestamp(6)) as  timestamp(6) ),
+        cast(
+            from_iso8601_timestamp(
+                cast(date_trunc('day', current_timestamp(6)) as varchar)
+            ) as  timestamp(6) 
+        )
+    )
+    )
 
         group by
             id,
@@ -150,8 +154,17 @@ with
             training_end,
             training_set_size,
             updated_at,
+            
+    case
+        when abs(anomaly_score) > 3
+        then 
+     true 
 
-            case when abs(anomaly_score) > 3 then true else false end as is_anomaly
+        else 
+     false
+
+    end
+ as is_anomaly
         from metrics_anomaly_score
     )
 

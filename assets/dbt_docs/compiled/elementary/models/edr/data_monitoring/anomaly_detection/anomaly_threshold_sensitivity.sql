@@ -1,7 +1,7 @@
+
+
 with
-    metrics_anomaly_score as (
-        select * from "lakehouse_main"."elementary"."metrics_anomaly_score"
-    ),
+    metrics_anomaly_score as (select * from "lakehouse_main"."elementary"."metrics_anomaly_score"),
 
     score_sensitivity as (
 
@@ -13,41 +13,90 @@ with
             training_avg as metric_avg,
             training_stddev as metric_stddev,
             anomaly_score,
+            
+    case
+        when abs(anomaly_score) >= 1.5
+        then 
+     true 
 
-            case
-                when abs(anomaly_score) >= 1.5 then true else false
+        else 
+     false
 
-            end as "is_anomaly_1_5",
+    end
 
-            case
-                when abs(anomaly_score) >= 2 then true else false
+            as "is_anomaly_1_5",
+            
+    case
+        when abs(anomaly_score) >= 2
+        then 
+     true 
 
-            end as "is_anomaly_2",
+        else 
+     false
 
-            case
-                when abs(anomaly_score) >= 2.5 then true else false
+    end
 
-            end as "is_anomaly_2_5",
+            as "is_anomaly_2",
+            
+    case
+        when abs(anomaly_score) >= 2.5
+        then 
+     true 
 
-            case
-                when abs(anomaly_score) >= 3 then true else false
+        else 
+     false
 
-            end as "is_anomaly_3",
+    end
 
-            case
-                when abs(anomaly_score) >= 3.5 then true else false
+            as "is_anomaly_2_5",
+            
+    case
+        when abs(anomaly_score) >= 3
+        then 
+     true 
 
-            end as "is_anomaly_3_5",
+        else 
+     false
 
-            case
-                when abs(anomaly_score) >= 4 then true else false
+    end
 
-            end as "is_anomaly_4",
+            as "is_anomaly_3",
+            
+    case
+        when abs(anomaly_score) >= 3.5
+        then 
+     true 
 
-            case
-                when abs(anomaly_score) >= 4.5 then true else false
+        else 
+     false
 
-            end as "is_anomaly_4_5"
+    end
+
+            as "is_anomaly_3_5",
+            
+    case
+        when abs(anomaly_score) >= 4
+        then 
+     true 
+
+        else 
+     false
+
+    end
+
+            as "is_anomaly_4",
+            
+    case
+        when abs(anomaly_score) >= 4.5
+        then 
+     true 
+
+        else 
+     false
+
+    end
+
+            as "is_anomaly_4_5"
         from metrics_anomaly_score
         where abs(anomaly_score) >= 1.5
 

@@ -1,9 +1,11 @@
+
+
+
+
 -- STEP 0: select valid companies from the dimension table
 with
     valid_companies as (
-        select ticker
-        from "lakehouse_main"."gold"."gold_dim_company"
-        where status = 'qualified'
+        select ticker from "lakehouse_main"."gold"."gold_dim_company" where status = 'qualified'
     ),
     -- STEP 1: Extract qualified data from silver layers
     income_statement as (
@@ -74,13 +76,11 @@ with
             is_stmt.has_is,
             bs.has_bs,
             cf.has_cf,
-            fund.has_fund,
+            fund.has_fund
+
             -- 6. THÊM AUDIT COLUMNS TỰ ĐỘNG
-            CAST(
-                from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-                with TIME ZONE
-            ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at,
-            'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as int_invocation_id
+            
+            , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
 
         from income_statement is_stmt
         full outer join balance_sheet bs using (ticker, year, quarter)
@@ -144,11 +144,8 @@ select
 
     case
         when unqualified_reason is NULL then 'qualified' else 'unqualified'
-    end as status,
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at,
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as int_invocation_id
+    end as status
+
+    , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as int_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as int_invocation_id 
 
 from applied_dq_rules

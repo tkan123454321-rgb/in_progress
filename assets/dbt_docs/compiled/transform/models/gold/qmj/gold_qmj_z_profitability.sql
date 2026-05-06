@@ -1,3 +1,7 @@
+
+
+
+
 -- STEP 1: Extract qualified Z-scores from the intermediate profitability layer
 with
     intermediate_data as (
@@ -41,13 +45,10 @@ select
 
     -- Final AQR Profitability Score: Z-Score of the cross-sectional ranks
     (final_rank - AVG(final_rank) over w_qtr)
-    / NULLIF(STDDEV_SAMP(final_rank) over w_qtr, 0) as qmj_profitability_score,
+    / NULLIF(STDDEV_SAMP(final_rank) over w_qtr, 0) as qmj_profitability_score
+
     -- Auto-generated audit columns for the Gold layer
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as gold_updated_at,
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as gold_invocation_id
+    , CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as gold_updated_at , 'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as gold_invocation_id 
 
 from final_ranking
 window w_qtr as (partition by absolute_quarter)

@@ -1,3 +1,8 @@
+
+
+
+
+
 with
     deduped_data as (
         select
@@ -9,30 +14,39 @@ with
     ),
 
     applied_dq_rules as (
-        select
-            *,
+        select *, 
 
-            NULLIF(
-                CONCAT_WS(
-                    ' | ',
+    
 
-                    -- AUTO-CHECK FOR NON-NEGATIVE VALUES (MUST BE POSITIVE)
+    NULLIF(
+        CONCAT_WS(
+            ' | ',
+
+            -- AUTO-CHECK FOR NON-NEGATIVE VALUES (MUST BE POSITIVE)
+            
+                
                     case
                         when COALESCE(cash_dividend, 0) < 0
                         then 'cash_dividend cannot be negative'
                         else NULL
                     end,
-
+                
+            
+                
                     case
                         when COALESCE(stock_dividend, 0) < 0
                         then 'stock_dividend cannot be negative'
                         else NULL
                     end,
+                
+            
 
-                    NULL
-                ),
-                ''
-            ) as unqualified_reason
+            NULL
+        ),
+        ''
+    )
+
+ as unqualified_reason
         from deduped_data
         where rn = 1
     )
@@ -41,15 +55,13 @@ select
     ticker,
     year,
 
-    COALESCE(cash_dividend, 0) as cash_dividend,
+    
+        COALESCE(cash_dividend, 0) as cash_dividend,
+    
+        COALESCE(stock_dividend, 0) as stock_dividend,
+    
 
-    COALESCE(stock_dividend, 0) as stock_dividend,
-
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at,
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as silver_invocation_id,
+     CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as silver_updated_at,  'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as silver_invocation_id, 
 
     case
         when unqualified_reason is NULL or unqualified_reason = ''

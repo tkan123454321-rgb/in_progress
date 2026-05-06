@@ -1,3 +1,5 @@
+
+
 with
     error_models as (
 
@@ -60,8 +62,12 @@ select
     model_execution_id as alert_id,
     unique_id,
     coalesce(
-        try_cast(generated_at as timestamp(6)),
-        cast(from_iso8601_timestamp(cast(generated_at as varchar)) as timestamp(6))
+        try_cast(generated_at as  timestamp(6) ),
+        cast(
+            from_iso8601_timestamp(
+                cast(generated_at as varchar)
+            ) as  timestamp(6) 
+        )
     ) as detected_at,
     database_name,
     materialization,
@@ -75,4 +81,10 @@ select
     status,
     full_refresh
 from error_models
-where (1 = 1) and lower(status) != 'success' and lower(status) != 'skipped'
+where
+    
+    
+      (1 = 1)
+    
+
+    and lower(status) != 'success'and lower(status) != 'skipped'

@@ -1,7 +1,7 @@
+
+
 with
-    elementary_test_results as (
-        select * from "lakehouse_main"."elementary"."elementary_test_results"
-    ),
+    elementary_test_results as (select * from "lakehouse_main"."elementary"."elementary_test_results"),
 
     alerts_dbt_tests as (
         select
@@ -30,13 +30,16 @@ with
             result_rows
         from elementary_test_results
         where
-
-            (1 = 1)
+            
+    
+      (1 = 1)
+    
 
             and lower(status) != 'pass'
-
-            and lower(status) != 'skipped'
-
+            
+            
+                and lower(status) != 'skipped'
+            
             and test_type = 'dbt_test'
     )
 

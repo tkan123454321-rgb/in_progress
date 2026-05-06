@@ -1,7 +1,7 @@
+
+
 with
-    results as (
-        select * from "lakehouse_main"."elementary"."dbt_source_freshness_results"
-    ),
+    results as (select * from "lakehouse_main"."elementary"."dbt_source_freshness_results"),
 
     sources as (select * from "lakehouse_main"."elementary"."dbt_sources")
 
@@ -10,11 +10,11 @@ select
     results.max_loaded_at,
     results.snapshotted_at,
     coalesce(
-        try_cast(results.generated_at as timestamp(6)),
+        try_cast(results.generated_at as  timestamp(6) ),
         cast(
-            from_iso8601_timestamp(cast(results.generated_at as varchar)) as timestamp(
-                6
-            )
+            from_iso8601_timestamp(
+                cast(results.generated_at as varchar)
+            ) as  timestamp(6) 
         )
     ) as detected_at,
     results.max_loaded_at_time_ago_in_s,
@@ -44,4 +44,9 @@ select
     results.filter as freshness_filter
 from results
 join sources on results.unique_id = sources.unique_id
-where (1 = 1) and lower(status) != 'pass'
+where
+    
+    
+      (1 = 1)
+    
+ and lower(status) != 'pass'

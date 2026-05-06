@@ -1,3 +1,9 @@
+
+
+
+
+
+
 with
     raw_source as (
         select *
@@ -13,18 +19,23 @@ select
     TRIM(UPPER(ticker)) as ticker,
 
     -- 1. JSON parsing
-    TRY_CAST(json_extract_scalar(data, '$.exchange') as VARCHAR) as exchange,
-
-    TRY_CAST(json_extract_scalar(data, '$.isListing') as BOOLEAN) as is_listing,
+    
+        TRY_CAST(
+            json_extract_scalar(data, '$.exchange') as VARCHAR
+        ) as exchange,
+    
+        TRY_CAST(
+            json_extract_scalar(data, '$.isListing') as BOOLEAN
+        ) as is_listing,
+    
 
     -- 2. Audit columns
-    bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh' as bronze_ingested_time,
-
-    CAST(
-        from_iso8601_timestamp('2026-05-06T08:01:34.665195+00:00') as TIMESTAMP
-        with TIME ZONE
-    ) AT TIME ZONE 'Asia/Ho_Chi_Minh' as staged_at,
-
-    'd5a816e0-a4c8-4d5b-bf97-ac0fe62d468a' as staging_invocation_id
+    
+        bronze_ingested_time AT TIME ZONE 'Asia/Ho_Chi_Minh' as bronze_ingested_time,
+    
+        CAST(from_iso8601_timestamp('2026-05-06T08:48:04.916793+00:00') AS TIMESTAMP WITH TIME ZONE) AT TIME ZONE 'Asia/Ho_Chi_Minh' as staged_at,
+    
+        'd5f144b3-ec78-4c38-93a0-f54d53bb219b' as staging_invocation_id
+    
 
 from raw_source

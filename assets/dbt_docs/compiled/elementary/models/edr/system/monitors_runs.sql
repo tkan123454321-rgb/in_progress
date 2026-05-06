@@ -1,7 +1,7 @@
+
+
 with
-    data_monitoring_metrics as (
-        select * from "lakehouse_main"."elementary"."data_monitoring_metrics"
-    ),
+    data_monitoring_metrics as (select * from "lakehouse_main"."elementary"."data_monitoring_metrics"),
 
     max_bucket_end as (
 
