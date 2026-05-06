@@ -37,12 +37,12 @@ Here is what this platform *cannot* replace:
 
 ## See It In Action (Live Demo)
 
-Reading about the architecture is one thing; seeing the final result is another.
-
 All the heavy data processing from the pipeline is served directly to a live, interactive dashboard. You can jump right in to see how the system automatically ranks and filters the market.
 
 👉 **[CLICK HERE TO EXPLORE THE LIVE QUANTAMENTAL SCREENER](https://qmj-dashboard.streamlit.app/)** 👈
-
+> **Note on "Cold Start":** Since this is a community-hosted app, it may go into "sleep mode" if inactive. If the page doesn't load immediately, please **click the "Wake up" button and wait about 30 seconds** for the system to boot up.
 *(Tip: Once inside, please select the **Q4/2025** reporting period—since many companies haven't released their Q1/2026 financial reports yet. Then, filter by "Hạng QMJ" to instantly see the top fundamentally strong companies in the market).*
 
 ---
+*Alright folks! let's move to the data platform architecture to clearly see the engine under the hood*
+# System Architecture
