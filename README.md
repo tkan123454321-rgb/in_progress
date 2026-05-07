@@ -81,6 +81,6 @@ Running a distributed SQL engine like Trino can be expensive if users write poor
 ## Day 2 Operations & Platform Engineering
 ### The Orchestrator: Airflow
 To manage the complex dependencies between data ingestion, Kafka streams, and transformations and maintenance tasks, Apache Airflow serves as the main orchestrator of the platform.
-*(./assets/images/airflow_dags.png)*
+![Airflow UI](./assets/images/airflow_dags.png)
 > *Overview of the Airflow UI: Managing ingestion schedules, transformation pipelines and maintenance jobs.*
 ---
