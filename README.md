@@ -77,4 +77,10 @@ Running a distributed SQL engine like Trino can be expensive if users write poor
 * **[I] Query Telemetry Interception:** Trino is configured with an event listener that emits metadata for every executed query. Vector captures these JSON payloads via an HTTP server source (`trino_http_listener`).
 * **[II] VRL Processing & Long-Term Storage:** Inside Vector, the VRL engine processes the raw event. It extracts user info, the cleaned SQL query text, and crucial **FinOps metrics** (`cpu_time_s`, `scanned_bytes`, `peak_memory_bytes`). Then Vector routes these structured audit logs into a dedicated **PostgreSQL** database for long-term storage.
 * **[III] The FinOps Dashboard:** **Grafana** connects directly to this PostgreSQL audit database to visualize compute costs. This creates a powerful FinOps dashboard that highlights the most CPU-intensive queries, tracks data scanned over time. It allows the data team to pinpoint exact queries that need optimization, reducing compute overhead and reduce computing costs.
+
+## Day 2 Operations & Platform Engineering
+### The Orchestrator: Airflow
+To manage the complex dependencies between data ingestion, Kafka streams, and transformations and maintenance tasks, Apache Airflow serves as the main orchestrator of the platform.
+*(./assets/images/airflow_dags.png)*
+> *Overview of the Airflow UI: Managing ingestion schedules, transformation pipelines and maintenance jobs.*
 ---
