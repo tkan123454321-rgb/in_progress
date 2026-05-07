@@ -64,10 +64,17 @@ This is the main flow of the financial data, from raw API extraction to the user
 * **[7, 8, 9, 10] dbt Medallion Pipeline:** dbt handles the heavy lifting, transforming raw data through 5 strict layers (Bronze ➔ Staging ➔ Silver ➔ Intermediate ➔ Gold). It standardizes schemas, calculates complex financial metrics, and finally merges everything into a "One Big Table" (OBT). This eliminates the need for complex CPU-heavy SQL joins, ensures fast dashboard performance and reduce computing cost.
 * **[11] Cost-Optimized Serving:** Hosting a server for a portfolio project is over-engineer and expensive. Embracing a pragmatic engineering approach, the final Gold layer is extracted as a CSV file. This file is directly served via Streamlit Cloudzero hosting costs.
 
-#### Centralized Observability (Flows A - C)
+### Centralized Observability (Flows A - C)
 Monitoring a distributed data platform with 9 moving parts can be really hard if done manually. Instead of opening terminal and typing `docker logs <container_name>` to debug, this architecture implements a centralized observability stack.
 
-* **[A] Daemon-Level Log:** Vector is deployed with a bind mount directly to the Docker daemon socket (`unix:///var/run/docker.sock`). Vector can automatically capture the log streams from ALL 9 containers in the cluster simultaneously.
+* **[A] Daemon-Level Log interception:** Vector is deployed with a bind mount directly to the Docker daemon socket (`unix:///var/run/docker.sock`). Vector can automatically capture the log streams from ALL 9 containers in the cluster simultaneously.
 * **[B] Resilient Processing & Routing:** Vector takes the raw logs and encodes the payloads into structured **JSON**.
 * **[C] The Single Pane of Glass:** The structured logs are pushed to Loki (the log aggregation engine) and immediately available in Grafana. Because Vector pre-encoded everything into JSON, Grafana's built-in parsers can read, filter on specific fields. The entire platform's health is now monitored from one unified interface.
+
+### FinOps & Long-Term Query Auditing (Flows I - III)
+Running a distributed SQL engine like Trino can be expensive if users write poorly optimized queries. To enforce **FinOps** (Cloud Cost Optimization), the platform implements a query telemetry pipeline.
+
+* **[I] Query Telemetry Interception:** Trino is configured with an event listener that emits metadata for every executed query. Vector captures these JSON payloads via an HTTP server source (`trino_http_listener`).
+* **[II] VRL Processing & Long-Term Storage:** Inside Vector, the VRL engine processes the raw event. It extracts user info, the cleaned SQL query text, and crucial **FinOps metrics** (`cpu_time_s`, `scanned_bytes`, `peak_memory_bytes`). Then Vector routes these structured audit logs into a dedicated **PostgreSQL** database for long-term storage.
+* **[III] The FinOps Dashboard:** **Grafana** connects directly to this PostgreSQL audit database to visualize compute costs. This creates a powerful FinOps dashboard that highlights the most CPU-intensive queries, tracks data scanned over time. It allows the data team to pinpoint exact queries that need optimization, reducing compute overhead and reduce computing costs.
 ---
