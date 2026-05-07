@@ -15,11 +15,13 @@ This platform was built to solve that exact pain point. By automating the data e
 
 *   **2. "Is the price fair?" (Solved by Value Score):**
     *   **The Pain:** Spending hours building complex valuation models, only to find out a quality stock is currently too expensive.
-    *   **The Solution:** Building strictly on top of your QMJ-approved list, the Value score **DOES THE MATH FOR YOU**. It instantly scans your pre-filtered high-quality companies and highlights which ones are currently undervalued, ensuring you never overpay for a good asset.
+    *   **The Solution:** Building on top of your QMJ-approved list, the Value score instantly scans your pre-filtered high-quality companies and highlights which ones are currently undervalued, ensuring you never overpay for a good asset.
 
 *   **3. "Is it time to act?" (Solved by Momentum Score):**
     *   **The Pain:** Buying a great, undervalued stock, but waiting years for the price to move because the broader market is ignoring it.
-    *   **The Solution:** The Momentum score **TRACKS THE TREND**. As the final overlay, it shows you exactly which of those high-quality, attractively priced stocks are attracting cash flow *right now*, helping you optimize your entry timing.
+    *   **The Solution:** The Momentum score **TRACKS THE TREND**. As the final overlay, it shows you exactly which of those high-quality stocks are attracting cash flow *right now*, helping you optimize your entry timing.
+
+    ![solution](./assets/images/solution.png)
 
 ## ⚠️ Limitations: The Irreplaceable Human Element
 
@@ -28,8 +30,8 @@ While this platform successfully automates data collection and screening, it is 
 Here is what this platform *cannot* replace:
 
 *   **Data Imperfections:** Automated systems rely on raw data, which can sometimes have reporting errors or missing numbers. The screened list is just step one, not the final answer.
-*   **Deep Fundamental Analysis:** The system calculates past and present numbers perfectly, but it cannot predict the future. We still absolutely need **Financial Analysts** to dig deep into a company's real-world business model, competitive advantages, and true future potential.
-*   **Strategic Portfolio Management:** A list of good stocks doesn't automatically create a safe portfolio. We still need **Investment Strategists** to set the big-picture goals, and **Portfolio Managers** to build a balanced portfolio, manage daily risks, and track long-term growth.
+*   **Deep Fundamental Analysis:** The system calculates past and present numbers perfectly, but it cannot predict the future. We still absolutely need Financial Analysts to dig deep into a company's real-world business model, competitive advantages, and true future potential.
+*   **Strategic Portfolio Management:** A list of good stocks doesn't automatically create a safe portfolio. We still need Investment Strategists to set the big-picture goals, and Portfolio Managers to build a balanced portfolio and track long-term growth.
 *   **Asset Diversification:** This platform focuses only on stocks. A solid investment plan needs diversification across other asset classes like bonds, real estate, or commodities.
 
 > *No matter how smart the machine gets, it cannot replace finance professionals. Technology just takes away the manual, repetitive work. This gives human analysts more time and energy to focus on what they do best: thinking, planning, and making real strategies.*
@@ -48,6 +50,6 @@ All the heavy data processing from the pipeline is served directly to a live, in
 # System Architecture
 ![Platform Architecture](./assets/images/architecture.png)
 
-> *Architecture showing a end-to-end data pipeline platform: from raw financial data ingestion to the final automated screening dashboard.*
+> *An end-to-end event-driven Data Lakehouse architecture: from raw financial API ingestion via Kafka & Polars, through a 5-tier Medallion transformation pipeline (dbt, Apache Iceberg, Trino), fully orchestrated by Airflow and monitored by a centralized Observability stack.*
 
 ---
