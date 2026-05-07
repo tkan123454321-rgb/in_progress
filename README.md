@@ -63,4 +63,11 @@ This is the main flow of the financial data, from raw API extraction to the user
 * **[6] Fault-Tolerant Loading & Offset Acknowledgment:** Polars writes the processed chunks directly into the Bronze Layer of the Lakehouse (stored in MinIO as Iceberg tables). Crucially, the Kafka consumer only commits the offset (flushes the message) AFTER a successful write to the Bronze layer to prevent data loss during a mid-process crash.
 * **[7, 8, 9, 10] dbt Medallion Pipeline:** dbt handles the heavy lifting, transforming raw data through 5 strict layers (Bronze ➔ Staging ➔ Silver ➔ Intermediate ➔ Gold). It standardizes schemas, calculates complex financial metrics, and finally merges everything into a "One Big Table" (OBT). This eliminates the need for complex CPU-heavy SQL joins, ensures fast dashboard performance and reduce computing cost.
 * **[11] Cost-Optimized Serving:** Hosting a server for a portfolio project is over-engineer and expensive. Embracing a pragmatic engineering approach, the final Gold layer is extracted as a CSV file. This file is directly served via Streamlit Cloudzero hosting costs.
+
+#### Centralized Observability (Flows A - C)
+Monitoring a distributed data platform with 9 moving parts can be really hard if done manually. Instead of opening terminal and typing `docker logs <container_name>` to debug, this architecture implements a centralized observability stack.
+
+* **[A] Daemon-Level Log:** Vector is deployed with a bind mount directly to the Docker daemon socket (`unix:///var/run/docker.sock`). Vector can automatically capture the log streams from ALL 9 containers in the cluster simultaneously.
+* **[B] Resilient Processing & Routing:** Vector takes the raw logs and encodes the payloads into structured **JSON**.
+* **[C] The Single Pane of Glass:** The structured logs are pushed to Loki (the log aggregation engine) and immediately available in Grafana. Because Vector pre-encoded everything into JSON, Grafana's built-in parsers can read, filter on specific fields. The entire platform's health is now monitored from one unified interface.
 ---
