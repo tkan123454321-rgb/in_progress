@@ -80,7 +80,17 @@ Running a distributed SQL engine like Trino can be expensive if users write poor
 
 ## Day 2 Operations & Platform Engineering
 ### The Orchestrator: Airflow
-To manage the complex dependencies between data ingestion, Kafka streams, and transformations and maintenance tasks, Apache Airflow serves as the main orchestrator of the platform.
+To optimize API usage and compute costs, the orchestration is separated into three distinct DAGs based on the data's natural update frequency.
+
+To handle the dbt transformation layer, I replaced the native Airflow `BashOperator` with Astronomer Cosmos. Instead of running a single monolithic `dbt run` command, Cosmos renders every dbt model as a standalone Airflow task. This makes debugging effortless and allows me to clear and re-run specific failed tasks without restarting the entire pipeline.
 ![Airflow UI](./assets/images/airflow_dags.png)
 > *Overview of the Airflow UI: Managing ingestion schedules, transformation pipelines and maintenance jobs.*
+
+#### Group 1: The Core Data Pipelines
+![gold_dim & fundamental](./assets/images/gold_dim.png)
+> **`DAG: Gold Dim Company & Fundamentals`**
+> * **Frequency:** Monthly.
+> * **The Logic:** This pipeline ingests baseline metadata for 1,500+ stocks, including exchange info, market capitalization, and average liquidity,...
+> * **dbt Action:** Cosmos triggers dbt models to apply direct business filters (e.g., removing illiquid or penny stocks). It outputs the `gold_dim_company`, which is a clean, qualified list of companies that serves as the foundation for all subsequent calculations.
+
 ---
