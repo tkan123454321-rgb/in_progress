@@ -191,3 +191,14 @@ To make Data Quality (DQ) monitoring effortless, I integrated the test results d
 
 **How it works:**
 Every time the Airflow DAG executes the dbt pipeline, the `elementary` package automatically logs the test execution metadata into the Lakehouse. Grafana queries this table to visualize the results. Instead of scrolling through logs or writing ad-hoc SQL queries, the team can spot anomalies at a single glance and immediately know which specific model requires attention.
+
+#### 4. Iceberg Metadata & Storage Monitor
+Data Lakehouses can suffer from the "small files problem" and storage bloat when data is ingested frequently. While the automated maintenance DAGs handle garbage collection and compaction on a scheduled basis, I needed real-time visibility into the physical state of the tables to detect early signs.
+
+*![qmj overview](./assets/images/metadata.png)*
+> *The Iceberg Metadata Dashboard. It tracks the physical footprint of every table across all layers.*
+
+**The Implementation:**
+Grafana connects directly to Trino to query Apache Iceberg's hidden metadata tables (`table$snapshots`). This allows the team to continuously monitor critical storage metrics across the Bronze, Staging, Silver, and Gold layers:
+* **File Count & Size Tracking:** Instantly spot if a table is generating too many small files (`total-data-files`) before it degrades query performance.
+* **Commit History:** Track exactly when an `append` or `overwrite` operation happened, the size of the commit, and the specific `trino_query_id` that executed it.
