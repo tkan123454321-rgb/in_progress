@@ -212,3 +212,61 @@ Running heavy dbt transformations on a distributed SQL engine can easily spike c
 **The practical value:**
 * **Cost Visibility:** It exposes the exact `query_text`, the application that triggered it (e.g., `dbt-trino`), and its specific compute footprint (`CPU Time` and `Scanned bytes`).
 * **Targeted Optimization:** Instead of guessing which dbt model is slowing down the pipeline or draining resources, the team can monitor the "Top 20 Resource Intensive Queries" list and systematically refactor the exact SQL code causing the bottleneck.
+
+## And finally,... Project Structure
+
+
+```text
+├── .github/workflows/        # Continuous Integration (CI) pipelines (Linting, CodeQL, Tests)
+├── assets/                   # Static assets and images for documentation
+│
+├── common/                   # Shared libraries used across the platform
+│   ├── clients/              # Connection managers (API, Kafka, Iceberg, Postgres)
+│   ├── core/                 # Platform-specific exceptions, custom logging, and dbt helpers
+│   └── infrastructure/       # Lakehouse maintenance logic & Ingestion state tracking
+│
+├── infra_config/             # Configuration files for Observability (Vector, Loki, Grafana, Kafka UI)
+│
+├── ingestion/                # The Producer logic (Task generation)
+│   ├── ingest_main.py        # Main coordinator that generates JSON tasks and pushes them to Kafka
+│   └── kafka_producer.py     # Executes the push of lightweight task metadata events to topics
+│
+├── load/                     # The Consumer and Loading logic
+│   ├── load_main.py          # Main coordinator for the raw data ingestion flow
+│   ├── kafka_consumer.py     # Pulls claim-checks and executes heavy data fetching from APIs
+│   ├── lakehouse_loader.py   # Uses Polars to sink data micro-batches into the Bronze Iceberg layer
+│   └── web_serving_loader.py # Extracts the final Gold data to CSV for Streamlit Cloud serving
+│
+├── orchestration/            # Apache Airflow environment and DAG definitions
+│   └── dags/                 # Contains main core pipelines, automated maintenance DAGs, and task groups
+│
+├── postgres_database/        # SQL scripts for backend databases
+│   ├── init_postgres_db/     # Setup scripts for ingestion metadata and Airflow databases
+│   └── maintenance/          # Maintenance scripts (pg_partman) for Trino queries long-term storage
+│
+├── schema/                   # OOP-based Data Contracts and Iceberg Specifications
+│   ├── producer_schema.py    # Pydantic base classes & specific data methods (Polars LazyFrame parsing)
+│   └── schema_metadata.py    # Global registry for Iceberg schemas, partition specs, and sort orders
+│
+├── scripts/                  # Bash helper scripts
+│
+├── transform/                # The dbt project (Analytics Engineering layer)
+│   ├── models/               # SQL transformations (Bronze ➔ Staging ➔ Silver ➔ Intermediate ➔ Gold)
+│   ├── macros/               # Custom Jinja macros
+│   ├── seeds/                # Static mapping files (CSV) loaded into the Lakehouse
+│   ├── tests/                # Custom tests for quality check
+│   └── snapshots/            # SCD Type 2 logic for historical prices and dividend tracking
+│
+├── trino_etc/                # Trino compute engine catalogs and cluster configurations
+│
+├── web_ui/                   # Streamlit application for the interactive web dashboard
+│   ├── app.py                # Main Streamlit front-end logic
+│   └── data_qmj.csv          # The final exported Gold dataset for zero-cost serving
+│
+├── docker-compose.yml        # Main entry point to spin up the entire distributed cluster locally
+├── Makefile                  # CLI shortcuts for starting services, running tests, and formatting
+├── pyproject.toml            # Python dependencies and build configurations
+├── .pre-commit-config.yaml   # Automated code formatting and linting hooks
+├── .devcontainer.json        # VS Code Remote Container config for isolated, consistent dev environments
+├── *.Dockerfile              # Custom container images for Airflow, Postgres, etc.
+└── README.md                 # You are here
