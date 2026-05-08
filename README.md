@@ -93,4 +93,11 @@ To handle the dbt transformation layer, I replaced the native Airflow `BashOpera
 > * **The Logic:** This pipeline ingests baseline metadata for 1,500+ stocks, including exchange info, market capitalization, and average liquidity,...
 > * **dbt Action:** Cosmos triggers dbt models to apply direct business filters (e.g., removing illiquid or penny stocks). It outputs the `gold_dim_company`, which is a clean, qualified list of companies that serves as the foundation for all subsequent calculations.
 
+![historical_quotes](./assets/images/historical_quotes.png)
+> **`DAG: Historical Quotes Weekly Dag`**
+> * **Frequency:** Weekly.
+> * **The Logic:** This pipeline updates market prices and monitors dividend payouts using SCD Type 2 (dbt Snapshots).
+>   * *If a dividend change is detected:* It triggers a full historical backfill to adjust past prices for that specific ticker.
+>   * *If no change:* It simply performs a lightweight, incremental load for the new trading days.
+> * **dbt Action:** dbt models use this clean price data to calculate the Value Score and Momentum Score.
 ---
