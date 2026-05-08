@@ -270,3 +270,9 @@ Running heavy dbt transformations on a distributed SQL engine can easily spike c
 ├── .devcontainer.json        # VS Code Remote Container config for isolated, consistent dev environments
 ├── *.Dockerfile              # Custom container images for Airflow, Postgres, etc.
 └── README.md                 # You are here
+
+---
+> ⚠️ **Note: The story doesn't end here...**
+> We have covered a lot to get here, but this project is a living document. This README will continue to be actively optimized and updated in the future.
+> ⭐ **If you found this architecture interesting, helpful, or just cool, please consider giving this repository a Star!** It means a lot to me and keeps the motivation burning.
+> Until next time, see you in the next update!
