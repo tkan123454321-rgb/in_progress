@@ -100,4 +100,10 @@ To handle the dbt transformation layer, I replaced the native Airflow `BashOpera
 >   * *If a dividend change is detected:* It triggers a full historical backfill to adjust past prices for that specific ticker.
 >   * *If no change:* It simply performs a lightweight, incremental load for the new trading days.
 > * **dbt Action:** dbt models use this clean price data to calculate the Value Score and Momentum Score.
+
+![quarter](./assets/images/quarter.png)
+> **`DAG: Financial Quarter Dag`**
+> * **Frequency:** Every 3.5 - 4 months (aligned with financial reporting periods).
+> * **The Logic:** This pipeline pulls the full financial statements (Balance Sheet, Income Statement, Cash Flow, and fundamental metrics) for the filtered companies.
+> * **dbt Action:** The dbt pipeline calculates the exact math required to output the final Quality (QMJ) Score.
 ---
