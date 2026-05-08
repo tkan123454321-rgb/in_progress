@@ -106,4 +106,18 @@ To handle the dbt transformation layer, I replaced the native Airflow `BashOpera
 > * **Frequency:** Every 3.5 - 4 months (aligned with financial reporting periods).
 > * **The Logic:** This pipeline pulls the full financial statements (Balance Sheet, Income Statement, Cash Flow, and fundamental metrics) for the filtered companies.
 > * **dbt Action:** The dbt pipeline calculates the exact math required to output the final Quality (QMJ) Score.
+
+#### Group 2: Automated System Maintenance
+
+A true production-grade Lakehouse must maintain itself. To prevent storage bloat and performance degradation over time, this monthly maintenance DAG automates the cleanup and compaction process:
+
+![maintenance](./assets/images/maintenance.png)
+> * **Nessie GC & Database Vacuum:** It executes Nessie's Garbage Collection CLI to purge expired Iceberg snapshots and unreferenced metadata commits, followed by a `VACUUM ANALYZE` on PostgreSQL to reclaim disk space.
+> * **MinIO Orphan Cleanup:** It compares the physical data files in MinIO against the active "live set" managed by Nessie. Any untracked physical files are permanently deleted.
+> * **Iceberg Optimization:** It triggers Trino to compact scattered, small Parquet files into larger chunks and rewrites the Iceberg manifest files, preventing the "small files problem" and ensuring fast read speeds.
+> * **Architecture Note (Avoiding Docker-in-Docker):** To execute the Nessie CLI tools, I avoided using `BashOperator` to run container commands inside the Airflow worker. That creates a "Docker-in-Docker" (DinD) pattern, which makes debugging really difficult. Instead, I used `DockerOperator`. This safely creates temporary sibling containers directly on the host machine, keeping the Airflow environment clean and isolated.
+
+![maintenance_log](./assets/images/airflow_log.png)
+* **Airflow Log Purge:** Airflow generates massive logs for every single task. A dedicated  DAG runs a simple bash script to purge all local Airflow logs older than 3 days, ensuring the host machine never runs out of storage.
+
 ---
