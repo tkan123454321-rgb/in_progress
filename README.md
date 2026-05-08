@@ -118,6 +118,23 @@ A true production-grade Lakehouse must maintain itself. To prevent storage bloat
 > * **Architecture Note (Avoiding Docker-in-Docker):** To execute the Nessie CLI tools, I avoided using `BashOperator` to run container commands inside the Airflow worker. That creates a "Docker-in-Docker" (DinD) pattern, which makes debugging really difficult. Instead, I used `DockerOperator`. This safely creates temporary sibling containers directly on the host machine, keeping the Airflow environment clean and isolated.
 
 ![maintenance_log](./assets/images/airflow_log.png)
-* **Airflow Log Purge:** Airflow generates massive logs for every single task. A dedicated  DAG runs a simple bash script to purge all local Airflow logs older than 3 days, ensuring the host machine never runs out of storage.
+> * **Airflow Log Purge:** Airflow generates massive logs for every single task. A dedicated  DAG runs a simple bash script to purge all local Airflow logs older than 3 days, ensuring the host machine never runs out of storage.
 
+### The Open Data Lakehouse
+
+As a Finance student building a portfolio project, my core philosophy is tied to **ROI (Return on Investment) and FinOps**. While traditional cloud Data Warehouses (like Snowflake or BigQuery) are powerful, they are quite expensive for a student, especially when dealing with growing financial datasets.
+
+Therefore, I deliberately designed a Decoupled Open Data Lakehouse. This architecture strictly separates storage from compute, allowing each layer to scale independently based on actual demand:
+
+* **Storage (MinIO) & Format (Apache Iceberg):** MinIO acts as the S3-compatible object storage, providing infinite scalability at a low cost. On top of that, Apache Iceberg manages the raw Parquet files and brings crucial database features to the data lake:
+  * **Zero Vendor Lock-in:** The data is stored in open-source formats. You are not trapped in a closed ecosystem like Snowflake. If you want to switch from Trino to Spark tomorrow, you just point the new engine to MinIO—no data migration needed.
+  * **Schema Evolution:** You can add, drop, or rename columns instantly without having to rewrite terabytes of historical data.
+  * **ACID Transactions:** Multiple pipelines can read and write to the same table simultaneously without causing data corruption or reading partial updates.
+  * **Time Travel:** You can query the table exactly as it looked at a specific timestamp in the past. This is critical for debugging pipelines and reproducing old financial models.
+* **The Catalog (Project Nessie):** Acting as the "Git-for-Data". Nessie allows me to create data branches to test heavy dbt transformations in isolation, and safely merge them into the production branch.
+* **The Compute Engine Selection (Trino):**
+  * **Why not Apache Spark?** Spark has high memory overhead (due to the JVM) and slow startup times. Since my dbt transformations are entirely SQL-based, deploying a heavy distributed processing framework like Spark consumes unnecessary RAM and compute costs.
+  * **Why not DuckDB?** DuckDB is highly optimized for single-node, local analysis. However, it is not designed to be a distributed engine for production environments. Furthermore, its integration with Project Nessie and dbt is still experimental and prone to compatibility errors.
+  * **Why not ClickHouse or StarRocks?** These OLAP engines are built for sub-second, real-time analytics. My financial pipelines update on weekly and monthly schedules. Real-time latency is not a business requirement, so adding these engines would only overcomplicate the infrastructure.
+  * **Why Trino?** Trino is a Massively Parallel Processing engine that executes distributed SQL queries quickly without the heavy baseline RAM usage of Spark. It provides stable, native integration with Iceberg and Nessie. It also acts as the primary SQL engine for dbt and allows Grafana to read data directly from the Lakehouse.
 ---
