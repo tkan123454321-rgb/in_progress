@@ -160,13 +160,23 @@ I highly encourage you to explore the live docs to see the engineering details u
 > *The dbt lineage graph showing the data flow from raw sources to the final analytical Gold models.*
 
 ### Centralized Observability
+#### 1. Microservices Log Aggregation
 
 When running a distributed platform with over a dozen active containers, debugging by manually typing `docker logs <container_name>` into a terminal is not scalable. To ensure the platform's reliability, I implemented a centralized observability stack using Vector, Loki, and Grafana.
 
-#### 1. Microservices Log Aggregation
 *![qmj overview](./assets/images/unified_logs.png)*
 > *The unified logging dashboard in Grafana. Notice the tabs at the top: logs from Airflow, Kafka, Trino, Nessie, and MinIO are all aggregated into a single, filterable interface.*
 
 > **The practical benefits:**
 > * **Instant Filtering:** I can filter logs by `container_name`, `detected_level` (info/error/warn), or exact timestamps without touching a command line.
 > * **Cross-Service Correlation:** If a dbt model fails in Airflow, I can immediately switch to the Trino or Nessie tab within the exact same timeframe to investigate the root cause.
+#### 2. Developer Experience:
+During the development phase of the Python ingestion workers, terminal logs scroll by too quickly to effectively debug complex data payloads. To solve this "fast-scrolling terminal" problem, I engineered a custom Python logger specifically for the development environment.
+
+*![qmj overview](./assets/images/dev_log.png)*
+> *The dedicated development dashboard. Instead of scrolling through a terminal, logs are structured and instantly queryable by `run_id`, `component`, or `func_name`.*
+
+> **How it works under the hood:**
+Using the `logging_loki.LokiQueueHandler`, the Python worker bypasses the standard terminal output and pushes structured JSON logs directly to the Loki API endpoint (`/loki/api/v1/push`).
+> * **Contextual Injection:** A `LoggerAdapter` automatically tags every single log line with critical metadata (like the specific `run_id`, `component`, and `env`).
+> * **Environment-Aware:** This dashboard is a developer productivity tool. In the Production environment, Apache Airflow's native UI handles task-level logging, eliminating the need for redundant log dashboards in Grafana.
