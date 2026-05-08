@@ -158,4 +158,15 @@ I highly encourage you to explore the live docs to see the engineering details u
 
 *![qmj overview](./assets/images/dbt_linage.png)*
 > *The dbt lineage graph showing the data flow from raw sources to the final analytical Gold models.*
----
+
+### Centralized Observability
+
+When running a distributed platform with over a dozen active containers, debugging by manually typing `docker logs <container_name>` into a terminal is not scalable. To ensure the platform's reliability, I implemented a centralized observability stack using Vector, Loki, and Grafana.
+
+#### 1. Microservices Log Aggregation
+*![qmj overview](./assets/images/unified_logs.png)*
+> *The unified logging dashboard in Grafana. Notice the tabs at the top: logs from Airflow, Kafka, Trino, Nessie, and MinIO are all aggregated into a single, filterable interface.*
+
+> **The practical benefits:**
+> * **Instant Filtering:** I can filter logs by `container_name`, `detected_level` (info/error/warn), or exact timestamps without touching a command line.
+> * **Cross-Service Correlation:** If a dbt model fails in Airflow, I can immediately switch to the Trino or Nessie tab within the exact same timeframe to investigate the root cause.
