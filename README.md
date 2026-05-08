@@ -131,10 +131,31 @@ Therefore, I deliberately designed a Decoupled Open Data Lakehouse. This archite
   * **Schema Evolution:** You can add, drop, or rename columns instantly without having to rewrite terabytes of historical data.
   * **ACID Transactions:** Multiple pipelines can read and write to the same table simultaneously without causing data corruption or reading partial updates.
   * **Time Travel:** You can query the table exactly as it looked at a specific timestamp in the past. This is critical for debugging pipelines and reproducing old financial models.
+
 * **The Catalog (Project Nessie):** Acting as the "Git-for-Data". Nessie allows me to create data branches to test heavy dbt transformations in isolation, and safely merge them into the production branch.
+
 * **The Compute Engine Selection (Trino):**
   * **Why not Apache Spark?** Spark has high memory overhead (due to the JVM) and slow startup times. Since my dbt transformations are entirely SQL-based, deploying a heavy distributed processing framework like Spark consumes unnecessary RAM and compute costs.
   * **Why not DuckDB?** DuckDB is highly optimized for single-node, local analysis. However, it is not designed to be a distributed engine for production environments. Furthermore, its integration with Project Nessie and dbt is still experimental and prone to compatibility errors.
   * **Why not ClickHouse or StarRocks?** These OLAP engines are built for sub-second, real-time analytics. My financial pipelines update on weekly and monthly schedules. Real-time latency is not a business requirement, so adding these engines would only overcomplicate the infrastructure.
   * **Why Trino?** Trino is a Massively Parallel Processing engine that executes distributed SQL queries quickly without the heavy baseline RAM usage of Spark. It provides stable, native integration with Iceberg and Nessie. It also acts as the primary SQL engine for dbt and allows Grafana to read data directly from the Lakehouse.
+
+### Data Transformation & Quality (The dbt Layer)
+
+Explaining the exact SQL transformations, schema evolution, and data quality tests for the entire Medallion architecture would make this README endlessly long.
+
+To keep this document concise, I have generated and deployed the fully interactive **dbt Documentation via Netlify**.
+
+**👉 [View the Live dbt Documentation Here](https://qmj.netlify.app/#!/overview)**
+
+I highly encourage you to explore the live docs to see the engineering details under the hood:
+* **The Medallion Architecture:** Read the project overview to see exactly how data is transformed through 5 layers (Bronze ➔ Staging ➔ Silver ➔ Intermediate ➔ Gold).
+* **The Data Quality Shield:** See how I utilized standard dbt tests, `dbt_utils` and `dbt_expectations` to enforce strict financial data integrity.
+* **Column-level Logic:** Inspect the compiled SQL code for any model to see how financial metrics (like the QMJ score or Momentum) are calculated.
+
+*![qmj overview](./assets/images/dbt_overview.png)*
+> *The hosted dbt documentation providing full transparency into the transformation logic, schemas, and tests.*
+
+*![qmj overview](./assets/images/dbt_linage.png)*
+> *The dbt lineage graph showing the data flow from raw sources to the final analytical Gold models.*
 ---
