@@ -7,7 +7,9 @@ exclude: >
     .*log.*/.*|
     transform/dbt_packages/.*|
     transform/target/.*|
+    transform/docs/.*|
     .*\.csv|
+    assets/.*|
     .*\.parquet
   )$
 repos:

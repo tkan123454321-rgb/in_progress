@@ -1,6 +1,13 @@
+{% docs __overview__ %}
 # Lakehouse Data Platform Architecture
 
 This documentation outlines the data pipeline architecture, which is organized into four distinct layers: Staging, Silver, Intermediate, and Gold. The architecture is designed to enforce data quality, traceability, and performance.
+
+### How to view my Data Lineage
+
+1. Look at the **bottom right corner** of this screen.
+2. Click the blue circular button (**View lineage graph**).
+3. IN **'packages: All Selected'**, Select **'transform'** to expand and view all my dbt models.
 
 ---
 
@@ -51,3 +58,4 @@ The Gold layer is the presentation zone. Data here is highly refined, aggregated
 3. **Historical Snapshots (SCD Type 2):** Track historical changes over time (e.g., corporate structural changes) using validated data from this layer.
 
 *Note: Tables in the Gold layer contain strictly qualified data and are optimized for read performance and direct consumption.*
+{% enddocs %}
