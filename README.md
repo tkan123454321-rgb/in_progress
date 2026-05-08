@@ -202,3 +202,13 @@ Data Lakehouses can suffer from the "small files problem" and storage bloat when
 Grafana connects directly to Trino to query Apache Iceberg's hidden metadata tables (`table$snapshots`). This allows the team to continuously monitor critical storage metrics across the Bronze, Staging, Silver, and Gold layers:
 * **File Count & Size Tracking:** Instantly spot if a table is generating too many small files (`total-data-files`) before it degrades query performance.
 * **Commit History:** Track exactly when an `append` or `overwrite` operation happened, the size of the commit, and the specific `trino_query_id` that executed it.
+
+#### 5. FinOps & Compute Optimization
+Running heavy dbt transformations on a distributed SQL engine can easily spike compute costs if queries are poorly optimized. Grafana connects directly to the PostgreSQL audit database (which stores the long-term query telemetry intercepted by Vector).
+
+*![qmj overview](./assets/images/finops.png)*
+> *The FinOps Dashboard tracking the top resource-intensive queries, sorted by CPU time and scanned data volume.*
+
+**The practical value:**
+* **Cost Visibility:** It exposes the exact `query_text`, the application that triggered it (e.g., `dbt-trino`), and its specific compute footprint (`CPU Time` and `Scanned bytes`).
+* **Targeted Optimization:** Instead of guessing which dbt model is slowing down the pipeline or draining resources, the team can monitor the "Top 20 Resource Intensive Queries" list and systematically refactor the exact SQL code causing the bottleneck.
