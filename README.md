@@ -180,3 +180,14 @@ During the development phase of the Python ingestion workers, terminal logs scro
 Using the `logging_loki.LokiQueueHandler`, the Python worker bypasses the standard terminal output and pushes structured JSON logs directly to the Loki API endpoint (`/loki/api/v1/push`).
 > * **Contextual Injection:** A `LoggerAdapter` automatically tags every single log line with critical metadata (like the specific `run_id`, `component`, and `env`).
 > * **Environment-Aware:** This dashboard is a developer productivity tool. In the Production environment, Apache Airflow's native UI handles task-level logging, eliminating the need for redundant log dashboards in Grafana.
+
+#### 3. Data Quality Observability (Elementary)
+Running hundreds of data quality tests is crucial for financial data. However, manually querying the raw `elementary_test_results` table to hunt for failures is inefficient and slows down incident response.
+
+To make Data Quality (DQ) monitoring effortless, I integrated the test results directly into the centralized Grafana stack.
+
+*![qmj overview](./assets/images/dbt_test.png)*
+> *The Data Quality Dashboard. It provides a comprehensive view of all dbt tests, instantly highlighting any failures (the red slice) and detailing exactly which test condition failed.*
+
+**How it works:**
+Every time the Airflow DAG executes the dbt pipeline, the `elementary` package automatically logs the test execution metadata into the Lakehouse. Grafana queries this table to visualize the results. Instead of scrolling through logs or writing ad-hoc SQL queries, the team can spot anomalies at a single glance and immediately know which specific model requires attention.
