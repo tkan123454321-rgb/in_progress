@@ -369,6 +369,7 @@ def main():
     _faq()
     _technical_adjustments()
     _limitations()
+    _project_repo()
     st.markdown("---")
     st.caption("""
     **⚠️ TUYÊN BỐ MIỄN TRỪ TRÁCH NHIỆM (DISCLAIMER):** Đây là sản phẩm thực tế thuộc dự án cá nhân nhằm khẳng định năng lực chuyên môn trong lĩnh vực Data Engineering. Mọi dữ liệu, tín hiệu và thông tin trên hệ thống chỉ phục vụ mục đích tham khảo và CHẮN CHẮN có khả năng sai sót dữ liệu. Tác giả không cung cấp dịch vụ tư vấn tài chính và không chịu trách nhiệm cho bất kỳ quyết định mua bán hay tổn thất tài chính nào.
