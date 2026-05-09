@@ -204,15 +204,8 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
         "qmj_safety",  # S         # Kỳ báo cáo
         "current_market_cap",  # Vốn hóa hiện tại
         "quarter_market_cap",  # Vốn hóa chốt quý
-        "value_raw_score",  # Định giá gốc (Lịch sử)
-        "z_value_historical",  # Định giá chéo Z-score (Lịch sử)
-        "momentum_raw_score",  # Đà tăng gốc (Lịch sử)
-        "z_momentum_historical",  # Đà tăng chéo Z-score (Lịch sử)
-        # --- CỤM TIME-SERIES & CROSS-SECTIONAL (GẦN ĐÂY) ---
         "value_recent_score",  # Định giá gốc (Gần đây)
-        "z_value_recent",  # Định giá chéo Z-score (Gần đây)
         "momentum_recent_score",  # Đà tăng gốc (Gần đây)
-        "z_momentum_recent",  # Đà tăng chéo Z-score (Gần đây)
     ]
 
     # 2. CHỈ CHỌN CÁC CỘT TRÊN (Tự động ẩn các cột shares, volume, kỹ thuật...)
