@@ -274,5 +274,5 @@ Running heavy dbt transformations on a distributed SQL engine can easily spike c
 ---
 > ⚠️ **Note: The story doesn't end here...**
 > We have covered a lot to get here, and this README will continue to be actively optimized and updated in the future.
-> ⭐ **If you found this architecture interesting, helpful, or just cool, please consider giving this repository a Star!** It means a lot to me and keeps the motivation burning.
+> **If you found this architecture interesting, helpful, or just cool, please consider giving this repository a Star!** It means a lot to me and keeps the motivation burning.
 > Until next time, see you in the next update!

@@ -10,6 +10,7 @@ exclude: >
     transform/docs/.*|
     .*\.csv|
     assets/.*|
+    web_ui/assets/.*|
     .*\.parquet
   )$
 repos:
