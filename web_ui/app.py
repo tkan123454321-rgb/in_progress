@@ -120,7 +120,7 @@ def render_filters(df: pl.DataFrame):
 
 
 def _introduction():
-    with st.expander(" Tại sao sản phẩm này ra đời? (The 'Why' behind the Product) "):
+    with st.expander(" Tại sao sản phẩm này ra đời? "):
         st.markdown("""
         ### 1. Câu chuyện của mình: khi kiến thức tài chính là không đủ.
         Đầu năm 3 đại học, sau khi nhận email báo đỗ CFA Level 1 với điểm số 1755/1900, mình từng nghĩ: Mình sẽ chọn một mã cổ phiếu, áp dụng đống công thức định giá xịn vừa học được, viết một cái report thật chất lượng 20-30 trang PDF rồi tự tin gửi CV ứng tuyển vào khối phân tích của các công ty chứng khoán hoặc các quỹ đầu tư thì bao pass cv và vào thẳng phỏng vấn.
@@ -132,19 +132,18 @@ def _introduction():
         Do đó, thay vì cố chấp làm một chuyên viên phân tích tài chính chọn mã bằng sức người, mình chọn lùi lại 1 bước để nhìn toàn cảnh. Mình đã chọn trở thành một data engineer để xây một hệ thống pipeline dữ liệu sàng lọc tự động, khách quan, tự động quét qua hàng ngàn mã cổ phiếu và chỉ để lại những cổ phiếu chất lượng tốt nhất cho công việc phân tích chuyên sâu.
 
         ### 2. Thế là sản phẩm này ra đời:
-        Sản phẩm này được tạo ra để trả lời cho ba câu hỏi cốt lõi:
-        * Đâu là những cổ phiếu chất lượng cao đáng để đầu tư (Theo Hạng QMJ)? -> Câu hỏi này giải quyết 90% thời gian tìm kiếm cổ phiếu chất lượng.
-        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang được định giá hấp dẫn (theo điểm Value)? -> Câu hỏi này giúp giảm rủi ro mua cổ phiếu chất lượng tốt nhưng lại được định giá quá cao trên thị trường.
-        * Trong số những cổ phiếu chất lượng đó, đâu là những cổ phiếu đang có đà tăng trưởng mạnh mẽ (theo điểm Momentum)? -> Câu hỏi này giúp chúng ta xác định thời điểm đúng để mua vào những mã cổ phiếu chất lượng đó.
+        Bộ lọc này sinh ra để xử lý triệt để cái đau đầu của dân đầu tư: **Mất quá nhiều thời gian**.
 
-        ### 3. Cốt lõi của sản phẩm này: điểm QMJ (Quality Minus Junk) và sự kết hợp giữa điểm Value & Momentum
-        Để sản phẩm này đưa ra các tín hiệu chính xác và khách quan, lõi thuật toán (Data Pipeline) được xây dựng dựa trên các nghiên cứu định lượng từ công ty quản lý đầu tư toàn cầu AQR Capital Management:
+        Về bản chất, nó là một cái phễu lọc định lượng cơ bản tự động (quantamental screening), giúp chúng ta thu hẹp cả thị trường lại xuống 1 danh sách cổ phiếu chất lượng tốt bằng cách trả lời 3 câu hỏi cốt lõi trước khi xuống tiền:
 
-        * [QMJ (Quality Minus Junk)](https://link.springer.com/article/10.1007/s11142-018-9470-2): Lượng hóa chất lượng doanh nghiệp bằng toán học để loại bỏ hoàn toàn cảm tính. Thay vì dùng một chỉ số đơn lẻ dễ bị thao túng, hệ thống thu thập hàng chục chỉ số tài chính thô, xếp hạng (Rank) và chuẩn hóa chúng thành điểm Z-Score. Bằng cách lấy trung bình cộng, thuật toán khử nhiễu (reduce noise) và đánh giá sức khỏe doanh nghiệp qua 3 trụ cột:
-            * Sinh lời (Profitability): Đo lường năng lực tạo ra lợi nhuận bền vững thông qua 6 chỉ số đa chiều (ROE, ROA, Dòng tiền, Biên gộp...).
-            * Tăng trưởng (Growth): Đánh giá tốc độ gia tăng của lợi nhuận cốt lõi trong một chu kỳ dài hạn.
-            * An toàn (Safety): Đo lường khả năng sinh tồn dựa trên rủi ro phá sản, đòn bẩy nợ và mức độ biến động giá cổ phiếu.
-        * [Value And Momentum Everywhere](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2174501): Sau khi có những mã có điểm quality cao (QMJ Score), hệ thống tiếp tục xác định cổ phiếu đang được định giá hấp dẫn (Value) và cổ phiếu nào đang có đà tăng trưởng (Momentum) để từ đó đưa ra những quyết định đầu tư tốt hơn.
+        ### 1. Công ty này làm ăn được ko không? (Lọc hàng chất lượng bằng điểm QMJ)
+        Thay vì bỏ ra cả tuần lật từng trang Báo cáo tài chính, soi từng con số để mò mẫm ra được vài công ty làm ăn đàng hoàng giữa hơn 1.600 mã trên sàn, điểm QMJ là cái máy quét chính. Nó gạt bỏ mọi yếu tố cảm xúc và chắt lọc thành 1 danh sách chỉ gồm những doanh nghiệp khỏe mạnh nhất, lợi nhuận đều, ít rủi ro nợ nần. Đây là lớp phòng thủ an toàn đầu tiên.
+
+        ### 2. "Hàng tốt đấy, nhưng giá này nhảy vào có bị 'đu đỉnh' không?" (Tránh mua giá quá cao bằng điểm Value )
+        Danh sách công ty chất lượng thì có rồi, nhưng giá cổ phiếu đang quá cao so với giá trị nội tại cũng không ổn. Nên từ danh sách cổ phiếu chất lượng đã qua vòng QMJ, hệ thống dùng điểm Value để quét tiếp xem mã nào đang bị thị trường định giá thấp. Nó giúp chúng ta tìm được hàng ngon nhưng vẫn đang ở mức giá rẻ.
+
+        ### 3. "Ngon, bổ, rẻ rồi, múc luôn hay đợi?" (Đo sóng dòng tiền bằng  điểm Momentum)
+        Mua được cổ phiếu tốt, định giá lại đang quá rẻ. Nhưng nếu ôm xong cứ để đấy 1-2 năm giá nó chẳng chịu nhúc nhích vì dòng tiền ngoài thị trường đang đổ ở chỗ khác. Ôm hàng, chôn vốn cực kỳ ức chế. Lúc này ta sẽ dùng Điểm Momentum là lớp màng lọc cuối cùng, nó chỉ mặt đặt tên những cổ phiếu (vốn dĩ đã tốt và rẻ) đang bắt đầu hút tiền mạnh bây giờ.
 
         > *Lưu ý: Bảng dữ liệu này là một dự án cá nhân (Portfolio Project) để chứng minh khả năng xử lý và xây dựng kiến trúc dữ liệu (Data Engineering). Các số liệu và bảng xếp hạng ở đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
