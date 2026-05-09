@@ -274,19 +274,6 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
             help="Giá trị vốn hóa thị trường tại ngày kết thúc quý báo cáo (tỷ đồng).",
             format="%,.0f",
         ),
-        # --- CẤU HÌNH CÁC CỘT TIME-SERIES (GỐC) ---
-        "value_raw_score": st.column_config.NumberColumn(
-            "Định giá Gốc Lịch sử (Value Raw - Hist)",
-            width="medium",
-            help="dùng cho phân tích Time-series: diểm value gốc trong quá khứ, so sánh định giá của cổ phiếu với chính lịch sử của nó.",
-            format="%.4f",
-        ),
-        "momentum_raw_score": st.column_config.NumberColumn(
-            "Đà tăng Gốc Lịch sử (Mom Raw - Hist)",
-            width="medium",
-            help="dùng cho phân tích Time-series: Điểm Momentum gốc trong quá khứ, đo lường sức mạnh giá tự thân trong lịch sử.",
-            format="%.4f",
-        ),
         "value_recent_score": st.column_config.NumberColumn(
             "Định giá Gốc Gần đây (Value Raw - Recent)",
             width="medium",
@@ -298,31 +285,6 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
             width="medium",
             help="dùng cho phân tích Time-series: Điểm Momentum gốc gần đây, đo lường sức mạnh giá tự thân tại thời điểm hiện tại.",
             format="%.4f",
-        ),
-        # --- CẤU HÌNH CÁC CỘT CROSS-SECTIONAL (Z-SCORE) ---
-        "z_value_historical": st.column_config.NumberColumn(
-            "Định giá Z-Score Lịch sử (Value Z - Hist)",
-            width="medium",
-            help="dùng cho phân tích Cross-sectional: Cổ phiếu này quá khứ rẻ hay đắt so với các cổ phiếu khác.",
-            format="%.2f",
-        ),
-        "z_momentum_historical": st.column_config.NumberColumn(
-            "Đà tăng Z-Score Lịch sử (Mom Z - Hist)",
-            width="medium",
-            help="dùng cho phân tích Cross-sectional: Đà tăng giá mạnh hay yếu so với thị trường trong quá khứ.",
-            format="%.2f",
-        ),
-        "z_value_recent": st.column_config.NumberColumn(
-            "Định Giá Z-Score Gần Đây (Value Z - Recent)",
-            width="medium",
-            help="dùng cho phân tích Cross-sectional: Cổ phiếu này hiện tại đang rẻ hay đắt so với các cổ phiếu khác.",
-            format="%.2f",
-        ),
-        "z_momentum_recent": st.column_config.NumberColumn(
-            "Đà tăng Z-Score Gần Đây (Mom Z - Recent)",
-            width="medium",
-            help="dùng cho phân tích Cross-sectional: đà tăng giá hiện tại mạnh hay yếu so với thị trường chung.",
-            format="%.2f",
         ),
     }
     # 4. VẼ BẢNG
