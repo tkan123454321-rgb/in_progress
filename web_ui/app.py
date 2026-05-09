@@ -147,7 +147,10 @@ def _introduction():
 
         > *Lưu ý: Bảng dữ liệu này là một dự án cá nhân (Portfolio Project) để chứng minh khả năng xử lý và xây dựng kiến trúc dữ liệu (Data Engineering). Các số liệu và bảng xếp hạng ở đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
-        st.image("./assets/solution.png", use_container_width=True)
+        st.image(
+            str(Path(__file__).parent / "assets" / "solution.png"),
+            use_container_width=True,
+        )
 
 
 def _faq():
