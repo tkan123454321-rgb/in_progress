@@ -136,21 +136,22 @@ def _introduction():
 
         Về bản chất, nó là một cái phễu lọc định lượng cơ bản tự động (quantamental screening), giúp chúng ta thu hẹp cả thị trường lại xuống 1 danh sách cổ phiếu chất lượng tốt bằng cách trả lời 3 câu hỏi cốt lõi trước khi xuống tiền:
 
-        ### 1. Công ty này làm ăn được ko không? (Lọc hàng chất lượng bằng điểm QMJ)
+        ## 1. Công ty này làm ăn được ko không? (Lọc hàng chất lượng bằng điểm QMJ)
         Thay vì bỏ ra cả tuần lật từng trang Báo cáo tài chính, soi từng con số để mò mẫm ra được vài công ty làm ăn đàng hoàng giữa hơn 1.600 mã trên sàn, điểm QMJ là cái máy quét chính. Nó gạt bỏ mọi yếu tố cảm xúc và chắt lọc thành 1 danh sách chỉ gồm những doanh nghiệp khỏe mạnh nhất, lợi nhuận đều, ít rủi ro nợ nần. Đây là lớp phòng thủ an toàn đầu tiên.
 
-        ### 2. "Hàng tốt đấy, nhưng giá này nhảy vào có bị 'đu đỉnh' không?" (Tránh mua giá quá cao bằng điểm Value )
+        ## 2. Hàng tốt đấy, nhưng cổ phiếu đó có bị định giá quá cao không? (Tránh mua giá quá cao bằng điểm Value )
         Danh sách công ty chất lượng thì có rồi, nhưng giá cổ phiếu đang quá cao so với giá trị nội tại cũng không ổn. Nên từ danh sách cổ phiếu chất lượng đã qua vòng QMJ, hệ thống dùng điểm Value để quét tiếp xem mã nào đang bị thị trường định giá thấp. Nó giúp chúng ta tìm được hàng ngon nhưng vẫn đang ở mức giá rẻ.
 
-        ### 3. "Ngon, bổ, rẻ rồi, múc luôn hay đợi?" (Đo sóng dòng tiền bằng  điểm Momentum)
+        ## 3. Ngon, bổ, rẻ rồi, múc luôn hay đợi? (Đo sóng dòng tiền bằng  điểm Momentum)
         Mua được cổ phiếu tốt, định giá lại đang quá rẻ. Nhưng nếu ôm xong cứ để đấy 1-2 năm giá nó chẳng chịu nhúc nhích vì dòng tiền ngoài thị trường đang đổ ở chỗ khác. Ôm hàng, chôn vốn cực kỳ ức chế. Lúc này ta sẽ dùng Điểm Momentum là lớp màng lọc cuối cùng, nó chỉ mặt đặt tên những cổ phiếu (vốn dĩ đã tốt và rẻ) đang bắt đầu hút tiền mạnh bây giờ.
 
         > *Lưu ý: Bảng dữ liệu này là một dự án cá nhân (Portfolio Project) để chứng minh khả năng xử lý và xây dựng kiến trúc dữ liệu (Data Engineering). Các số liệu và bảng xếp hạng ở đây hoàn toàn không phải là lời khuyên hay khuyến nghị đầu tư.*
         """)
+        st.image("./assets/solution.png", use_container_width=True)
 
 
 def _faq():
-    with st.expander(" 💡 FAQ (Giải đáp thắc mắc về dữ liệu) "):
+    with st.expander(" FAQ (Giải đáp thắc mắc về dữ liệu) "):
         st.markdown(
             "### Tại sao chỉ có số ít mã cổ phiếu được chấm điểm QMJ theo từng quý?"
         )
