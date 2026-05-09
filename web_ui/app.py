@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 # ==========================================
-# 1. DATA PROCESSING (XỬ LÝ DỮ LIỆU)
+# 1. DATA PROCESSING
 # ==========================================
 @st.cache_data
 def transform_data():
@@ -52,22 +52,19 @@ def _get_latest_update_time(df: pl.DataFrame) -> str:
 
 
 # ==========================================
-# 2. UI COMPONENTS (CÁC THÀNH PHẦN GIAO DIỆN)
+# 2. UI COMPONENTS
 # ==========================================
 def render_filters(df: pl.DataFrame):
     """Hàm này chỉ chuyên lo việc vẽ bộ lọc và trả về dữ liệu đã lọc"""
     list_q = _get_quarters_for_selectbox(df)
 
     col1, col2, col3 = st.columns([1, 1, 1])
-
-    # Cột 1: Chọn Quý
+    # quarter column selection
     with col1:
         selected_q = st.selectbox("Chọn Kỳ Báo Cáo:", options=list_q)
         df_filtered_by_q = df.filter(pl.col("ui_label") == selected_q)
-
+    # criteria selection
     with col2:
-        # Tạo một từ điển map giữa Tên hiển thị và Cột tương ứng trong data
-        # desc=True nghĩa là điểm cao xếp trên, desc=False là hạng thấp (số 1) xếp trên
         criteria_dict = {
             "Hạng QMJ": {"col": "qmj_rank", "desc": False},
             "Đà tăng trưởng (Top Momentum)": {"col": "z_momentum_recent", "desc": True},
@@ -80,12 +77,12 @@ def render_filters(df: pl.DataFrame):
         * **Định giá hấp dẫn**: Sàng lọc các cổ phiếu có mức định giá thấp hoặc hấp dẫn so với giá trị nội tại.
         """
 
-        # 3. Thêm tham số help vào selectbox
         selected_criteria = st.selectbox(
             "Chọn Tiêu chí Xếp hạng:",
             options=list(criteria_dict.keys()),
             help=help_text,
         )
+    # 3. Search box for ticker
     with col3:
         search_ticker = (
             st.text_input("Tìm nhanh mã CK:", placeholder="VD: VNM, HPG...")
@@ -104,21 +101,21 @@ def render_filters(df: pl.DataFrame):
     sort_col = criteria_dict[selected_criteria]["col"]
     is_desc = criteria_dict[selected_criteria]["desc"]
 
-    # Lọc lần cuối theo Rank
     if search_ticker:
         df_final = df_filtered_by_q.filter(
             pl.col("ticker").str.contains(search_ticker)
         ).sort(sort_col, descending=is_desc)
     else:
-        df_final = (
-            df_filtered_by_q.filter(pl.col("qmj_rank") <= selected_top_n).sort(
-                sort_col, descending=is_desc
-            )  # Hạng 1 lên đầu
+        df_final = df_filtered_by_q.filter(pl.col("qmj_rank") <= selected_top_n).sort(
+            sort_col, descending=is_desc
         )
 
     return df_final, selected_q, selected_top_n, selected_criteria
 
 
+# ==========================================
+# CONTENT
+# =========================================
 def _introduction():
     with st.expander(" Tại sao sản phẩm này ra đời? "):
         st.markdown("""
@@ -132,6 +129,10 @@ def _introduction():
         Do đó, thay vì cố chấp làm một chuyên viên phân tích tài chính chọn mã bằng sức người, mình chọn lùi lại 1 bước để nhìn toàn cảnh. Mình đã chọn trở thành một data engineer để xây một hệ thống pipeline dữ liệu sàng lọc tự động, khách quan, tự động quét qua hàng ngàn mã cổ phiếu và chỉ để lại những cổ phiếu chất lượng tốt nhất cho công việc phân tích chuyên sâu.
 
         ### 2. Thế là sản phẩm này ra đời:
+        Để đảm bảo sản phẩm này đưa ra các tín hiệu chính xác và khách quan dựa trên các công bố được kiểm chứng và xác nhận, lõi thuật toán và các chỉ số được lựa chọn và xây dựng dựa trên các nghiên cứu định lượng từ công ty quản lý đầu tư toàn cầu AQR Capital Management qua 2 bài báo chính:
+        * "[Quality Minus Junk](https://link.springer.com/article/10.1007/s11142-018-9470-2)" (Xuất bản công khai 05-11-2018): Nghiên cứu này giới thiệu thuật toán chấm điểm QMJ (Quality Minus Junk) để đánh giá chất lượng doanh nghiệp dựa trên 3 nhóm nhân tố: Lợi nhuận (Profitability), Tăng trưởng (Growth) và An toàn (Safety). Điểm QMJ tổng hợp giúp xếp hạng các cổ phiếu theo chất lượng nền tảng tài chính.
+        * "[Value and Momentum Everywhere](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2174501)" (Xuất bản công khai 14-11-2012): Nghiên cứu này trình bày cách xây dựng các chỉ số Định giá (Value) và Đà tăng trưởng (Momentum) để đo lường mức độ hấp dẫn về giá và sức mạnh xu hướng của cổ phiếu trên nhiều thị trường và lớp tài sản khác nhau.
+
         Bộ lọc này sinh ra để xử lý triệt để cái đau đầu của dân đầu tư: **Mất quá nhiều thời gian**.
 
         Về bản chất, nó là một cái phễu lọc định lượng cơ bản tự động (quantamental screening), giúp chúng ta thu hẹp cả thị trường lại xuống 1 danh sách cổ phiếu chất lượng tốt bằng cách trả lời 3 câu hỏi cốt lõi trước khi xuống tiền:
@@ -188,7 +189,7 @@ def _faq():
 
 
 def _technical_adjustments():
-    with st.expander(" Hiệu chỉnh Kỹ thuật  "):
+    with st.expander("Hiệu chỉnh Kỹ thuật"):
         st.markdown("""
         Để thuật toán vận hành thực tế và khách quan nhất tại thị trường Việt Nam, sản phẩm đã được thay đổi 1 số điểm so với bài báo gốc của AQR:
         * Chu kỳ Tăng trưởng (Growth Window): Thay vì dùng 20 quý (5 năm) lịch sử làm mốc cửa sổ tham chiếu trong mục tính thành phần tăng trưởng (growth), mình đã rút ngắn xuống còn 16 quý (4 năm).
@@ -198,35 +199,42 @@ def _technical_adjustments():
         """)
 
 
+def _limitations():
+    with st.expander(" Giới hạn của hệ thống: Yếu tố không thể thay thế "):
+        st.markdown("""
+        Dù nền tảng này tự động hóa khâu thu thập và sàng lọc dữ liệu, nó sinh ra là để **hỗ trợ ra quyết định**, chứ KHÔNG THỂ thay thế quyết định và kiến thức chuyên môn của con người:
+        * **Sai số dữ liệu:** Máy móc hoàn toàn phụ thuộc vào nguồn dữ liệu thô. Thỉnh thoảng các báo cáo tài chính vẫn có độ trễ, sai sót hoặc thiếu hụt số liệu. Danh sách hệ thống lọc ra chỉ là bước khởi đầu, không phải là tín hiệu chắc chắn để nhắm mắt mua theo.
+        * **Phân tích cơ bản chuyên sâu:** Hệ thống tính toán các con số trong quá khứ và hiện tại cực kỳ hoàn hảo, nhưng nó không thể dự đoán tương lai. Chúng ta vẫn bắt buộc phải cần các Chuyên viên Phân tích (Financial Analysts) để mổ xẻ mô hình kinh doanh thực tế, lợi thế cạnh tranh, chất lượng ban lãnh đạo và tiềm năng tương lai thực sự của doanh nghiệp.
+        * **Quản trị Danh mục Chiến lược:** Lắp ghép những cổ phiếu tốt nhất lại với nhau không tự động tạo ra một danh mục an toàn. Chúng ta vẫn cần các nhà hoạch định chiến lược Đầu tư (Investment Strategists) và các Giám đốc Danh mục (Portfolio Managers) để phân bổ tỷ trọng, đa dạng hóa và kiểm soát rủi ro dài hạn.
+        * **Đa dạng hóa Lớp tài sản:** sản phẩm này chỉ tập trung vào thị trường Cổ phiếu. Một kế hoạch quản lý và tăng trưởng tài chính vững chắc đòi hỏi sự luân chuyển linh hoạt qua các lớp tài sản khác như Trái phiếu, Bất động sản hay vàng,....
+
+        **Tóm lại:** Cho dù máy móc có tự động hoá đến đâu, nó cũng không bao giờ thay thế được con người. Công nghệ chỉ lấy đi những phần việc tay chân lặp đi lặp lại. Nó trả lại cho các chuyên gia phân tích 90% thời gian và năng lượng để họ tập trung vào thứ mà tự động không làm được: **Suy luận, Lên kế hoạch và Xây dựng chiến lược đầu tư thực chiến.**
+        """)
+
+
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
-    """Hàm hiển thị bảng dữ liệu với thứ tự cột đã được sắp xếp lại"""
     st.header(f"{selected_q}", divider="gray")
     st.caption(f"⏱️ Cập nhật lần cuối: {updated_time}")
 
-    # 1. ĐỊNH NGHĨA THỨ TỰ HIỂN THỊ (Sắp xếp lại danh sách cột)
-    # Bác liệt kê các cột muốn HIỆN THEO THỨ TỰ từ trái sang phải ở đây
     display_order = [
-        "qmj_rank",  # Đưa Hạng lên đầu tiên
-        "ticker",  # Mã CK
-        "company_name",  # Tên công ty
-        "exchange",  # Sàn
-        "industry_group",  # Nhóm ngành
-        "sector_detail",  # Lĩnh vực
-        "qmj_score",  # Điểm tổng
-        "qmj_profitability",  # P
-        "qmj_growth",  # G
-        "qmj_safety",  # S         # Kỳ báo cáo
-        "current_market_cap",  # Vốn hóa hiện tại
-        "quarter_market_cap",  # Vốn hóa chốt quý
-        "value_recent_score",  # Định giá gốc (Gần đây)
-        "momentum_recent_score",  # Đà tăng gốc (Gần đây)
+        "qmj_rank",
+        "ticker",
+        "company_name",
+        "exchange",
+        "industry_group",
+        "sector_detail",
+        "qmj_score",
+        "qmj_profitability",
+        "qmj_growth",
+        "qmj_safety",
+        "current_market_cap",
+        "quarter_market_cap",
+        "value_recent_score",
+        "momentum_recent_score",
     ]
 
-    # 2. CHỈ CHỌN CÁC CỘT TRÊN (Tự động ẩn các cột shares, volume, kỹ thuật...)
-    # Việc dùng .select ở đây sẽ loại bỏ hoàn toàn các cột bác không liệt kê ở trên
     df_display = df.select(display_order)
 
-    # 3. CẤU HÌNH HIỂN THỊ (Làm đẹp tên cột)
     view_config = {
         "qmj_rank": st.column_config.NumberColumn(
             "Hạng (Rank)",
@@ -301,27 +309,28 @@ def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
             format="%.4f",
         ),
     }
-    # 4. VẼ BẢNG
+
     st.dataframe(
         df_display, column_config=view_config, use_container_width=True, hide_index=True
     )
 
 
 # ==========================================
-# 3. ORCHESTRATOR (NHẠC TRƯỞNG ĐIỀU PHỐI)
+# 3. ORCHESTRATOR
 # ==========================================
 def main():
-    st.set_page_config(page_title="QMJ Dashboard", layout="wide")
-    st.title(
-        "Demo Dữ liệu QMJ - 1 số cồ phiếu chưa phát hành dữ liệu quý mới nhất cho q1 2026, hãy chọn q4/2025"
-    )
-    st.header("Bảng danh sách dữ liệu cổ phiếu chấm điểm theo QMJ", divider="gray")
+    st.set_page_config(page_title="Quantamental Screener", layout="wide")
 
-    # 1. Lấy dữ liệu gốc
+    st.title("Hệ thống Sàng lọc Cổ phiếu Định lượng Cơ bản (Quantamental Screener)")
+
+    st.info(
+        "💡 **Lưu ý dữ liệu:** Một số doanh nghiệp chưa công bố Báo cáo tài chính Quý 1/2026. Để xem danh sách cổ phiếu được chấm điểm đầy đủ nhất, vui lòng chọn kỳ báo cáo **Quý 4/2025**."
+    )
+    st.header("Bảng Xếp hạng Cổ phiếu (QMJ - Value - Momentum)", divider="gray")
+
     df_raw = transform_data()
 
     if df_raw is not None:
-        # 2. Đưa dữ liệu qua bộ lọc (Lấy về dữ liệu đã lọc và quý đang chọn)
         updated_time = _get_latest_update_time(df_raw)
         df_filtered, selected_q, selected_top_n, selected_criteria = render_filters(
             df_raw
@@ -336,13 +345,13 @@ def main():
             insight_text = f"Danh sách cổ phiếu theo {selected_criteria}."
         st.caption(f"**Bảng dưới đây trả lời cho câu hỏi:** *{insight_text}*")
 
-        # 3. Đưa dữ liệu đã lọc lên bảng vẽ
         render_main_content(df_filtered, selected_q, updated_time)
     else:
         st.error("⚠️ Không tìm thấy file dữ liệu (data_qmj.csv)!")
     _introduction()
     _faq()
     _technical_adjustments()
+    _limitations()
     st.markdown("---")
     st.caption("""
     **⚠️ TUYÊN BỐ MIỄN TRỪ TRÁCH NHIỆM (DISCLAIMER):** Đây là sản phẩm thực tế thuộc dự án cá nhân nhằm khẳng định năng lực chuyên môn trong lĩnh vực Data Engineering. Mọi dữ liệu, tín hiệu và thông tin trên hệ thống chỉ phục vụ mục đích tham khảo và CHẮN CHẮN có khả năng sai sót dữ liệu. Tác giả không cung cấp dịch vụ tư vấn tài chính và không chịu trách nhiệm cho bất kỳ quyết định mua bán hay tổn thất tài chính nào.
