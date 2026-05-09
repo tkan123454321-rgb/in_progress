@@ -212,6 +212,23 @@ def _limitations():
         """)
 
 
+def _project_repo():
+    with st.expander("Kiến trúc Hệ thống & Mã nguồn"):
+        st.markdown("""
+        Nếu anh/chị là nhà tuyển dụng, Kỹ sư dữ liệu (Data Engineer), hoặc đơn giản là tò mò về cách hệ thống này tự động thu thập, xử lý dữ liệu và tối ưu chi phí hạ tầng, mời anh/chị ghé thăm kho lưu trữ mã nguồn của dự án.
+        **File README của dự án tổ chức như sau:**
+        * **Bản vẽ Kiến trúc chi tiết:** cách các thành phần trong hệ thống kết nối với nhau, luồng dữ liệu vận hành ra sao, và cách tối ưu chi phí hạ tầng.
+        * **Luồng xử lý Dữ liệu:** Hành trình dữ liệu từ nguồn đến bản đích cuối cùng.
+        * **Tư duy thiết kế:** Xử lý luồng sự kiện, tối ưu bộ nhớ, và quản lý chi phí.
+        """)
+
+        st.link_button(
+            "Xem chi tiết Kiến trúc & Source Code trên GitHub",
+            "https://github.com/tkan123454321-rgb/VN_stocks_quantamental_screener",
+            type="primary",
+        )
+
+
 def render_main_content(df: pl.DataFrame, selected_q: str, updated_time: str):
     st.header(f"{selected_q}", divider="gray")
     st.caption(f"⏱️ Cập nhật lần cuối: {updated_time}")
@@ -324,7 +341,7 @@ def main():
     st.title("Hệ thống Sàng lọc Cổ phiếu Định lượng Cơ bản (Quantamental Screener)")
 
     st.info(
-        "💡 **Lưu ý dữ liệu:** Một số doanh nghiệp chưa công bố Báo cáo tài chính Quý 1/2026. Để xem danh sách cổ phiếu được chấm điểm đầy đủ nhất, vui lòng chọn kỳ báo cáo **Quý 4/2025**."
+        "**Lưu ý dữ liệu:** Một số doanh nghiệp chưa công bố Báo cáo tài chính Quý 1/2026. Để xem danh sách cổ phiếu được chấm điểm đầy đủ nhất, vui lòng chọn kỳ báo cáo **Quý 4/2025**."
     )
     st.header("Bảng Xếp hạng Cổ phiếu (QMJ - Value - Momentum)", divider="gray")
 
